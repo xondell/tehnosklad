@@ -120,6 +120,7 @@ export default async function CategoryPage({
           state={state}
           result={result}
           actionPath={actionPath}
+          leadSource="category_product_card"
         />
       </div>
     </PageContainer>

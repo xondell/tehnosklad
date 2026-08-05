@@ -52,6 +52,24 @@ Supabase transport получает списки товаров одним bulk 
 
 Proxy не запрашивает роль из БД и не является единственной защитой.
 
+## Data flow заявки
+
+```text
+ContactDialog
+  -> POST /api/leads (same-origin JSON + Idempotency-Key)
+    -> shared canonical validation
+      -> HMAC request/IP/phone hashes
+        -> service-role submit_public_lead RPC
+          -> lead + initial status history + Telegram outbox (одна транзакция)
+            -> claim delivery lease
+              -> Telegram Bot API
+                -> complete delivery attempt/result
+```
+
+Браузер передаёт только `productId`; имя, цена и URL товара заново разрешаются RPC из опубликованного RU/RO каталога и сохраняются snapshot-полями. Клиент не имеет Data API grants на leads и не получает service role. Повтор одного запроса с тем же UUID и canonical payload возвращает существующую заявку, а тот же UUID с другим payload отклоняется.
+
+Telegram не участвует в транзакции сохранения заявки. Явный `429` может перейти в `retry_wait`; сетевой timeout, `5xx` и просроченная processing lease считаются неопределённым исходом и переводятся в `manual_review`, чтобы автоматический повтор не создал дубликат сообщения.
+
 ## Структура
 
 ```text
@@ -63,6 +81,8 @@ src/
     data.ts, repository.ts, demo-repository.ts
     supabase/{transport,repository,mapper,rows}.ts
   features/admin/auth/
+  features/leads/
+  app/api/leads/route.ts
   lib/env/
   lib/supabase/{browser,server,public-server,service,proxy}.ts
   proxy.ts
@@ -75,4 +95,4 @@ supabase/
 
 ## Следующие внешние границы
 
-Route Handlers появятся только для заявок/Telegram/AI. Прямой anon INSERT в будущие заявки не предусматривается. CRUD и Storage upload UI относятся к следующему административному этапу.
+CRUD и Storage upload UI относятся к следующему административному этапу. AI Route Handler и provider interface появятся только после определения контракта; прямой anon INSERT ни для заявок, ни для AI-истории не предусматривается.

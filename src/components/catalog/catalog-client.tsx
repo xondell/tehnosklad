@@ -13,6 +13,7 @@ import type {
 } from "@/features/catalog/types";
 import { localizedPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
+import type { LeadSource } from "@/features/leads/types";
 
 function FilterFields({
   dictionary,
@@ -123,6 +124,7 @@ export function CatalogClient({
   state,
   result,
   actionPath,
+  leadSource,
   showCategories = false,
 }: {
   locale: Locale;
@@ -133,6 +135,7 @@ export function CatalogClient({
   state: CatalogUrlState;
   result: CatalogSearchResult;
   actionPath: string;
+  leadSource: LeadSource;
   showCategories?: boolean;
 }) {
   const fields = (
@@ -186,6 +189,7 @@ export function CatalogClient({
               locale={locale}
               dictionary={dictionary}
               settings={settings}
+              leadSource={leadSource}
             />
           ) : (
             <div className="rounded-2xl border border-dashed border-stone-300 p-10 text-center">

@@ -110,6 +110,13 @@ begin
   end if;
 
   begin
+    perform count(*) from public.leads;
+    raise exception 'anon lead select unexpectedly succeeded';
+  exception when insufficient_privilege then
+    null;
+  end;
+
+  begin
     insert into public.products (
       category_id, brand, model, sku, price_minor
     ) values (
@@ -141,6 +148,16 @@ begin
   then
     raise exception 'slug route write grants are public';
   end if;
+  if has_table_privilege('anon', 'public.leads', 'select')
+    or has_table_privilege('anon', 'public.leads', 'insert')
+    or has_function_privilege(
+      'anon',
+      'public.submit_public_lead(uuid,text,text,text,public.app_locale,public.lead_source,text,text,text,text,text,uuid,text)',
+      'execute'
+    )
+  then
+    raise exception 'anonymous lead storage access is public';
+  end if;
 end;
 $$;
 
@@ -157,6 +174,13 @@ begin
     or exists (select 1 from public.user_roles)
   then
     raise exception 'authenticated request without uid can read identity rows';
+  end if;
+  if exists (select 1 from public.leads)
+    or exists (select 1 from public.lead_status_history)
+    or exists (select 1 from public.lead_telegram_deliveries)
+    or exists (select 1 from public.lead_delivery_attempts)
+  then
+    raise exception 'authenticated non-admin can read lead data';
   end if;
   begin
     insert into public.user_roles (user_id, role)

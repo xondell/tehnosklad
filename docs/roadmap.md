@@ -38,11 +38,15 @@
 
 Подробности: [stage-4.md](stage-4.md).
 
-## Этап 5 — заявки и Telegram
+## Этап 5 — заявки и Telegram — завершён
 
-- Валидируемый server endpoint, honeypot, rate limit и idempotency.
-- Leads/status history/delivery logs отдельной migration после утверждения модели.
-- Сохранение до Telegram delivery и безопасные retry.
+- Валидируемый same-origin server endpoint, 16 KiB limit, honeypot, rate limit и UUID idempotency key.
+- Leads/status history/Telegram outbox и delivery attempts отдельной migration.
+- Сохранение заявки до Telegram delivery, snapshot опубликованного товара и безопасная классификация retry/uncertain failures.
+- Реальная доступная RU/RO форма, product/source context и сохранение введённых данных при ошибке.
+- Unit, transactional SQL, production HTTP integration и desktop/mobile browser QA.
+
+Подробности: [stage-5.md](stage-5.md).
 
 ## Этап 6 — административный CRUD
 

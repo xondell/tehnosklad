@@ -1,27 +1,28 @@
 # Матрица RLS и ручная проверка
 
-| Ресурс                              |                           anon read | anon write | authenticated non-admin |                admin |
-| ----------------------------------- | ----------------------------------: | ---------: | ----------------------: | -------------------: |
-| published, non-archived products    |                                 yes |         no |               read only |                 CRUD |
-| drafts/archived products            |                                  no |         no |                      no |                 CRUD |
-| published categories                |                                 yes |         no |               read only |                 CRUD |
-| draft/archived categories           |                                  no |         no |                      no |                 CRUD |
-| translations                        |                  public parent only |         no |      public parent only |                 CRUD |
-| product image metadata              |                  public parent only |         no |      public parent only |                 CRUD |
-| attribute groups/attributes/options | reachable from public category only |         no |            same as anon |                 CRUD |
-| product attribute values            |                 public product only |         no |            same as anon |                 CRUD |
-| public site settings whitelist      |                                 yes |         no |               read only |                 CRUD |
-| own profile/role                    |                                  no |         no |      own safe rows only |      controlled CRUD |
-| other profiles/roles                |                                  no |         no |                      no |      controlled CRUD |
-| Storage public object URL           |                    yes if URL known |         no |           read URL only | insert/select/delete |
+| Ресурс                              |                           anon read | anon write | authenticated non-admin |                    admin |
+| ----------------------------------- | ----------------------------------: | ---------: | ----------------------: | -----------------------: |
+| published, non-archived products    |                                 yes |         no |               read only |                     CRUD |
+| drafts/archived products            |                                  no |         no |                      no |                     CRUD |
+| published categories                |                                 yes |         no |               read only |                     CRUD |
+| draft/archived categories           |                                  no |         no |                      no |                     CRUD |
+| translations                        |                  public parent only |         no |      public parent only |                     CRUD |
+| product image metadata              |                  public parent only |         no |      public parent only |                     CRUD |
+| attribute groups/attributes/options | reachable from public category only |         no |            same as anon |                     CRUD |
+| product attribute values            |                 public product only |         no |            same as anon |                     CRUD |
+| public site settings whitelist      |                                 yes |         no |               read only |                     CRUD |
+| own profile/role                    |                                  no |         no |      own safe rows only |          controlled CRUD |
+| other profiles/roles                |                                  no |         no |                      no |          controlled CRUD |
+| leads/status/delivery logs          |                                  no |         no |                      no | read; lead status update |
+| Storage public object URL           |                    yes if URL known |         no |           read URL only |     insert/select/delete |
 
-Leads/private settings/technical logs отсутствуют в фактической schema Этапа 3, поэтому Data API surface для них не существует.
+Публичный endpoint заявки не означает Data API access: только server-side service role может выполнить `submit_public_lead`, claim/complete delivery и записать outbox. Private rate-limit table не выдаёт grants даже service role и доступна только security-definer RPC.
 
 ## Автоматизируемая anon-проверка
 
-После local reset выполните `supabase/verification/rls.sql`. Ожидаются 12 products, 3 categories, 14 settings rows; script также проверяет отсутствие draft leakage в таблицах и server-search RPC, недоступность current/draft slug routes, достижимость seeded attribute group, отсутствие anon EXECUTE на role helper и запрет anon insert. Transaction полностью откатывается.
+После local reset выполните `supabase/verification/rls.sql`. Ожидаются 12 products, 3 categories, 14 settings rows; script также проверяет отсутствие draft leakage, недоступность leads для anon/non-admin, отсутствие anon EXECUTE на lead/role RPC и запрет anon insert. Transaction полностью откатывается.
 
-Затем выполните `supabase/verification/integrity.sql`: он принудительно переводит deferred constraints в immediate и доказывает отказ при удалении перевода, назначении draft-категории, image без alt, отсутствии required attribute, несовместимой смене attribute type и попытке превратить category override в filterable text. Все изменения также откатываются.
+Затем выполните `supabase/verification/integrity.sql`: кроме catalog invariants он проверяет inventory 24 public tables/44 policies, grants lead RPC, idempotent submit, authoritative product snapshot, status history и claim/complete Telegram delivery. Все изменения также откатываются.
 
 ## Non-admin
 
@@ -64,8 +65,8 @@ Leads/private settings/technical logs отсутствуют в фактичес
 ## Advisor checklist
 
 - Все public tables показывают RLS enabled.
-- Нет public `SECURITY DEFINER` functions.
+- Public `SECURITY DEFINER` functions ограничены reviewed catalog/lead RPC с `search_path=''` и минимальными EXECUTE grants.
 - `private.is_admin()` имеет `search_path=''` и execute только authenticated.
 - Нет broad grants/default privileges для anon/authenticated.
 - Нет anon INSERT policy.
-- Views/RPC отсутствуют, поэтому отдельного RLS-bypass surface нет.
+- Каждый RPC отдельно проверен по EXECUTE grants; anon не может вызвать service-only lead RPC.

@@ -9,17 +9,20 @@ import type {
 } from "@/features/catalog/types";
 import { localizedPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
+import type { LeadSource } from "@/features/leads/types";
 
 export function ProductCard({
   product,
   locale,
   dictionary,
   settings,
+  leadSource,
 }: {
   product: CatalogProduct;
   locale: Locale;
   dictionary: Dictionary;
   settings: PublicSiteSettings;
+  leadSource: LeadSource;
 }) {
   const discount = getDiscountPercent(
     product.priceMinor,
@@ -92,8 +95,10 @@ export function ProductCard({
             </Link>
             <ContactButton
               dictionary={dictionary}
+              locale={locale}
               label={dictionary.actions.contact}
-              productName={product.name}
+              source={leadSource}
+              product={{ id: product.id, name: product.name }}
               settings={settings}
             />
           </div>

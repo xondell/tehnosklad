@@ -142,6 +142,7 @@ export default async function HomePage({
               locale={locale}
               dictionary={d}
               settings={settings}
+              leadSource="home_product_card"
             />
           </div>
         </PageContainer>
@@ -193,7 +194,9 @@ export default async function HomePage({
               </Link>
               <ContactButton
                 dictionary={d}
+                locale={locale}
                 label={d.actions.contact}
+                source="home_contact"
                 settings={settings}
               />
             </div>

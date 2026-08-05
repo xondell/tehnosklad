@@ -118,6 +118,7 @@ export default async function CatalogPage({
           state={state}
           result={result}
           actionPath={actionPath}
+          leadSource="catalog_product_card"
           showCategories
         />
       </div>

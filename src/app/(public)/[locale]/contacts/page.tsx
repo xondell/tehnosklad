@@ -86,7 +86,9 @@ export default async function ContactsPage({
             />
             <ContactButton
               dictionary={d}
+              locale={locale}
               label={d.actions.contact}
+              source="contacts_page"
               settings={settings}
             />
           </div>

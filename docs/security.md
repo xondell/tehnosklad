@@ -59,11 +59,22 @@ Public bucket обходит Storage SELECT RLS при чтении извест
 
 Удаление DB row не удаляет object транзакционно. Будущий admin workflow сначала помечает запись, удаляет object, затем metadata; периодическая orphan-проверка остаётся обязательной.
 
+## Заявки и Telegram
+
+- `POST /api/leads` принимает только same-origin `application/json`, максимум 16 KiB и обязательный UUID `Idempotency-Key`.
+- Имя, телефон, Telegram username, комментарий, locale/source/path, согласие и product UUID валидируются сервером; скрытое поле служит honeypot.
+- Endpoint не делает прямой insert: service-only `submit_public_lead` атомарно проверяет idempotency, лимиты и опубликованность товара, затем создаёт lead, initial status history и outbox.
+- Лимиты: не более 5 новых заявок на HMAC IP за 15 минут и 3 на HMAC телефона за час. Raw IP не хранится.
+- Product snapshot всегда строится из БД; переданные браузером название, цена и ссылка не принимаются.
+- `anon` не имеет grants/policies/EXECUTE на leads и RPC. `authenticated` может читать заявки только через admin policy; изменение ограничено колонкой `status` и также требует admin RLS.
+- Неопределённый результат Telegram (`timeout`, `5xx`, stale lease) не повторяется автоматически и требует ручной проверки. Автоповтор разрешён только после явного `429` Telegram.
+- Provider response body, bot token и raw request headers не сохраняются. В delivery log остаются только числовые статусы, безопасные error codes и message id.
+
 ## Secrets и логирование
 
 - Publishable key безопасно используется вместе с RLS; он не является секретом.
 - `SUPABASE_SERVICE_ROLE_KEY` никогда не имеет `NEXT_PUBLIC_` и доступен только leaf server module.
-- Telegram/AI keys не находятся в `site_settings`.
+- `LEAD_IP_HASH_SECRET`, `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` никогда не имеют `NEXT_PUBLIC_` и не находятся в `site_settings`.
 - `site_settings` имеет закрытый whitelist публичных ключей, поэтому secret нельзя случайно переключить флагом `is_public`.
 - Supabase transport отбрасывает внутренний error object и выбрасывает санитизированный application error; UI не получает SQL/stack/cookies/token.
 - Server log содержит только имя ресурса и application error code; keys, cookies, tokens и user object не логируются.

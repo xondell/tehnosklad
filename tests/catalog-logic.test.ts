@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import { validateLead } from "@/components/public/contact-dialog";
 import { DemoCatalogRepository } from "@/features/catalog/demo-repository";
 import {
   defaultCatalogFilters,
@@ -8,7 +7,6 @@ import {
   formatPrice,
   getDiscountPercent,
 } from "@/features/catalog/logic";
-import { getDictionary } from "@/i18n/get-dictionary";
 
 describe("catalog business logic", () => {
   it("formats integer minor units as MDL", () => {
@@ -90,25 +88,4 @@ describe("catalog business logic", () => {
       ).toHaveLength(1);
     },
   );
-});
-
-describe("lead form validation", () => {
-  const dictionary = getDictionary("ru");
-  it("requires name, phone and consent", () => {
-    expect(
-      validateLead({ name: "", phone: "12", consent: false }, dictionary),
-    ).toEqual({
-      name: dictionary.contactModal.required,
-      phone: dictionary.contactModal.phoneError,
-      consent: dictionary.contactModal.consentError,
-    });
-  });
-  it("allows a valid form without optional fields", () => {
-    expect(
-      validateLead(
-        { name: "Анна", phone: "+373 69 166 172", consent: true },
-        dictionary,
-      ),
-    ).toEqual({});
-  });
 });

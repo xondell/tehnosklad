@@ -155,6 +155,10 @@ if (process.env.TEHNOSKLAD_LOCAL_TEST !== "1") {
 }
 
 const runId = randomUUID();
+const runIpPrefix = `198.18.${20 + (Number.parseInt(runId.slice(0, 2), 16) % 200)}`;
+const runPhoneSeed = (Number.parseInt(runId.slice(2, 8), 16) % 100_000)
+  .toString()
+  .padStart(5, "0");
 const publishedCategoryId = "10000000-0000-4000-8000-000000000001";
 const publishedProductId = "20000000-0000-4000-8000-000000000001";
 const slugHistoryProductId = "20000000-0000-4000-8000-000000000002";
@@ -178,6 +182,46 @@ let adminId = "";
 let nonAdminId = "";
 let inactiveId = "";
 const storagePaths: string[] = [];
+const leadRequestIds: string[] = [];
+
+type RuntimeLeadPayload = {
+  name: string;
+  phone: string;
+  telegram?: string;
+  comment?: string;
+  consent: boolean;
+  locale: "ru" | "ro";
+  source:
+    | "home_contact"
+    | "contacts_page"
+    | "home_product_card"
+    | "catalog_product_card"
+    | "category_product_card"
+    | "product_page"
+    | "similar_product_card";
+  sourcePath: string;
+  productId?: string;
+  companyWebsite?: string;
+};
+
+async function postLead(
+  payload: RuntimeLeadPayload,
+  options: { requestId?: string; address?: string; origin?: string } = {},
+) {
+  const requestId = options.requestId ?? randomUUID();
+  leadRequestIds.push(requestId);
+  const response = await fetch(`${siteUrl}/api/leads`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Origin: options.origin ?? siteUrl,
+      "Idempotency-Key": requestId,
+      "X-Forwarded-For": options.address ?? "198.51.100.10",
+    },
+    body: JSON.stringify(payload),
+  });
+  return { response, requestId };
+}
 
 function publicClient(): SupabaseClient {
   return createClient(apiUrl, publishableKey, {
@@ -377,6 +421,14 @@ afterAll(async () => {
   if (storagePaths.length) {
     await cleanup("remove runtime Storage objects", () =>
       service.storage.from("product-images").remove([...new Set(storagePaths)]),
+    );
+  }
+  if (leadRequestIds.length) {
+    await cleanup("remove runtime leads", () =>
+      service
+        .from("leads")
+        .delete()
+        .in("client_request_id", [...new Set(leadRequestIds)]),
     );
   }
   await cleanup("remove runtime product slug routes", () =>
@@ -829,6 +881,197 @@ describe.sequential("real local Auth and Storage", () => {
 });
 
 describe.sequential("production HTTP and application Auth", () => {
+  it("persists a product lead once and records a durable Telegram outcome", async () => {
+    const payload: RuntimeLeadPayload = {
+      name: "Иван Тестовый",
+      phone: `+373 69 ${runPhoneSeed}1`,
+      telegram: "@runtime_test",
+      comment: "Нужна доставка",
+      consent: true,
+      locale: "ru",
+      source: "product_page",
+      sourcePath: "/ru/product/nord-cool-300",
+      productId: publishedProductId,
+    };
+    const { response, requestId } = await postLead(payload, {
+      address: `${runIpPrefix}.41`,
+    });
+    expect(response.status).toBe(201);
+    expect(await response.json()).toEqual({ ok: true });
+
+    const lead = resultData(
+      await service
+        .from("leads")
+        .select(
+          "id,name,phone,product_name_snapshot,product_price_minor,product_currency,product_path_snapshot",
+        )
+        .eq("client_request_id", requestId)
+        .single(),
+      "read persisted runtime lead",
+    );
+    if (!lead) throw new Error("Persisted runtime lead is missing");
+    expect(lead).toMatchObject({
+      name: "Иван Тестовый",
+      phone: `+37369${runPhoneSeed}1`,
+      product_name_snapshot: "Холодильник Nord Cool 300",
+      product_price_minor: 789000,
+      product_currency: "MDL",
+      product_path_snapshot: "/ru/product/nord-cool-300",
+    });
+
+    const [history, delivery] = await Promise.all([
+      service
+        .from("lead_status_history")
+        .select("status")
+        .eq("lead_id", lead.id),
+      service
+        .from("lead_telegram_deliveries")
+        .select("id,state,attempt_count,last_error_code")
+        .eq("lead_id", lead.id)
+        .single(),
+    ]);
+    expect(resultData(history, "read lead history")).toEqual([
+      { status: "new" },
+    ]);
+    const deliveryRow = resultData(delivery, "read Telegram delivery");
+    if (!deliveryRow) throw new Error("Runtime Telegram delivery is missing");
+    expect(deliveryRow).toMatchObject({
+      state: "permanent_failure",
+      attempt_count: 1,
+      last_error_code: "telegram_config_missing",
+    });
+    const attemptRows = resultData(
+      await service
+        .from("lead_delivery_attempts")
+        .select("outcome,error_code,provider_http_status")
+        .eq("delivery_id", deliveryRow.id),
+      "read Telegram delivery attempt",
+    );
+    expect(attemptRows).toEqual([
+      {
+        outcome: "permanent_failure",
+        error_code: "telegram_config_missing",
+        provider_http_status: null,
+      },
+    ]);
+    const repeated = await postLead(payload, {
+      requestId,
+      address: `${runIpPrefix}.41`,
+    });
+    expect(repeated.response.status).toBe(200);
+    const repeatedCount = await service
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("client_request_id", requestId);
+    assertNoError(repeatedCount, "count idempotent runtime leads");
+    expect(repeatedCount.count).toBe(1);
+
+    const conflicting = await postLead(
+      { ...payload, name: "Другой клиент" },
+      { requestId, address: `${runIpPrefix}.41` },
+    );
+    expect(conflicting.response.status).toBe(409);
+
+    const anonRead = await publicClient().from("leads").select("id");
+    expect(anonRead.error).not.toBeNull();
+    const admin = await signIn(fixture.adminEmail, fixture.adminPassword);
+    const adminRead = resultData(
+      await admin.from("leads").select("id").eq("id", lead.id),
+      "admin lead read",
+    );
+    expect(adminRead).toHaveLength(1);
+  });
+
+  it("rejects invalid, forged-origin and unavailable-product submissions", async () => {
+    const base: RuntimeLeadPayload = {
+      name: "Мария Тестовая",
+      phone: `+37369${runPhoneSeed}2`,
+      consent: true,
+      locale: "ru",
+      source: "contacts_page",
+      sourcePath: "/ru/contacts",
+    };
+
+    const honeypot = await postLead(
+      { ...base, companyWebsite: "https://spam.example" },
+      { address: `${runIpPrefix}.42` },
+    );
+    expect(honeypot.response.status).toBe(202);
+    const honeypotRows = resultData(
+      await service
+        .from("leads")
+        .select("id")
+        .eq("client_request_id", honeypot.requestId),
+      "check honeypot lead absence",
+    );
+    expect(honeypotRows).toHaveLength(0);
+
+    const invalid = await postLead(
+      { ...base, phone: "12", consent: false },
+      { address: `${runIpPrefix}.43` },
+    );
+    expect(invalid.response.status).toBe(422);
+    expect(await invalid.response.json()).toMatchObject({
+      ok: false,
+      code: "validation_error",
+    });
+
+    const forged = await postLead(base, {
+      address: `${runIpPrefix}.44`,
+      origin: "https://evil.example",
+    });
+    expect(forged.response.status).toBe(403);
+
+    const draft = await postLead(
+      {
+        ...base,
+        phone: `+37369${runPhoneSeed}3`,
+        source: "product_page",
+        sourcePath: `/ru/product/runtime-draft-product-${runId}`,
+        productId: fixture.draftProductId,
+      },
+      { address: `${runIpPrefix}.45` },
+    );
+    expect(draft.response.status).toBe(422);
+    expect(await draft.response.json()).toMatchObject({
+      fieldErrors: { product: "invalid" },
+    });
+  });
+
+  it("rate-limits repeated submissions by a privacy-preserving IP hash", async () => {
+    const address = `${runIpPrefix}.99`;
+    for (let index = 0; index < 5; index += 1) {
+      const created = await postLead(
+        {
+          name: `Клиент Лимит ${index}`,
+          phone: `+37369${runPhoneSeed}${index}`,
+          consent: true,
+          locale: "ru",
+          source: "home_contact",
+          sourcePath: "/ru",
+        },
+        { address },
+      );
+      expect(created.response.status, `submission ${index + 1}`).toBe(201);
+    }
+    const limited = await postLead(
+      {
+        name: "Клиент Лимит Шесть",
+        phone: `+37369${runPhoneSeed}6`,
+        consent: true,
+        locale: "ru",
+        source: "home_contact",
+        sourcePath: "/ru",
+      },
+      { address },
+    );
+    expect(limited.response.status).toBe(429);
+    expect(limited.response.headers.get("retry-after")).toBe("900");
+    expect(await limited.response.json()).toMatchObject({
+      code: "rate_limited",
+    });
+  });
+
   it("permanently redirects historical product and category slugs", async () => {
     const productSlug = `vesta-fresh-280-${runId}`;
     const categorySlug = `stoves-${runId}`;

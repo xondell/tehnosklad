@@ -6,7 +6,7 @@
 
 1. Создайте проект в Supabase Dashboard.
 2. В Connect/API keys скопируйте Project URL и **publishable key**.
-3. Secret/service-role key копируйте только если будущая узкая server operation действительно его требует.
+3. Secret/service-role key нужен server-only endpoint заявок. Никогда не добавляйте его в `NEXT_PUBLIC_*` или клиентский код.
 4. Отключите публичную регистрацию в Auth settings. Пользователей создаёт только владелец через Dashboard.
 
 Publishable key передаётся браузеру и безопасен только вместе с grants/RLS. Service-role key является секретом и bypasses RLS.
@@ -26,10 +26,12 @@ npm run db:reset:local
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=local-publishable-or-anon-key
+SUPABASE_SERVICE_ROLE_KEY=local-secret-or-service-role-key
+LEAD_IP_HASH_SECRET=replace-with-random-secret-at-least-32-characters
 CATALOG_DATA_SOURCE=supabase
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` для storefront/Auth не нужен.
+`SUPABASE_SERVICE_ROLE_KEY` не нужен storefront/Auth, но обязателен для `/api/leads`. `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` можно не задавать локально: заявка сохранится, а delivery будет явно отмечена как `permanent_failure/telegram_config_missing`.
 
 ## 3. Migration и seed
 
@@ -122,10 +124,14 @@ commit;
 NEXT_PUBLIC_SITE_URL=https://your-domain.example
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+LEAD_IP_HASH_SECRET=...
+TELEGRAM_BOT_TOKEN=...
+TELEGRAM_CHAT_ID=...
 CATALOG_DATA_SOURCE=supabase
 ```
 
-Service-role key добавляйте только когда появится использующая его server-only операция. Проверьте Supabase Auth Site URL/allowed redirects, `/ru`, `/ro`, catalog, product и `/admin/login`. Docker/local filesystem в production не требуются.
+Используйте отдельный случайный `LEAD_IP_HASH_SECRET` длиной не менее 32 символов. Telegram variables задаются только парой; chat ID может быть отрицательным для группы. Проверьте Supabase Auth Site URL/allowed redirects, `/ru`, `/ro`, catalog, product, реальную форму заявки и `/admin/login`. Docker/local filesystem в production не требуются.
 
 ## 10. Статус проверки
 

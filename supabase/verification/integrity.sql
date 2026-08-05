@@ -11,6 +11,8 @@ declare
     'attribute_option_translations', 'attribute_options',
     'attribute_translations', 'attributes', 'categories',
     'category_attributes', 'category_slug_routes', 'category_translations',
+    'lead_delivery_attempts', 'lead_status_history',
+    'lead_telegram_deliveries', 'leads',
     'product_attribute_value_translations', 'product_attribute_values',
     'product_image_translations', 'product_images', 'product_slug_routes',
     'product_translations', 'products', 'profiles', 'site_settings', 'user_roles'
@@ -60,6 +62,11 @@ begin
       ('category_attributes_category_id_fkey'),
       ('category_slug_routes_category_id_fkey'),
       ('category_translations_category_id_fkey'),
+      ('lead_delivery_attempts_delivery_id_fkey'),
+      ('lead_status_history_changed_by_fkey'),
+      ('lead_status_history_lead_id_fkey'),
+      ('lead_telegram_deliveries_lead_id_fkey'),
+      ('leads_product_id_fkey'),
       ('product_attribute_value_translations_value_id_fkey'),
       ('product_attribute_values_attribute_id_fkey'),
       ('product_attribute_values_option_id_attribute_id_fkey'),
@@ -102,7 +109,7 @@ begin
   end if;
   if (
     select count(*) from pg_policies where schemaname = 'public'
-  ) <> 40 then
+  ) <> 44 then
     raise exception 'public policy inventory mismatch';
   end if;
   if exists (
@@ -158,7 +165,9 @@ begin
       'categories_parent_fk_idx', 'products_category_fk_idx',
       'category_attributes_attribute_fk_idx',
       'product_attribute_values_attribute_fk_idx',
-      'category_slug_routes_entity_idx', 'product_slug_routes_entity_idx'
+      'category_slug_routes_entity_idx', 'product_slug_routes_entity_idx',
+      'leads_product_created_idx', 'lead_status_history_lead_created_idx',
+      'lead_delivery_attempts_delivery_started_idx'
     ]) as expected(index_name)
     where not exists (
       select 1 from pg_class as index_relation
@@ -216,6 +225,26 @@ begin
   ) then
     raise exception 'Stage 4 function grants mismatch';
   end if;
+
+  if not has_function_privilege(
+    'service_role',
+    'public.submit_public_lead(uuid,text,text,text,public.app_locale,public.lead_source,text,text,text,text,text,uuid,text)',
+    'execute'
+  ) or not has_function_privilege(
+    'service_role', 'public.claim_lead_telegram_delivery(uuid)', 'execute'
+  ) or not has_function_privilege(
+    'service_role',
+    'public.complete_lead_telegram_delivery(uuid,uuid,public.lead_delivery_outcome,text,integer,integer,text,integer)',
+    'execute'
+  ) or has_function_privilege(
+    'anon',
+    'public.submit_public_lead(uuid,text,text,text,public.app_locale,public.lead_source,text,text,text,text,text,uuid,text)',
+    'execute'
+  ) or has_function_privilege(
+    'authenticated', 'public.claim_lead_telegram_delivery(uuid)', 'execute'
+  ) then
+    raise exception 'Stage 5 function grants mismatch';
+  end if;
 end;
 $$;
 
@@ -254,7 +283,9 @@ begin
     'attribute_options', 'attribute_option_translations',
     'category_attributes', 'product_attribute_values',
     'product_attribute_value_translations', 'site_settings',
-    'category_slug_routes', 'product_slug_routes'
+    'category_slug_routes', 'product_slug_routes', 'leads',
+    'lead_status_history', 'lead_telegram_deliveries',
+    'lead_delivery_attempts'
   ] loop
     if not has_table_privilege('service_role', format('public.%I', table_name), 'select')
       or not has_table_privilege('service_role', format('public.%I', table_name), 'insert')
@@ -267,6 +298,99 @@ begin
       raise exception 'table grants mismatch for %', table_name;
     end if;
   end loop;
+end;
+$$;
+
+do $$
+declare
+  created_lead_id uuid;
+  repeated_lead_id uuid;
+  created boolean;
+  delivery_attempt_id uuid;
+  delivery_lease_token uuid;
+begin
+  select lead_id, was_created into created_lead_id, created
+  from public.submit_public_lead(
+    '93000000-0000-4000-8000-000000000001',
+    repeat('a', 64), repeat('b', 64), repeat('c', 64),
+    'ru', 'product_page', '/ru/product/verification',
+    'Проверочный клиент', '+37369111111', '@verification_user',
+    'Проверка этапа 5',
+    '20000000-0000-4000-8000-000000000001', 'stage-5-v1'
+  );
+  if not created then
+    raise exception 'first lead submission was not marked as created';
+  end if;
+
+  select lead_id, was_created into repeated_lead_id, created
+  from public.submit_public_lead(
+    '93000000-0000-4000-8000-000000000001',
+    repeat('a', 64), repeat('b', 64), repeat('c', 64),
+    'ru', 'product_page', '/ru/product/verification',
+    'Проверочный клиент', '+37369111111', '@verification_user',
+    'Проверка этапа 5',
+    '20000000-0000-4000-8000-000000000001', 'stage-5-v1'
+  );
+  if created or repeated_lead_id <> created_lead_id then
+    raise exception 'idempotent lead submission created a duplicate';
+  end if;
+
+  if not exists (
+    select 1 from public.leads
+    where id = created_lead_id and status = 'new'
+      and product_name_snapshot is not null
+      and product_price_minor is not null
+      and product_currency = 'MDL'
+      and product_path_snapshot like '/ru/product/%'
+  ) or (
+    select count(*) from public.lead_status_history
+    where lead_id = created_lead_id and status = 'new'
+  ) <> 1 or (
+    select count(*) from public.lead_telegram_deliveries
+    where lead_id = created_lead_id and state = 'queued'
+  ) <> 1 then
+    raise exception 'lead snapshot, status history or Telegram outbox mismatch';
+  end if;
+
+  select attempt_id, lease_token
+  into delivery_attempt_id, delivery_lease_token
+  from public.claim_lead_telegram_delivery(created_lead_id);
+  if delivery_attempt_id is null or delivery_lease_token is null then
+    raise exception 'queued Telegram delivery was not claimed';
+  end if;
+  perform public.complete_lead_telegram_delivery(
+    delivery_attempt_id, delivery_lease_token, 'succeeded',
+    null, 200, null, 'verification-message', null
+  );
+  if not exists (
+    select 1 from public.lead_telegram_deliveries
+    where lead_id = created_lead_id and state = 'succeeded'
+      and attempt_count = 1 and delivered_at is not null
+      and provider_message_id = 'verification-message'
+  ) then
+    raise exception 'Telegram delivery completion mismatch';
+  end if;
+
+  update public.leads set status = 'contacted' where id = created_lead_id;
+  if (
+    select count(*) from public.lead_status_history
+    where lead_id = created_lead_id
+  ) <> 2 then
+    raise exception 'lead status history update mismatch';
+  end if;
+
+  begin
+    perform public.submit_public_lead(
+      '93000000-0000-4000-8000-000000000001',
+      repeat('d', 64), repeat('b', 64), repeat('c', 64),
+      'ru', 'product_page', '/ru/product/verification',
+      'Другой клиент', '+37369111111', null, null,
+      '20000000-0000-4000-8000-000000000001', 'stage-5-v1'
+    );
+    raise exception 'idempotency conflict unexpectedly succeeded';
+  exception when invalid_parameter_value then
+    if sqlerrm <> 'lead_idempotency_conflict' then raise; end if;
+  end;
 end;
 $$;
 

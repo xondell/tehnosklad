@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("server-only", () => ({}));
+
 import { hasActiveAdminRole } from "@/features/admin/auth/role";
 import { safeAdminRedirectTarget } from "@/features/admin/auth/redirect";
 import { parseCatalogDataSource } from "@/lib/env/catalog";
@@ -8,6 +10,10 @@ import {
   getSupabasePublicEnvironment,
   requireSupabasePublishableKey,
 } from "@/lib/env/public";
+import {
+  getLeadSecurityEnvironment,
+  getOptionalTelegramEnvironment,
+} from "@/lib/env/server";
 import { EnvironmentConfigurationError } from "@/lib/env/shared";
 
 describe("admin security helpers", () => {
@@ -108,5 +114,37 @@ describe("Supabase public environment", () => {
     expect(
       requireSupabasePublishableKey("PUBLIC_KEY", "sb_publishable_ok"),
     ).toBe("sb_publishable_ok");
+  });
+});
+
+describe("lead delivery environment", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("requires a sufficiently long private lead hash secret", () => {
+    vi.stubEnv("LEAD_IP_HASH_SECRET", "short");
+    expect(() => getLeadSecurityEnvironment()).toThrow(
+      EnvironmentConfigurationError,
+    );
+    vi.stubEnv("LEAD_IP_HASH_SECRET", "a".repeat(32));
+    expect(getLeadSecurityEnvironment()).toEqual({
+      leadHashSecret: "a".repeat(32),
+    });
+  });
+
+  it("allows Telegram to be disabled but rejects partial configuration", () => {
+    vi.stubEnv("TELEGRAM_BOT_TOKEN", "");
+    vi.stubEnv("TELEGRAM_CHAT_ID", "");
+    expect(getOptionalTelegramEnvironment()).toBeNull();
+
+    vi.stubEnv("TELEGRAM_BOT_TOKEN", "123456:abcdefghijklmnopqrstuvwxyz_ABCD");
+    expect(() => getOptionalTelegramEnvironment()).toThrow(
+      EnvironmentConfigurationError,
+    );
+
+    vi.stubEnv("TELEGRAM_CHAT_ID", "-1001234567890");
+    expect(getOptionalTelegramEnvironment()).toEqual({
+      botToken: "123456:abcdefghijklmnopqrstuvwxyz_ABCD",
+      chatId: "-1001234567890",
+    });
   });
 });

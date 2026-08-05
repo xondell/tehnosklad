@@ -2,16 +2,22 @@
 import { useRef, useState } from "react";
 import { ContactDialog } from "@/components/public/contact-dialog";
 import type { PublicSiteSettings } from "@/features/catalog/types";
+import type { LeadSource } from "@/features/leads/types";
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 export function ContactButton({
   dictionary,
+  locale,
   label,
-  productName,
+  source,
+  product,
   settings,
 }: {
   dictionary: Dictionary;
+  locale: Locale;
   label: string;
-  productName?: string;
+  source: LeadSource;
+  product?: { id: string; name: string };
   settings: PublicSiteSettings;
 }) {
   const [open, setOpen] = useState(false);
@@ -33,7 +39,9 @@ export function ContactButton({
       {open ? (
         <ContactDialog
           dictionary={dictionary}
-          productName={productName}
+          locale={locale}
+          source={source}
+          product={product}
           settings={settings}
           onClose={close}
         />

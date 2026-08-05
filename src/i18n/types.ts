@@ -116,7 +116,14 @@ export type Dictionary = {
     comment: string;
     consent: string;
     submit: string;
-    unavailable: string;
+    sending: string;
+    successTitle: string;
+    success: string;
+    genericError: string;
+    rateLimited: string;
+    nameError: string;
+    telegramError: string;
+    commentError: string;
     required: string;
     phoneError: string;
     consentError: string;

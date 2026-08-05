@@ -103,6 +103,9 @@ function cleanChildEnvironment() {
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_SECRET_KEY",
     "TEST_SUPABASE_SERVICE_ROLE_KEY",
+    "LEAD_IP_HASH_SECRET",
+    "TELEGRAM_BOT_TOKEN",
+    "TELEGRAM_CHAT_ID",
   ]) {
     delete environment[name];
   }
@@ -220,6 +223,8 @@ const nextEnvironment = {
   NEXT_PUBLIC_SITE_URL: siteUrl,
   NEXT_PUBLIC_SUPABASE_URL: apiUrl,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
+  SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,
+  LEAD_IP_HASH_SECRET: "local-integration-lead-secret-32-characters-minimum",
   CATALOG_DATA_SOURCE: "supabase",
 };
 

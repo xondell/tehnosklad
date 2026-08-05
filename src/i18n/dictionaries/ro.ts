@@ -120,7 +120,7 @@ export const ro: Dictionary = {
     nextImage: "Imaginea următoare",
     contactTitle: "Aveți nevoie de ajutor?",
     contactText:
-      "Sunați-ne sau lăsați datele de contact — trimiterea pe server va fi conectată în etapa de integrare.",
+      "Sunați sau lăsați o cerere — un angajat al magazinului vă va contacta.",
   },
   contactModal: {
     title: "Contactează-ne",
@@ -136,10 +136,19 @@ export const ro: Dictionary = {
     consent:
       "Sunt de acord cu prelucrarea datelor personale pentru a fi contactat(ă)",
     submit: "Trimite cererea",
-    unavailable:
-      "Trimiterea cererilor va fi conectată în etapa de integrare. Acum datele nu sunt salvate.",
+    sending: "Se trimite…",
+    successTitle: "Cererea a fost trimisă cu succes",
+    success: "Un angajat al magazinului vă va contacta.",
+    genericError:
+      "Cererea nu a putut fi salvată. Verificați conexiunea și încercați din nou.",
+    rateLimited:
+      "Au fost trimise prea multe cereri. Încercați din nou puțin mai târziu.",
+    nameError: "Introduceți un nume între 2 și 100 de caractere",
+    telegramError:
+      "Introduceți un username Telegram între 5 și 32 de caractere",
+    commentError: "Comentariul nu poate depăși 2000 de caractere",
     required: "Completați acest câmp",
-    phoneError: "Introduceți un număr de telefon",
+    phoneError: "Introduceți un număr de telefon valid",
     consentError: "Este necesar acordul pentru prelucrarea datelor",
   },
   contacts: {
@@ -151,7 +160,7 @@ export const ro: Dictionary = {
     draft:
       "Acesta este un proiect informativ, nu un document juridic final. Înainte de lansarea în production, textul trebuie verificat în raport cu legislația Republicii Moldova.",
     privacyIntro:
-      "Această pagină descrie modul preconizat de funcționare a formularului de contact în etapa actuală.",
+      "Această pagină descrie funcționarea formularului de contact și folosirea datelor transmise pentru a răspunde clientului.",
     privacySections: [
       {
         title: "Ce date",
@@ -167,7 +176,7 @@ export const ro: Dictionary = {
       },
     ],
     personalIntro:
-      "Prelucrarea datelor personale va fi conectată odată cu primirea cererilor pe server.",
+      "Datele din formular sunt salvate după consimțământul explicit și sunt folosite pentru contactarea clientului privind cererea.",
     personalSections: [
       {
         title: "Acord",

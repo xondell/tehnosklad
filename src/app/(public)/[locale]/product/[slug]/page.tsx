@@ -149,8 +149,10 @@ export default async function ProductPage({
             <div className="mt-5 flex flex-wrap gap-2">
               <ContactButton
                 dictionary={d}
+                locale={locale}
                 label={d.actions.contact}
-                productName={product.name}
+                source="product_page"
+                product={{ id: product.id, name: product.name }}
                 settings={settings}
               />
               <a className="button-secondary" href={settings.phoneHref}>
@@ -188,6 +190,7 @@ export default async function ProductPage({
             locale={locale}
             dictionary={d}
             settings={settings}
+            leadSource="similar_product_card"
           />
         </div>
       </section>
