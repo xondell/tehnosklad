@@ -1,58 +1,173 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
+import { ProductGrid } from "@/components/catalog/product-grid";
+import { ProductIllustration } from "@/components/catalog/product-illustration";
+import { ContactButton } from "@/components/public/contact-button";
+import { CopyPhoneButton } from "@/components/public/copy-phone-button";
 import { PageContainer } from "@/components/layout/page-container";
 import { siteConfig } from "@/config/site";
+import { demoCategories, demoProducts } from "@/features/catalog/demo-data";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, localizedPath } from "@/i18n/config";
-
 export default async function HomePage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-
-  if (!isLocale(locale)) {
-    notFound();
-  }
-
-  const dictionary = getDictionary(locale);
-
+  if (!isLocale(locale)) notFound();
+  const d = getDictionary(locale);
+  const popular = demoProducts
+    .filter((product) => product.isPopular)
+    .slice(0, 3);
   return (
     <>
-      <section className="bg-stone-100 py-14 sm:py-20">
-        <PageContainer>
-          <p className="mb-4 font-bold text-stone-600">
-            {dictionary.home.eyebrow}
-          </p>
-          <h1 className="max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
-            {dictionary.home.title}
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg text-stone-600 sm:text-xl">
-            {dictionary.home.description}
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              className="inline-flex min-h-12 items-center rounded-xl bg-[var(--brand)] px-5 font-bold text-black hover:bg-[var(--brand-strong)]"
-              href={localizedPath(locale, "catalog")}
-            >
-              {dictionary.actions.openCatalog}
-            </Link>
-            <a
-              className="inline-flex min-h-12 items-center rounded-xl border-2 border-stone-900 px-5 font-bold hover:bg-stone-900 hover:text-white"
-              href={siteConfig.phoneHref}
-            >
-              {dictionary.actions.call}: {siteConfig.phoneDisplay}
-            </a>
+      <section className="border-b border-stone-200 bg-stone-50 py-10 sm:py-16">
+        <PageContainer className="grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
+          <div>
+            <p className="mb-4 text-sm font-bold uppercase tracking-wide text-stone-600">
+              {d.home.eyebrow}
+            </p>
+            <h1 className="max-w-3xl text-4xl font-black tracking-tight sm:text-6xl">
+              {d.home.title}
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-stone-600">
+              {d.home.description}
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                className="button-primary"
+                href={localizedPath(locale, "catalog")}
+              >
+                {d.actions.openCatalog}
+              </Link>
+              <a className="button-secondary" href={siteConfig.phoneHref}>
+                {d.actions.call}: {siteConfig.phoneDisplay}
+              </a>
+            </div>
+            <p className="mt-6 text-sm font-semibold text-stone-600">
+              {d.home.contactNote}
+            </p>
+          </div>
+          <div className="relative overflow-hidden rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+            <ProductIllustration
+              category="fridge"
+              tone="yellow"
+              label={d.home.title}
+              className="h-72 sm:h-96"
+            />
+            <div className="absolute bottom-7 left-7 rounded-xl bg-stone-950 px-4 py-3 text-sm font-bold text-white">
+              {d.common.city}
+            </div>
           </div>
         </PageContainer>
       </section>
-      <PageContainer className="py-10">
-        <div className="rounded-xl border border-amber-300 bg-amber-50 p-5 text-stone-800">
-          {dictionary.home.stageNote}
-        </div>
-      </PageContainer>
+      <section className="py-14">
+        <PageContainer>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-3xl font-black">{d.home.categoriesTitle}</h2>
+              <p className="mt-2 text-stone-600">
+                {d.home.categoriesDescription}
+              </p>
+            </div>
+            <Link
+              className="font-bold underline"
+              href={localizedPath(locale, "catalog")}
+            >
+              {d.actions.openCatalog}
+            </Link>
+          </div>
+          <div className="mt-7 grid gap-4 md:grid-cols-3">
+            {demoCategories.map((category) => (
+              <Link
+                className="group rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                key={category.id}
+                href={localizedPath(locale, `category/${category.slug}`)}
+              >
+                <ProductIllustration
+                  category={category.icon}
+                  tone={
+                    category.id === "stoves"
+                      ? "coral"
+                      : category.id === "vacuums"
+                        ? "mint"
+                        : "blue"
+                  }
+                  label={category.name[locale]}
+                  className="h-40"
+                />
+                <h3 className="mt-4 text-xl font-black">
+                  {category.name[locale]}
+                </h3>
+                <p className="mt-1 text-sm text-stone-600">
+                  {category.description[locale]}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </PageContainer>
+      </section>
+      <section className="bg-stone-50 py-14">
+        <PageContainer>
+          <h2 className="text-3xl font-black">{d.home.popularTitle}</h2>
+          <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
+          <div className="mt-7">
+            <ProductGrid products={popular} locale={locale} dictionary={d} />
+          </div>
+        </PageContainer>
+      </section>
+      <section className="py-14">
+        <PageContainer>
+          <h2 className="text-3xl font-black">{d.home.benefitsTitle}</h2>
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Object.values(d.home.benefits).map((benefit) => (
+              <article
+                className="rounded-2xl border border-stone-200 p-5"
+                key={benefit.title}
+              >
+                <h3 className="font-black">{benefit.title}</h3>
+                <p className="mt-2 text-sm text-stone-600">{benefit.text}</p>
+              </article>
+            ))}
+          </div>
+        </PageContainer>
+      </section>
+      <section className="pb-14">
+        <PageContainer>
+          <div className="grid gap-6 rounded-3xl bg-stone-950 p-6 text-white sm:p-9 lg:grid-cols-[1fr_auto]">
+            <div>
+              <h2 className="text-3xl font-black">{d.home.contactTitle}</h2>
+              <p className="mt-2 max-w-xl text-stone-300">
+                {d.home.contactDescription}
+              </p>
+              <p className="mt-5 font-bold">
+                {d.common.city}, {d.common.address}
+              </p>
+              <p>
+                {d.common.openDays}: {siteConfig.hours.openTime}
+              </p>
+              <p className="text-stone-300">{d.common.closed}</p>
+            </div>
+            <div className="flex flex-wrap content-start gap-2">
+              <a className="button-primary" href={siteConfig.phoneHref}>
+                {d.actions.call}
+              </a>
+              <CopyPhoneButton
+                copy={d.actions.copy}
+                copied={d.actions.copied}
+              />
+              <Link
+                className="button-secondary"
+                href={localizedPath(locale, "contacts")}
+              >
+                {d.navigation.contacts}
+              </Link>
+              <ContactButton dictionary={d} label={d.actions.contact} />
+            </div>
+          </div>
+        </PageContainer>
+      </section>
     </>
   );
 }

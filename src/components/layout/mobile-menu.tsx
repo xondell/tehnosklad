@@ -1,0 +1,92 @@
+"use client";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { PrimaryNav } from "@/components/layout/primary-nav";
+import { siteConfig } from "@/config/site";
+import type { Locale } from "@/i18n/config";
+import { localizedPath } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/types";
+export function MobileMenu({
+  locale,
+  dictionary,
+}: {
+  locale: Locale;
+  dictionary: Dictionary;
+}) {
+  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const esc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+  }, []);
+  function close() {
+    setOpen(false);
+    trigger.current?.focus();
+  }
+  return (
+    <>
+      <div className="flex items-center gap-1 lg:hidden">
+        <Link
+          aria-label={dictionary.navigation.search}
+          className="icon-button"
+          href={localizedPath(locale, "catalog")}
+        >
+          ⌕
+        </Link>
+        <a
+          aria-label={dictionary.actions.call}
+          className="icon-button"
+          href={siteConfig.phoneHref}
+        >
+          ☎
+        </a>
+        <button
+          ref={trigger}
+          aria-expanded={open}
+          aria-label={dictionary.actions.menu}
+          className="icon-button"
+          type="button"
+          onClick={() => setOpen(true)}
+        >
+          ☰
+        </button>
+      </div>
+      {open ? (
+        <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
+          <aside
+            aria-label={dictionary.navigationLabel}
+            className="ml-auto flex h-full w-[min(22rem,90vw)] flex-col bg-white p-5 shadow-xl"
+          >
+            <div className="flex items-center justify-between">
+              <strong>{dictionary.navigationLabel}</strong>
+              <button
+                aria-label={dictionary.actions.close}
+                className="icon-button"
+                type="button"
+                onClick={close}
+              >
+                ×
+              </button>
+            </div>
+            <div onClick={close}>
+              <PrimaryNav locale={locale} dictionary={dictionary} mobile />
+            </div>
+            <div className="mt-4 border-t border-stone-200 pt-4">
+              <LanguageSwitcher
+                currentLocale={locale}
+                label={dictionary.languageSwitcherLabel}
+              />
+            </div>
+            <a className="button-primary mt-5" href={siteConfig.phoneHref}>
+              {dictionary.actions.call}: {siteConfig.phoneDisplay}
+            </a>
+          </aside>
+        </div>
+      ) : null}
+    </>
+  );
+}

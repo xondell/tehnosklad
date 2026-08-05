@@ -19,10 +19,15 @@ export function SiteFooter({
 }) {
   return (
     <footer className="mt-auto border-t border-stone-200 bg-stone-950 text-white">
-      <PageContainer className="grid gap-8 py-10 md:grid-cols-3">
+      <PageContainer className="grid gap-8 py-10 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
           <Logo locale={locale} />
-          <p className="text-sm text-stone-300">{siteConfig.address}</p>
+          <p className="text-sm text-stone-300">
+            {dictionary.footer.description}
+          </p>
+          <p className="text-sm text-stone-300">
+            {dictionary.common.city}, {dictionary.common.address}
+          </p>
           <a
             className="inline-flex min-h-11 items-center font-bold"
             href={siteConfig.phoneHref}
@@ -33,9 +38,18 @@ export function SiteFooter({
         <div>
           <h2 className="mb-3 font-bold">{dictionary.footer.schedule}</h2>
           <p className="text-sm text-stone-300">
-            {siteConfig.hours.openDays}: {siteConfig.hours.openTime}
+            {dictionary.common.openDays}: {siteConfig.hours.openTime}
           </p>
-          <p className="text-sm text-stone-300">{siteConfig.hours.closedDay}</p>
+          <p className="text-sm text-stone-300">{dictionary.common.closed}</p>
+        </div>
+        <div>
+          <h2 className="mb-3 font-bold">{dictionary.footer.catalog}</h2>
+          <Link
+            className="text-sm text-stone-300 hover:text-white"
+            href={localizedPath(locale, "catalog")}
+          >
+            {dictionary.navigation.catalog}
+          </Link>
         </div>
         <div>
           <h2 className="mb-3 font-bold">{dictionary.footer.legal}</h2>

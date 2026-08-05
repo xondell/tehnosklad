@@ -8,9 +8,9 @@ export function Logo({ locale }: { locale: Locale }) {
     <Link
       className="inline-flex min-h-11 items-center rounded-lg bg-[var(--brand)] px-3 py-2 text-base font-black tracking-[0.08em] text-black sm:text-lg"
       href={localizedPath(locale)}
-      aria-label="Tehnosklad"
+      aria-label={locale === "ru" ? "Техносклад" : "Tehnosklad"}
     >
-      ТЕХНОСКЛАД
+      {locale === "ru" ? "ТЕХНОСКЛАД" : "TEHNOSKLAD"}
     </Link>
   );
 }
