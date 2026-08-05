@@ -1,17 +1,50 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
+import type { Metadata } from "next";
+import { cache } from "react";
 import { ProductGallery } from "@/components/catalog/product-gallery";
 import { ProductGrid } from "@/components/catalog/product-grid";
 import { ContactButton } from "@/components/public/contact-button";
 import { Breadcrumbs } from "@/components/public/breadcrumbs";
 import { PageContainer } from "@/components/layout/page-container";
 import {
-  getProductBySlug,
+  getProductRouteBySlug,
   getPublicSiteSettings,
   getSimilarProducts,
 } from "@/features/catalog/data";
 import { formatPrice, getDiscountPercent } from "@/features/catalog/logic";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale } from "@/i18n/config";
+import { localizedPath } from "@/i18n/config";
+import { JsonLd } from "@/features/seo/json-ld";
+import { buildLocalizedMetadata } from "@/features/seo/metadata";
+import { buildProductSchema } from "@/features/seo/schema";
+
+const loadProductRoute = cache(getProductRouteBySlug);
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { locale, slug } = await params;
+  if (!isLocale(locale)) notFound();
+  const route = await loadProductRoute(locale, slug);
+  if (!route) notFound();
+  const product = route.entity;
+  const currentPath = localizedPath(locale, `product/${product.slug}`);
+  const alternateLocale = locale === "ru" ? "ro" : "ru";
+  return buildLocalizedMetadata({
+    locale,
+    title: product.seoTitle ?? product.name,
+    description: product.seoDescription ?? product.shortDescription,
+    currentPath,
+    alternatePath: localizedPath(
+      alternateLocale,
+      `product/${product.alternateSlug}`,
+    ),
+    imagePath: product.images[0]?.url,
+  });
+}
 export default async function ProductPage({
   params,
 }: {
@@ -19,8 +52,12 @@ export default async function ProductPage({
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
-  const product = await getProductBySlug(locale, slug);
-  if (!product) notFound();
+  const route = await loadProductRoute(locale, slug);
+  if (!route) notFound();
+  const product = route.entity;
+  if (route.redirected) {
+    permanentRedirect(localizedPath(locale, `product/${product.slug}`));
+  }
   const d = getDictionary(locale);
   const [similar, settings] = await Promise.all([
     getSimilarProducts(locale, product.id, product.category.id, 3),
@@ -32,6 +69,25 @@ export default async function ProductPage({
   );
   return (
     <PageContainer className="py-8 sm:py-12">
+      <JsonLd
+        value={buildProductSchema({
+          locale,
+          product,
+          path: localizedPath(locale, `product/${product.slug}`),
+          breadcrumbItems: [
+            { name: d.common.breadcrumbsHome, path: `/${locale}` },
+            { name: d.catalog.title, path: `/${locale}/catalog` },
+            {
+              name: product.category.name,
+              path: `/${locale}/category/${product.category.slug}`,
+            },
+            {
+              name: product.name,
+              path: localizedPath(locale, `product/${product.slug}`),
+            },
+          ],
+        })}
+      />
       <Breadcrumbs
         locale={locale}
         home={d.common.breadcrumbsHome}

@@ -1,7 +1,29 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale } from "@/i18n/config";
+import { buildLocalizedMetadata } from "@/features/seo/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const d = getDictionary(locale);
+  const other = locale === "ru" ? "ro" : "ru";
+  return buildLocalizedMetadata({
+    locale,
+    title: d.footer.privacy,
+    description: d.legal.privacyIntro,
+    currentPath: `/${locale}/privacy`,
+    alternatePath: `/${other}/privacy`,
+    index: false,
+  });
+}
+
 export default async function PrivacyPage({
   params,
 }: {

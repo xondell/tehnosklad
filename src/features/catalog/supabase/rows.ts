@@ -11,6 +11,8 @@ export type DbCategoryTranslation = {
   slug: string;
   short_description: string;
   description: string;
+  seo_title: string | null;
+  seo_description: string | null;
 };
 
 export type DbCategoryRow = {
@@ -51,6 +53,8 @@ export type DbProductRow = {
     slug: string;
     short_description: string;
     description: string;
+    seo_title: string | null;
+    seo_description: string | null;
   }>;
   product_images: DbProductImageRow[];
 };
@@ -102,3 +106,8 @@ export type DbSpecificationRow = {
 };
 
 export type DbSiteSettingRow = { key: string; value: string };
+
+export type DbCatalogSearchRow = {
+  product_id: string | null;
+  total_count: number | string;
+};

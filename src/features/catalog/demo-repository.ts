@@ -1,6 +1,7 @@
 import { siteConfig } from "@/config/site";
 import { demoCategories, demoProducts } from "@/features/catalog/demo-data";
 import { buildCatalogFacets } from "@/features/catalog/facets";
+import { filterProducts } from "@/features/catalog/logic";
 import {
   CatalogDataError,
   type CatalogRepository,
@@ -9,6 +10,7 @@ import {
 import type {
   CatalogCategory,
   CatalogProduct,
+  CatalogSearchQuery,
   PublicSiteSettings,
 } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
@@ -25,6 +27,8 @@ function localizeCategory(
     name: category.name[locale],
     shortDescription: category.description[locale],
     description: category.description[locale],
+    seoTitle: null,
+    seoDescription: null,
   };
 }
 
@@ -53,6 +57,8 @@ function localizeProduct(
     name: product.name[locale],
     shortDescription: product.shortDescription[locale],
     description: product.description[locale],
+    seoTitle: null,
+    seoDescription: null,
     priceMinor: product.priceMinor,
     oldPriceMinor: product.oldPriceMinor ?? null,
     currency: "MDL",
@@ -111,6 +117,38 @@ export class DemoCatalogRepository implements CatalogRepository {
       .map((product) => localizeProduct(product, locale));
   }
 
+  async searchPublishedProducts(
+    locale: Locale,
+    categoryId: string | undefined,
+    query: CatalogSearchQuery,
+  ) {
+    const source = await this.getPublishedProducts(locale, { categoryId });
+    const filtered = filterProducts(
+      source,
+      {
+        query: query.query,
+        categoryId: "all",
+        brand: query.brand ?? "all",
+        availability: query.availability ?? "all",
+        minPrice:
+          query.minPriceMinor === null ? "" : String(query.minPriceMinor / 100),
+        maxPrice:
+          query.maxPriceMinor === null ? "" : String(query.maxPriceMinor / 100),
+        attributes: { ...query.attributes },
+        sort: query.sort,
+      },
+      locale,
+    );
+    const offset = (query.page - 1) * query.pageSize;
+    return {
+      products: filtered.slice(offset, offset + query.pageSize),
+      total: filtered.length,
+      page: query.page,
+      pageSize: query.pageSize,
+      pageCount: Math.ceil(filtered.length / query.pageSize),
+    };
+  }
+
   async getCategoryBySlug(locale: Locale, slug: string) {
     const category = demoCategories.find((item) => item.slug === slug);
     return category ? localizeCategory(category, locale) : null;
@@ -119,6 +157,14 @@ export class DemoCatalogRepository implements CatalogRepository {
   async getProductBySlug(locale: Locale, slug: string) {
     const product = demoProducts.find((item) => item.slug === slug);
     return product ? localizeProduct(product, locale) : null;
+  }
+
+  async getCategoryByHistoricalSlug() {
+    return null;
+  }
+
+  async getProductByHistoricalSlug() {
+    return null;
   }
 
   async getSimilarProducts(

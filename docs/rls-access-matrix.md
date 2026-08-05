@@ -19,7 +19,7 @@ Leads/private settings/technical logs отсутствуют в фактичес
 
 ## Автоматизируемая anon-проверка
 
-После local reset выполните `supabase/verification/rls.sql`. Ожидаются 12 products, 3 categories, 14 settings rows; script также проверяет отсутствие draft leakage, достижимость seeded attribute group, отсутствие anon EXECUTE на role helper и запрет anon insert. Transaction полностью откатывается.
+После local reset выполните `supabase/verification/rls.sql`. Ожидаются 12 products, 3 categories, 14 settings rows; script также проверяет отсутствие draft leakage в таблицах и server-search RPC, недоступность current/draft slug routes, достижимость seeded attribute group, отсутствие anon EXECUTE на role helper и запрет anon insert. Transaction полностью откатывается.
 
 Затем выполните `supabase/verification/integrity.sql`: он принудительно переводит deferred constraints в immediate и доказывает отказ при удалении перевода, назначении draft-категории, image без alt, отсутствии required attribute, несовместимой смене attribute type и попытке превратить category override в filterable text. Все изменения также откатываются.
 

@@ -22,6 +22,8 @@ export type Dictionary = {
     menu: string;
     filters: string;
     back: string;
+    previous: string;
+    next: string;
   };
   common: {
     city: string;
@@ -83,6 +85,8 @@ export type Dictionary = {
     mobileFilters: string;
     emptyTitle: string;
     emptyText: string;
+    pagination: string;
+    page: string;
   };
   product: {
     category: string;

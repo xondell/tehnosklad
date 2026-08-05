@@ -73,6 +73,8 @@ export function mapCategoryRow(
     name: translation.name,
     shortDescription: translation.short_description,
     description: translation.description,
+    seoTitle: translation.seo_title,
+    seoDescription: translation.seo_description,
   };
 }
 
@@ -216,6 +218,8 @@ export function mapProductRow(
     name: translation.name,
     shortDescription: translation.short_description,
     description: translation.description,
+    seoTitle: translation.seo_title,
+    seoDescription: translation.seo_description,
     priceMinor,
     oldPriceMinor,
     currency: "MDL",

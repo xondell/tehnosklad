@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/catalog/product-grid";
 import { ProductIllustration } from "@/components/catalog/product-illustration";
@@ -13,6 +14,30 @@ import {
 import { getCategoryTone } from "@/features/catalog/presentation";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, localizedPath } from "@/i18n/config";
+import { JsonLd } from "@/features/seo/json-ld";
+import { buildLocalizedMetadata } from "@/features/seo/metadata";
+import { buildHomeSchema } from "@/features/seo/schema";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const d = getDictionary(locale);
+  return buildLocalizedMetadata({
+    locale,
+    title:
+      locale === "ru"
+        ? "Tehnosklad — бытовая техника в Комрате"
+        : "Tehnosklad — electrocasnice în Comrat",
+    description: d.home.description,
+    currentPath: `/${locale}`,
+    alternatePath: `/${locale === "ru" ? "ro" : "ru"}`,
+    absoluteTitle: true,
+  });
+}
 export default async function HomePage({
   params,
 }: {
@@ -28,6 +53,7 @@ export default async function HomePage({
   ]);
   return (
     <>
+      <JsonLd value={buildHomeSchema(locale, settings)} />
       <section className="border-b border-stone-200 bg-stone-50 py-10 sm:py-16">
         <PageContainer className="grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>

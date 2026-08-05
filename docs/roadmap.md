@@ -29,12 +29,14 @@
 
 Подробности: [stage-3-runtime-validation.md](stage-3-runtime-validation.md).
 
-## Этап 4 — каталог и SEO
+## Этап 4 — каталог и SEO — завершён
 
-- Перенести клиентские фильтры в URL/server query по мере роста каталога.
-- Пагинация, server search, metadata/canonical/hreflang/schema.org.
+- URL/server query для поиска, фильтров, сортировки и пагинации.
+- Localized metadata, canonical/hreflang, Schema.org, sitemap/robots и OG images.
 - Redirect history для безопасной будущей смены опубликованных slug.
-- On-demand cache invalidation после будущих mutations.
+- Типизированные cache tags и on-demand invalidation foundation.
+
+Подробности: [stage-4.md](stage-4.md).
 
 ## Этап 5 — заявки и Telegram
 

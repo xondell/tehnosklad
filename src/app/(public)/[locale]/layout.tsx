@@ -13,18 +13,36 @@ import {
 } from "@/features/catalog/data";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale } from "@/i18n/config";
+import { getSiteUrl } from "@/lib/env/public";
 
 // The public shell is request-rendered; catalog queries have locale-aware
 // five-minute data-cache entries below the UI boundary.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Tehnosklad — бытовая техника в Комрате",
-    template: "%s | Tehnosklad",
-  },
-  description: "Магазин бытовой техники Tehnosklad в Комрате.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const description =
+    locale === "ru"
+      ? "Магазин бытовой техники Tehnosklad в Комрате."
+      : "Magazinul de electrocasnice Tehnosklad din Comrat.";
+  return {
+    metadataBase: new URL(getSiteUrl()),
+    applicationName: "Tehnosklad",
+    title: {
+      default:
+        locale === "ru"
+          ? "Tehnosklad — бытовая техника в Комрате"
+          : "Tehnosklad — electrocasnice în Comrat",
+      template: "%s | Tehnosklad",
+    },
+    description,
+  };
+}
 
 async function alternateHrefFor(locale: "ru" | "ro", pathname: string) {
   const segments = pathname.split("/").filter(Boolean);

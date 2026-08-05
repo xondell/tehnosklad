@@ -77,8 +77,19 @@ export function getSiteUrl(): string {
   const environment = requireEnvironmentVariables({
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   });
-  return requireValidUrl(
+  const value = requireValidUrl(
     "NEXT_PUBLIC_SITE_URL",
     environment.NEXT_PUBLIC_SITE_URL,
   );
+  const url = new URL(value);
+  if (
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  ) {
+    throw new EnvironmentConfigurationError(["NEXT_PUBLIC_SITE_URL"]);
+  }
+  return url.origin;
 }

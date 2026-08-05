@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { locales, type Locale } from "@/i18n/config";
 
@@ -33,6 +33,7 @@ export function LanguageSwitcher({
   alternateHref,
 }: LanguageSwitcherProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   return (
     <nav aria-label={label}>
@@ -47,11 +48,11 @@ export function LanguageSwitcher({
                 className={`flex min-h-9 min-w-10 items-center justify-center rounded-md px-2 text-sm font-bold ${
                   isCurrent ? "bg-stone-900 text-white" : "hover:bg-stone-100"
                 }`}
-                href={
+                href={`${
                   !isCurrent && alternateHref
                     ? alternateHref
                     : pathForLocale(pathname, locale)
-                }
+                }${searchParams.size ? `?${searchParams.toString()}` : ""}`}
                 hrefLang={locale}
                 lang={locale}
               >

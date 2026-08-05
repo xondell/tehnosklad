@@ -3,9 +3,11 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { CatalogDataError } from "@/features/catalog/repository";
+import type { CatalogSearchQuery } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import type {
   DbCategoryRow,
+  DbCatalogSearchRow,
   DbProductRow,
   DbSiteSettingRow,
   DbSpecificationRow,
@@ -16,6 +18,7 @@ export type TransportProductQuery = {
   popularOnly?: boolean;
   excludeId?: string;
   limit?: number;
+  ids?: string[];
 };
 
 export interface CatalogTransport {
@@ -24,11 +27,29 @@ export interface CatalogTransport {
     locale: Locale,
     slug: string,
   ): Promise<DbCategoryRow | null>;
+  findCategoryByHistoricalSlug(
+    locale: Locale,
+    slug: string,
+  ): Promise<DbCategoryRow | null>;
   listProducts(query?: TransportProductQuery): Promise<DbProductRow[]>;
   findProductBySlug(locale: Locale, slug: string): Promise<DbProductRow | null>;
+  findProductByHistoricalSlug(
+    locale: Locale,
+    slug: string,
+  ): Promise<DbProductRow | null>;
+  searchProductIds(
+    locale: Locale,
+    categoryId: string | undefined,
+    query: CatalogSearchQuery,
+  ): Promise<{ ids: string[]; total: number }>;
   listSpecifications(productIds: string[]): Promise<DbSpecificationRow[]>;
   listSiteSettings(locale: Locale): Promise<DbSiteSettingRow[]>;
 }
+
+const categorySelect =
+  "id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)";
+const productSelect =
+  "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description,seo_title,seo_description),categories!inner(id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))";
 
 function queryFailure(resource: string): CatalogDataError {
   return new CatalogDataError(
@@ -43,9 +64,7 @@ export class SupabaseCatalogTransport implements CatalogTransport {
   async listCategories(): Promise<DbCategoryRow[]> {
     const { data, error } = await this.client
       .from("categories")
-      .select(
-        "id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)",
-      )
+      .select(categorySelect)
       .eq("is_published", true)
       .is("archived_at", null)
       .order("sort_order");
@@ -65,12 +84,26 @@ export class SupabaseCatalogTransport implements CatalogTransport {
       .maybeSingle();
     if (lookup.error) throw queryFailure("category slug");
     if (!lookup.data) return null;
+    return this.findCategoryById(lookup.data.category_id);
+  }
+
+  async findCategoryByHistoricalSlug(locale: Locale, slug: string) {
+    const lookup = await this.client
+      .from("category_slug_routes")
+      .select("category_id")
+      .eq("locale", locale)
+      .eq("slug", slug)
+      .eq("is_current", false)
+      .maybeSingle();
+    if (lookup.error) throw queryFailure("category historical slug");
+    return lookup.data ? this.findCategoryById(lookup.data.category_id) : null;
+  }
+
+  private async findCategoryById(id: string) {
     const { data, error } = await this.client
       .from("categories")
-      .select(
-        "id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)",
-      )
-      .eq("id", lookup.data.category_id)
+      .select(categorySelect)
+      .eq("id", id)
       .eq("is_published", true)
       .is("archived_at", null)
       .maybeSingle();
@@ -83,9 +116,7 @@ export class SupabaseCatalogTransport implements CatalogTransport {
   ): Promise<DbProductRow[]> {
     let query = this.client
       .from("products")
-      .select(
-        "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description),categories!inner(id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))",
-      )
+      .select(productSelect)
       .eq("is_published", true)
       .is("archived_at", null)
       .order("sort_order");
@@ -98,6 +129,7 @@ export class SupabaseCatalogTransport implements CatalogTransport {
     if (queryOptions.excludeId) {
       query = query.neq("id", queryOptions.excludeId);
     }
+    if (queryOptions.ids) query = query.in("id", queryOptions.ids);
     if (queryOptions.limit) query = query.limit(queryOptions.limit);
 
     const { data, error } = await query;
@@ -126,12 +158,26 @@ export class SupabaseCatalogTransport implements CatalogTransport {
       .maybeSingle();
     if (lookup.error) throw queryFailure("product slug");
     if (!lookup.data) return null;
+    return this.findProductById(lookup.data.product_id);
+  }
+
+  async findProductByHistoricalSlug(locale: Locale, slug: string) {
+    const lookup = await this.client
+      .from("product_slug_routes")
+      .select("product_id")
+      .eq("locale", locale)
+      .eq("slug", slug)
+      .eq("is_current", false)
+      .maybeSingle();
+    if (lookup.error) throw queryFailure("product historical slug");
+    return lookup.data ? this.findProductById(lookup.data.product_id) : null;
+  }
+
+  private async findProductById(id: string) {
     const { data, error } = await this.client
       .from("products")
-      .select(
-        "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description),categories!inner(id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))",
-      )
-      .eq("id", lookup.data.product_id)
+      .select(productSelect)
+      .eq("id", id)
       .eq("is_published", true)
       .is("archived_at", null)
       .maybeSingle();
@@ -146,6 +192,42 @@ export class SupabaseCatalogTransport implements CatalogTransport {
           .from("product-images")
           .getPublicUrl(image.storage_path).data.publicUrl,
       })),
+    };
+  }
+
+  async searchProductIds(
+    locale: Locale,
+    categoryId: string | undefined,
+    query: CatalogSearchQuery,
+  ) {
+    const { data, error } = await this.client.rpc(
+      "search_public_catalog_product_ids",
+      {
+        p_locale: locale,
+        p_category_id: categoryId ?? null,
+        p_query: query.query || null,
+        p_brand: query.brand,
+        p_availability: query.availability,
+        p_min_price_minor: query.minPriceMinor,
+        p_max_price_minor: query.maxPriceMinor,
+        p_attributes: query.attributes,
+        p_sort: query.sort,
+        p_limit: query.pageSize,
+        p_offset: (query.page - 1) * query.pageSize,
+      },
+    );
+    if (error) throw queryFailure("catalog search");
+    const rows = (data ?? []) as DbCatalogSearchRow[];
+    const total = rows.length ? Number(rows[0]!.total_count) : 0;
+    if (!Number.isSafeInteger(total) || total < 0) {
+      throw new CatalogDataError(
+        "invalid_data",
+        "Invalid catalog search count",
+      );
+    }
+    return {
+      ids: rows.flatMap((row) => (row.product_id ? [row.product_id] : [])),
+      total,
     };
   }
 

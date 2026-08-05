@@ -24,6 +24,8 @@ export const ru: Dictionary = {
     menu: "Меню",
     filters: "Фильтры",
     back: "Назад",
+    previous: "Назад",
+    next: "Вперёд",
   },
   common: {
     city: "г. Комрат",
@@ -97,6 +99,8 @@ export const ru: Dictionary = {
     mobileFilters: "Фильтры каталога",
     emptyTitle: "Ничего не найдено",
     emptyText: "Попробуйте изменить запрос или сбросить фильтры.",
+    pagination: "Страницы каталога",
+    page: "Страница",
   },
   product: {
     category: "Категория",

@@ -64,6 +64,27 @@ begin
   if (select count(*) from public.product_attribute_values) <> 36 then
     raise exception 'anon product attribute value count is not 36';
   end if;
+  if exists (select 1 from public.category_slug_routes)
+    or exists (select 1 from public.product_slug_routes)
+  then
+    raise exception 'anon can read current or draft slug routes';
+  end if;
+
+  if (
+    select max(total_count)
+    from public.search_public_catalog_product_ids('ru')
+  ) <> 12 then
+    raise exception 'anon catalog search count is not 12';
+  end if;
+  if exists (
+    select 1
+    from public.search_public_catalog_product_ids(
+      p_locale => 'ru', p_brand => 'Draft'
+    )
+    where product_id is not null or total_count <> 0
+  ) then
+    raise exception 'anon catalog search exposes draft products';
+  end if;
 
   if exists (
     select 1 from public.categories
@@ -114,6 +135,11 @@ begin
     or has_table_privilege('anon', 'public.products', 'delete')
   then
     raise exception 'anon has catalog write grants';
+  end if;
+  if has_table_privilege('anon', 'public.product_slug_routes', 'insert')
+    or has_table_privilege('authenticated', 'public.category_slug_routes', 'update')
+  then
+    raise exception 'slug route write grants are public';
   end if;
 end;
 $$;

@@ -2,6 +2,8 @@ import type {
   CatalogCategory,
   CatalogFacets,
   CatalogProduct,
+  CatalogSearchQuery,
+  CatalogSearchResult,
   PublicSiteSettings,
 } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
@@ -18,11 +20,24 @@ export interface CatalogRepository {
     locale: Locale,
     query?: ProductQuery,
   ): Promise<CatalogProduct[]>;
+  searchPublishedProducts(
+    locale: Locale,
+    categoryId: string | undefined,
+    query: CatalogSearchQuery,
+  ): Promise<CatalogSearchResult>;
   getCategoryBySlug(
     locale: Locale,
     slug: string,
   ): Promise<CatalogCategory | null>;
   getProductBySlug(
+    locale: Locale,
+    slug: string,
+  ): Promise<CatalogProduct | null>;
+  getCategoryByHistoricalSlug(
+    locale: Locale,
+    slug: string,
+  ): Promise<CatalogCategory | null>;
+  getProductByHistoricalSlug(
     locale: Locale,
     slug: string,
   ): Promise<CatalogProduct | null>;

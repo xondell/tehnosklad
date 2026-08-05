@@ -23,6 +23,8 @@ const category: DbCategoryRow = {
       slug: "refrigerators",
       short_description: "Коротко",
       description: "Описание",
+      seo_title: null,
+      seo_description: null,
     },
     {
       locale: "ro",
@@ -30,6 +32,8 @@ const category: DbCategoryRow = {
       slug: "frigidere",
       short_description: "Scurt",
       description: "Descriere",
+      seo_title: null,
+      seo_description: null,
     },
   ],
 };
@@ -54,6 +58,8 @@ const product: DbProductRow = {
       slug: "holodilnik",
       short_description: "Коротко",
       description: "Полное описание",
+      seo_title: null,
+      seo_description: null,
     },
     {
       locale: "ro",
@@ -61,6 +67,8 @@ const product: DbProductRow = {
       slug: "frigider",
       short_description: "Scurt",
       description: "Descriere completă",
+      seo_title: null,
+      seo_description: null,
     },
   ],
   product_images: [

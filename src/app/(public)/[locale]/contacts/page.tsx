@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContactButton } from "@/components/public/contact-button";
 import { CopyPhoneButton } from "@/components/public/copy-phone-button";
@@ -5,6 +6,26 @@ import { PageContainer } from "@/components/layout/page-container";
 import { getPublicSiteSettings } from "@/features/catalog/data";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale } from "@/i18n/config";
+import { buildLocalizedMetadata } from "@/features/seo/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const d = getDictionary(locale);
+  const other = locale === "ru" ? "ro" : "ru";
+  return buildLocalizedMetadata({
+    locale,
+    title: d.contacts.title,
+    description: d.contacts.description,
+    currentPath: `/${locale}/contacts`,
+    alternatePath: `/${other}/contacts`,
+  });
+}
+
 export default async function ContactsPage({
   params,
 }: {

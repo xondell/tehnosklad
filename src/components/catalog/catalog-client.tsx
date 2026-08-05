@@ -1,100 +1,48 @@
-"use client";
-
-import { useMemo, useState } from "react";
+import Link from "next/link";
 
 import { ProductGrid } from "@/components/catalog/product-grid";
 import {
-  defaultCatalogFilters,
-  filterProducts,
-} from "@/features/catalog/logic";
+  catalogQueryHref,
+  type CatalogUrlState,
+} from "@/features/catalog/query";
 import type {
   CatalogCategory,
   CatalogFacets,
-  CatalogFilters,
-  CatalogProduct,
+  CatalogSearchResult,
   PublicSiteSettings,
 } from "@/features/catalog/types";
-import type { Locale } from "@/i18n/config";
+import { localizedPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
-export function CatalogClient({
-  locale,
+function FilterFields({
   dictionary,
-  categories,
-  products: sourceProducts,
   facets,
-  settings,
-  initialCategory,
-  lockCategory = false,
+  state,
 }: {
-  locale: Locale;
   dictionary: Dictionary;
-  categories: CatalogCategory[];
-  products: CatalogProduct[];
   facets: CatalogFacets;
-  settings: PublicSiteSettings;
-  initialCategory?: string;
-  lockCategory?: boolean;
+  state: CatalogUrlState;
 }) {
-  const [filters, setFilters] = useState<CatalogFilters>({
-    ...defaultCatalogFilters,
-    categoryId: initialCategory ?? "all",
-  });
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const products = useMemo(
-    () => filterProducts(sourceProducts, filters, locale),
-    [sourceProducts, filters, locale],
-  );
-  const update = (key: keyof CatalogFilters, value: string) =>
-    setFilters((old) => ({ ...old, [key]: value }));
-  const updateAttribute = (code: string, value: string) =>
-    setFilters((old) => ({
-      ...old,
-      attributes: { ...old.attributes, [code]: value },
-    }));
-  const reset = () =>
-    setFilters({
-      ...defaultCatalogFilters,
-      categoryId: initialCategory ?? "all",
-    });
-  const fields = (
+  return (
     <>
       <label className="field-label">
         {dictionary.catalog.searchLabel}
         <input
           className="field"
-          value={filters.query}
+          defaultValue={state.query}
+          maxLength={100}
+          name="q"
           placeholder={dictionary.catalog.searchPlaceholder}
-          onChange={(event) => update("query", event.target.value)}
         />
       </label>
-      {!lockCategory ? (
-        <label className="field-label">
-          {dictionary.catalog.category}
-          <select
-            className="field"
-            value={filters.categoryId}
-            onChange={(event) => update("categoryId", event.target.value)}
-          >
-            <option value="all">{dictionary.catalog.allCategories}</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      ) : null}
       <label className="field-label">
         {dictionary.catalog.brand}
-        <select
-          className="field"
-          value={filters.brand}
-          onChange={(event) => update("brand", event.target.value)}
-        >
-          <option value="all">{dictionary.catalog.allBrands}</option>
+        <select className="field" defaultValue={state.brand} name="brand">
+          <option value="">{dictionary.catalog.allBrands}</option>
           {facets.brands.map((brand) => (
-            <option key={brand}>{brand}</option>
+            <option key={brand} value={brand}>
+              {brand}
+            </option>
           ))}
         </select>
       </label>
@@ -102,10 +50,10 @@ export function CatalogClient({
         {dictionary.catalog.availability}
         <select
           className="field"
-          value={filters.availability}
-          onChange={(event) => update("availability", event.target.value)}
+          defaultValue={state.availability}
+          name="availability"
         >
-          <option value="all">{dictionary.catalog.allAvailability}</option>
+          <option value="">{dictionary.catalog.allAvailability}</option>
           <option value="in_stock">{dictionary.common.inStock}</option>
           <option value="on_order">{dictionary.common.onOrder}</option>
           <option value="out_of_stock">{dictionary.common.outOfStock}</option>
@@ -117,18 +65,18 @@ export function CatalogClient({
           <input
             aria-label={dictionary.catalog.priceFrom}
             className="field"
-            inputMode="numeric"
+            defaultValue={state.minPrice}
+            inputMode="decimal"
+            name="price_min"
             placeholder={dictionary.catalog.priceFrom}
-            value={filters.minPrice}
-            onChange={(event) => update("minPrice", event.target.value)}
           />
           <input
             aria-label={dictionary.catalog.priceTo}
             className="field"
-            inputMode="numeric"
+            defaultValue={state.maxPrice}
+            inputMode="decimal"
+            name="price_max"
             placeholder={dictionary.catalog.priceTo}
-            value={filters.maxPrice}
-            onChange={(event) => update("maxPrice", event.target.value)}
           />
         </div>
       </div>
@@ -137,10 +85,8 @@ export function CatalogClient({
           {attribute.label}
           <select
             className="field"
-            value={filters.attributes[attribute.code] ?? ""}
-            onChange={(event) =>
-              updateAttribute(attribute.code, event.target.value)
-            }
+            defaultValue={state.attributes[attribute.code] ?? ""}
+            name={`attr_${attribute.code}`}
           >
             <option value="">—</option>
             {attribute.options.map((option) => (
@@ -151,83 +97,92 @@ export function CatalogClient({
           </select>
         </label>
       ))}
-      <button className="button-secondary w-full" type="button" onClick={reset}>
-        {dictionary.actions.reset}
+      <label className="field-label">
+        {dictionary.catalog.sort}
+        <select className="field" defaultValue={state.sort} name="sort">
+          <option value="popular">{dictionary.catalog.sortPopular}</option>
+          <option value="new">{dictionary.catalog.sortNew}</option>
+          <option value="price_asc">{dictionary.catalog.sortPriceAsc}</option>
+          <option value="price_desc">{dictionary.catalog.sortPriceDesc}</option>
+          <option value="name">{dictionary.catalog.sortName}</option>
+        </select>
+      </label>
+      <button className="button-primary w-full" type="submit">
+        {dictionary.actions.apply}
       </button>
     </>
   );
+}
+
+export function CatalogClient({
+  locale,
+  dictionary,
+  categories,
+  facets,
+  settings,
+  state,
+  result,
+  actionPath,
+  showCategories = false,
+}: {
+  locale: Locale;
+  dictionary: Dictionary;
+  categories: CatalogCategory[];
+  facets: CatalogFacets;
+  settings: PublicSiteSettings;
+  state: CatalogUrlState;
+  result: CatalogSearchResult;
+  actionPath: string;
+  showCategories?: boolean;
+}) {
+  const fields = (
+    <FilterFields dictionary={dictionary} facets={facets} state={state} />
+  );
   return (
     <>
-      <button
-        className="button-secondary mb-4 w-full lg:hidden"
-        type="button"
-        onClick={() => setMobileOpen(true)}
-      >
-        {dictionary.actions.filters}
-      </button>
-      {mobileOpen ? (
-        <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
-          <aside
-            aria-label={dictionary.catalog.mobileFilters}
-            className="ml-auto h-full w-[min(22rem,92vw)] overflow-y-auto bg-white p-5"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="font-black">{dictionary.actions.filters}</h2>
-              <button
-                aria-label={dictionary.actions.close}
-                className="icon-button"
-                onClick={() => setMobileOpen(false)}
-                type="button"
-              >
-                ×
-              </button>
-            </div>
-            <div className="mt-5 space-y-4">
-              {fields}
-              <button
-                className="button-primary w-full"
-                type="button"
-                onClick={() => setMobileOpen(false)}
-              >
-                {dictionary.actions.apply}
-              </button>
-            </div>
-          </aside>
-        </div>
+      {showCategories ? (
+        <nav
+          aria-label={dictionary.catalog.category}
+          className="mb-6 flex flex-wrap gap-2"
+        >
+          {categories.map((category) => (
+            <Link
+              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-bold hover:bg-stone-100"
+              href={localizedPath(locale, `category/${category.slug}`)}
+              key={category.id}
+            >
+              {category.name}
+            </Link>
+          ))}
+        </nav>
       ) : null}
+      <details className="mb-5 rounded-2xl border border-stone-200 p-4 lg:hidden">
+        <summary className="cursor-pointer font-black">
+          {dictionary.actions.filters}
+        </summary>
+        <form action={actionPath} className="mt-5 space-y-4" method="get">
+          {fields}
+          <Link className="button-secondary w-full" href={actionPath}>
+            {dictionary.actions.reset}
+          </Link>
+        </form>
+      </details>
       <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
         <aside className="hidden rounded-2xl border border-stone-200 bg-stone-50 p-4 lg:block">
-          <div className="space-y-4">{fields}</div>
+          <form action={actionPath} className="space-y-4" method="get">
+            {fields}
+            <Link className="button-secondary w-full" href={actionPath}>
+              {dictionary.actions.reset}
+            </Link>
+          </form>
         </aside>
         <div>
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <p className="font-bold">
-              {products.length} {dictionary.common.results}
-            </p>
-            <label className="flex items-center gap-2 text-sm font-bold">
-              {dictionary.catalog.sort}
-              <select
-                className="field w-auto"
-                value={filters.sort}
-                onChange={(event) => update("sort", event.target.value)}
-              >
-                <option value="popular">
-                  {dictionary.catalog.sortPopular}
-                </option>
-                <option value="new">{dictionary.catalog.sortNew}</option>
-                <option value="price_asc">
-                  {dictionary.catalog.sortPriceAsc}
-                </option>
-                <option value="price_desc">
-                  {dictionary.catalog.sortPriceDesc}
-                </option>
-                <option value="name">{dictionary.catalog.sortName}</option>
-              </select>
-            </label>
-          </div>
-          {products.length ? (
+          <p className="mb-5 font-bold">
+            {result.total} {dictionary.common.results}
+          </p>
+          {result.products.length ? (
             <ProductGrid
-              products={products}
+              products={result.products}
               locale={locale}
               dictionary={dictionary}
               settings={settings}
@@ -240,15 +195,37 @@ export function CatalogClient({
               <p className="mt-2 text-stone-600">
                 {dictionary.catalog.emptyText}
               </p>
-              <button
-                className="button-secondary mt-5"
-                type="button"
-                onClick={reset}
-              >
+              <Link className="button-secondary mt-5" href={actionPath}>
                 {dictionary.actions.reset}
-              </button>
+              </Link>
             </div>
           )}
+          {result.pageCount > 1 ? (
+            <nav
+              aria-label={dictionary.catalog.pagination}
+              className="mt-8 flex flex-wrap items-center justify-center gap-2"
+            >
+              {result.page > 1 ? (
+                <Link
+                  className="button-secondary"
+                  href={catalogQueryHref(actionPath, state, result.page - 1)}
+                >
+                  {dictionary.actions.previous}
+                </Link>
+              ) : null}
+              <span className="px-3 text-sm font-bold">
+                {dictionary.catalog.page} {result.page} / {result.pageCount}
+              </span>
+              {result.page < result.pageCount ? (
+                <Link
+                  className="button-secondary"
+                  href={catalogQueryHref(actionPath, state, result.page + 1)}
+                >
+                  {dictionary.actions.next}
+                </Link>
+              ) : null}
+            </nav>
+          ) : null}
         </div>
       </div>
     </>

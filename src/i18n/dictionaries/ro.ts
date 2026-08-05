@@ -24,6 +24,8 @@ export const ro: Dictionary = {
     menu: "Meniu",
     filters: "Filtre",
     back: "Înapoi",
+    previous: "Înapoi",
+    next: "Înainte",
   },
   common: {
     city: "mun. Comrat",
@@ -101,6 +103,8 @@ export const ro: Dictionary = {
     mobileFilters: "Filtrele catalogului",
     emptyTitle: "Nu s-a găsit nimic",
     emptyText: "Încercați să schimbați căutarea sau să resetați filtrele.",
+    pagination: "Paginile catalogului",
+    page: "Pagina",
   },
   product: {
     category: "Categorie",

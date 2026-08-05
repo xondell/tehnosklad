@@ -157,6 +157,8 @@ if (process.env.TEHNOSKLAD_LOCAL_TEST !== "1") {
 const runId = randomUUID();
 const publishedCategoryId = "10000000-0000-4000-8000-000000000001";
 const publishedProductId = "20000000-0000-4000-8000-000000000001";
+const slugHistoryProductId = "20000000-0000-4000-8000-000000000002";
+const slugHistoryCategoryId = "10000000-0000-4000-8000-000000000002";
 const fixture = {
   draftCategoryId: randomUUID(),
   draftProductId: randomUUID(),
@@ -377,11 +379,23 @@ afterAll(async () => {
       service.storage.from("product-images").remove([...new Set(storagePaths)]),
     );
   }
+  await cleanup("remove runtime product slug routes", () =>
+    service
+      .from("product_slug_routes")
+      .delete()
+      .in("product_id", [fixture.draftProductId, fixture.archivedProductId]),
+  );
   await cleanup("remove runtime products", () =>
     service
       .from("products")
       .delete()
       .in("id", [fixture.draftProductId, fixture.archivedProductId]),
+  );
+  await cleanup("remove runtime category slug routes", () =>
+    service
+      .from("category_slug_routes")
+      .delete()
+      .eq("category_id", fixture.draftCategoryId),
   );
   await cleanup("remove runtime category", () =>
     service.from("categories").delete().eq("id", fixture.draftCategoryId),
@@ -447,6 +461,70 @@ describe.sequential("real local catalog repository", () => {
         address: expect.stringContaining("Comrat"),
       },
     );
+  });
+
+  it("searches, filters and paginates through the public RPC", async () => {
+    const repository = new SupabaseCatalogRepository(
+      new SupabaseCatalogTransport(publicClient()),
+    );
+    const baseQuery = {
+      query: "",
+      brand: null,
+      availability: null,
+      minPriceMinor: null,
+      maxPriceMinor: null,
+      attributes: {},
+      sort: "popular" as const,
+      page: 1,
+      pageSize: 5,
+    };
+    const secondPage = await repository.searchPublishedProducts(
+      "ru",
+      undefined,
+      { ...baseQuery, page: 2 },
+    );
+    expect(secondPage).toMatchObject({
+      total: 12,
+      page: 2,
+      pageSize: 5,
+      pageCount: 3,
+    });
+    expect(secondPage.products).toHaveLength(5);
+
+    const nord = await repository.searchPublishedProducts("ro", undefined, {
+      ...baseQuery,
+      brand: "Nord",
+      pageSize: 9,
+    });
+    expect(nord.total).toBeGreaterThan(0);
+    expect(nord.products.every((product) => product.brand === "Nord")).toBe(
+      true,
+    );
+
+    const drafts = await repository.searchPublishedProducts("ru", undefined, {
+      ...baseQuery,
+      brand: "Runtime",
+      pageSize: 9,
+    });
+    expect(drafts).toMatchObject({ total: 0, products: [] });
+
+    const capacity = await repository.searchPublishedProducts(
+      "ru",
+      publishedCategoryId,
+      {
+        ...baseQuery,
+        attributes: { capacity: "capacity" },
+        pageSize: 9,
+      },
+    );
+    expect(capacity).toMatchObject({
+      total: 4,
+    });
+    expect(
+      capacity.products.every(
+        (product) => product.category.id === publishedCategoryId,
+      ),
+    ).toBe(true);
   });
 });
 
@@ -751,6 +829,77 @@ describe.sequential("real local Auth and Storage", () => {
 });
 
 describe.sequential("production HTTP and application Auth", () => {
+  it("permanently redirects historical product and category slugs", async () => {
+    const productSlug = `vesta-fresh-280-${runId}`;
+    const categorySlug = `stoves-${runId}`;
+    try {
+      resultData(
+        await service
+          .from("product_translations")
+          .update({ slug: productSlug })
+          .eq("product_id", slugHistoryProductId)
+          .eq("locale", "ru"),
+        "change runtime product slug",
+      );
+      resultData(
+        await service
+          .from("category_translations")
+          .update({ slug: categorySlug })
+          .eq("category_id", slugHistoryCategoryId)
+          .eq("locale", "ru"),
+        "change runtime category slug",
+      );
+
+      const oldProduct = await fetch(`${siteUrl}/ru/product/vesta-fresh-280`, {
+        redirect: "manual",
+      });
+      expect(oldProduct.status).toBe(308);
+      expect(oldProduct.headers.get("location")).toBe(
+        `/ru/product/${productSlug}`,
+      );
+      const oldCategory = await fetch(`${siteUrl}/ru/category/stoves`, {
+        redirect: "manual",
+      });
+      expect(oldCategory.status).toBe(308);
+      expect(oldCategory.headers.get("location")).toBe(
+        `/ru/category/${categorySlug}`,
+      );
+    } finally {
+      assertNoError(
+        await service
+          .from("product_translations")
+          .update({ slug: "vesta-fresh-280" })
+          .eq("product_id", slugHistoryProductId)
+          .eq("locale", "ru"),
+        "restore runtime product slug",
+      );
+      assertNoError(
+        await service
+          .from("category_translations")
+          .update({ slug: "stoves" })
+          .eq("category_id", slugHistoryCategoryId)
+          .eq("locale", "ru"),
+        "restore runtime category slug",
+      );
+      assertNoError(
+        await service
+          .from("product_slug_routes")
+          .delete()
+          .eq("product_id", slugHistoryProductId)
+          .eq("slug", productSlug),
+        "remove runtime product slug history",
+      );
+      assertNoError(
+        await service
+          .from("category_slug_routes")
+          .delete()
+          .eq("category_id", slugHistoryCategoryId)
+          .eq("slug", categorySlug),
+        "remove runtime category slug history",
+      );
+    }
+  });
+
   it("serves RU/RO catalog routes and fails closed for drafts and unknown slugs", async () => {
     const root = await fetch(siteUrl, { redirect: "manual" });
     expect([307, 308]).toContain(root.status);
@@ -786,6 +935,60 @@ describe.sequential("production HTTP and application Auth", () => {
     ]) {
       expect((await fetch(`${siteUrl}${path}`)).status, path).toBe(404);
     }
+
+    const canonicalized = await fetch(
+      `${siteUrl}/ru/catalog?page=01&sort=popular`,
+      { redirect: "manual" },
+    );
+    expect([200, 307]).toContain(canonicalized.status);
+    if (canonicalized.status === 307) {
+      expect(canonicalized.headers.get("location")).toBe("/ru/catalog");
+    } else {
+      expect(await canonicalized.text()).toContain(
+        'rel="canonical" href="http://127.0.0.1:3100/ru/catalog"',
+      );
+    }
+
+    const filtered = await fetch(`${siteUrl}/ru/catalog?q=Nord`);
+    expect(filtered.status).toBe(200);
+    const filteredHtml = await filtered.text();
+    expect(filteredHtml).toContain('name="robots" content="noindex, follow"');
+    expect(filteredHtml).toContain("Nord Cool 300");
+
+    const searchAlias = await fetch(`${siteUrl}/ro/search?q=Nord`, {
+      redirect: "manual",
+    });
+    expect(searchAlias.status).toBe(308);
+    expect(searchAlias.headers.get("location")).toBe("/ro/catalog?q=Nord");
+  });
+
+  it("serves localized SEO discovery routes and structured data", async () => {
+    const product = await fetch(`${siteUrl}/ru/product/nord-cool-300`);
+    const html = await product.text();
+    expect(product.status).toBe(200);
+    expect(html).toContain(
+      'rel="canonical" href="http://127.0.0.1:3100/ru/product/nord-cool-300"',
+    );
+    expect(html).toContain('hrefLang="ro"');
+    expect(html).toContain('type="application/ld+json"');
+    expect(html).toContain('"@type":"Product"');
+
+    const robots = await fetch(`${siteUrl}/robots.txt`);
+    expect(robots.status).toBe(200);
+    expect(await robots.text()).toContain(
+      "Sitemap: http://127.0.0.1:3100/sitemap.xml",
+    );
+
+    const sitemap = await fetch(`${siteUrl}/sitemap.xml`);
+    const sitemapXml = await sitemap.text();
+    expect(sitemap.status).toBe(200);
+    expect(sitemapXml).toContain("/ru/product/nord-cool-300");
+    expect(sitemapXml).toContain('hreflang="ro"');
+    expect(sitemapXml).not.toContain("/privacy");
+
+    const image = await fetch(`${siteUrl}/ro/opengraph-image`);
+    expect(image.status).toBe(200);
+    expect(image.headers.get("content-type")).toContain("image/png");
   });
 
   it("protects the admin route, performs real login and logout, and keeps responses private", async () => {

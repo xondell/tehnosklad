@@ -10,10 +10,10 @@ declare
     'attribute_group_translations', 'attribute_groups',
     'attribute_option_translations', 'attribute_options',
     'attribute_translations', 'attributes', 'categories',
-    'category_attributes', 'category_translations',
+    'category_attributes', 'category_slug_routes', 'category_translations',
     'product_attribute_value_translations', 'product_attribute_values',
-    'product_image_translations', 'product_images', 'product_translations',
-    'products', 'profiles', 'site_settings', 'user_roles'
+    'product_image_translations', 'product_images', 'product_slug_routes',
+    'product_translations', 'products', 'profiles', 'site_settings', 'user_roles'
   ];
 begin
   select array_agg(table_name order by table_name) into actual_tables
@@ -58,6 +58,7 @@ begin
       ('categories_parent_id_fkey'),
       ('category_attributes_attribute_id_fkey'),
       ('category_attributes_category_id_fkey'),
+      ('category_slug_routes_category_id_fkey'),
       ('category_translations_category_id_fkey'),
       ('product_attribute_value_translations_value_id_fkey'),
       ('product_attribute_values_attribute_id_fkey'),
@@ -65,6 +66,7 @@ begin
       ('product_attribute_values_product_id_fkey'),
       ('product_image_translations_image_id_fkey'),
       ('product_images_product_id_fkey'),
+      ('product_slug_routes_product_id_fkey'),
       ('product_translations_product_id_fkey'),
       ('products_category_id_fkey'),
       ('profiles_id_fkey'),
@@ -100,7 +102,7 @@ begin
   end if;
   if (
     select count(*) from pg_policies where schemaname = 'public'
-  ) <> 36 then
+  ) <> 40 then
     raise exception 'public policy inventory mismatch';
   end if;
   if exists (
@@ -155,7 +157,8 @@ begin
     from unnest(array[
       'categories_parent_fk_idx', 'products_category_fk_idx',
       'category_attributes_attribute_fk_idx',
-      'product_attribute_values_attribute_fk_idx'
+      'product_attribute_values_attribute_fk_idx',
+      'category_slug_routes_entity_idx', 'product_slug_routes_entity_idx'
     ]) as expected(index_name)
     where not exists (
       select 1 from pg_class as index_relation
@@ -188,6 +191,30 @@ begin
       )
   ) <> 3 then
     raise exception 'Storage policy inventory mismatch';
+  end if;
+
+  if (select count(*) from public.category_slug_routes) <> 6
+    or (select count(*) from public.product_slug_routes) <> 24
+    or exists (
+      select 1 from public.category_slug_routes where not is_current
+    )
+    or exists (
+      select 1 from public.product_slug_routes where not is_current
+    )
+  then
+    raise exception 'initial slug route backfill mismatch';
+  end if;
+
+  if not has_function_privilege(
+    'anon',
+    'public.search_public_catalog_product_ids(public.app_locale,uuid,text,text,public.availability_status,bigint,bigint,jsonb,text,integer,integer)',
+    'execute'
+  ) or has_function_privilege(
+    'anon', 'private.sync_product_slug_route()', 'execute'
+  ) or has_function_privilege(
+    'authenticated', 'private.sync_category_slug_route()', 'execute'
+  ) then
+    raise exception 'Stage 4 function grants mismatch';
   end if;
 end;
 $$;
@@ -226,7 +253,8 @@ begin
     'attribute_group_translations', 'attributes', 'attribute_translations',
     'attribute_options', 'attribute_option_translations',
     'category_attributes', 'product_attribute_values',
-    'product_attribute_value_translations', 'site_settings'
+    'product_attribute_value_translations', 'site_settings',
+    'category_slug_routes', 'product_slug_routes'
   ] loop
     if not has_table_privilege('service_role', format('public.%I', table_name), 'select')
       or not has_table_privilege('service_role', format('public.%I', table_name), 'insert')
@@ -397,6 +425,45 @@ begin
   exception when raise_exception then
     if sqlerrm not like '%cannot be used as canonical filters%' then raise; end if;
   end;
+end;
+$$;
+
+insert into public.attributes (
+  id, group_id, code, data_type, is_filterable, sort_order
+) values (
+  '92000000-0000-4000-8000-000000000003',
+  '30000000-0000-4000-8000-000000000001',
+  'verification_numeric', 'number', true, 997
+);
+insert into public.attribute_translations (attribute_id, locale, name)
+values
+  ('92000000-0000-4000-8000-000000000003', 'ru', 'Число'),
+  ('92000000-0000-4000-8000-000000000003', 'ro', 'Număr');
+insert into public.category_attributes (
+  category_id, attribute_id, is_required, is_filterable, sort_order
+) values (
+  '10000000-0000-4000-8000-000000000001',
+  '92000000-0000-4000-8000-000000000003', false, true, 997
+);
+insert into public.product_attribute_values (
+  id, product_id, attribute_id, number_value
+) values (
+  '92000000-0000-4000-8000-000000000004',
+  '20000000-0000-4000-8000-000000000001',
+  '92000000-0000-4000-8000-000000000003', 280
+);
+
+do $$
+begin
+  if (
+    select max(total_count)
+    from public.search_public_catalog_product_ids(
+      p_locale => 'ru',
+      p_attributes => '{"verification_numeric":"280"}'::jsonb
+    )
+  ) <> 1 then
+    raise exception 'numeric catalog filter changed a significant trailing zero';
+  end if;
 end;
 $$;
 

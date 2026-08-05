@@ -208,4 +208,42 @@ describe("Supabase catalog transport", () => {
     expect(select).toEqual(expect.stringContaining("category_attributes("));
     expect(query.calls).toContainEqual(["in:product_id", ["product"]]);
   });
+
+  it("passes bounded server-search parameters to the catalog RPC", async () => {
+    const rpc = vi.fn().mockResolvedValue({
+      data: [{ product_id: "product", total_count: "12" }],
+      error: null,
+    });
+    const client = {
+      rpc,
+    } as unknown as SupabaseClient;
+    const transport = new SupabaseCatalogTransport(client);
+
+    await expect(
+      transport.searchProductIds("ru", "category", {
+        query: "Nord",
+        brand: "Nord",
+        availability: "in_stock",
+        minPriceMinor: 100,
+        maxPriceMinor: 500000,
+        attributes: { energy_class: "a_plus" },
+        sort: "price_asc",
+        page: 2,
+        pageSize: 9,
+      }),
+    ).resolves.toEqual({ ids: ["product"], total: 12 });
+    expect(rpc).toHaveBeenCalledWith("search_public_catalog_product_ids", {
+      p_locale: "ru",
+      p_category_id: "category",
+      p_query: "Nord",
+      p_brand: "Nord",
+      p_availability: "in_stock",
+      p_min_price_minor: 100,
+      p_max_price_minor: 500000,
+      p_attributes: { energy_class: "a_plus" },
+      p_sort: "price_asc",
+      p_limit: 9,
+      p_offset: 9,
+    });
+  });
 });

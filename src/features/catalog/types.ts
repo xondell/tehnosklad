@@ -15,6 +15,8 @@ export type CatalogCategory = {
   name: string;
   shortDescription: string;
   description: string;
+  seoTitle: string | null;
+  seoDescription: string | null;
 };
 
 export type ProductImage = {
@@ -48,6 +50,8 @@ export type CatalogProduct = {
   name: string;
   shortDescription: string;
   description: string;
+  seoTitle: string | null;
+  seoDescription: string | null;
   priceMinor: number;
   oldPriceMinor: number | null;
   currency: "MDL";
@@ -93,6 +97,28 @@ export type CatalogFilters = {
   maxPrice: string;
   attributes: Record<string, string>;
   sort: "popular" | "new" | "price_asc" | "price_desc" | "name";
+};
+
+export type CatalogSort = CatalogFilters["sort"];
+
+export type CatalogSearchQuery = {
+  query: string;
+  brand: string | null;
+  availability: StockStatus | null;
+  minPriceMinor: number | null;
+  maxPriceMinor: number | null;
+  attributes: Readonly<Record<string, string>>;
+  sort: CatalogSort;
+  page: number;
+  pageSize: number;
+};
+
+export type CatalogSearchResult = {
+  products: CatalogProduct[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
 };
 
 // Raw localized fixtures are kept separate from production DTOs.

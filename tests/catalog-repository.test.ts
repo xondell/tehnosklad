@@ -20,6 +20,8 @@ const categoryRow: DbCategoryRow = {
       slug: "category",
       short_description: "Коротко",
       description: "Описание",
+      seo_title: null,
+      seo_description: null,
     },
     {
       locale: "ro",
@@ -27,6 +29,8 @@ const categoryRow: DbCategoryRow = {
       slug: "categorie",
       short_description: "Scurt",
       description: "Descriere",
+      seo_title: null,
+      seo_description: null,
     },
   ],
 };
@@ -51,6 +55,8 @@ const productRow: DbProductRow = {
       slug: "product",
       short_description: "Коротко",
       description: "Описание",
+      seo_title: null,
+      seo_description: null,
     },
     {
       locale: "ro",
@@ -58,6 +64,8 @@ const productRow: DbProductRow = {
       slug: "produs",
       short_description: "Scurt",
       description: "Descriere",
+      seo_title: null,
+      seo_description: null,
     },
   ],
   product_images: [],
@@ -67,14 +75,29 @@ function mockTransport(): CatalogTransport {
   return {
     listCategories: vi.fn().mockResolvedValue([categoryRow]),
     findCategoryBySlug: vi.fn().mockResolvedValue(categoryRow),
+    findCategoryByHistoricalSlug: vi.fn().mockResolvedValue(null),
     listProducts: vi.fn().mockResolvedValue([productRow]),
     findProductBySlug: vi.fn().mockResolvedValue(productRow),
+    findProductByHistoricalSlug: vi.fn().mockResolvedValue(null),
+    searchProductIds: vi.fn().mockResolvedValue({ ids: ["product"], total: 1 }),
     listSpecifications: vi.fn().mockResolvedValue([]),
     listSiteSettings: vi.fn().mockResolvedValue([]),
   };
 }
 
 describe("repository contracts", () => {
+  const searchQuery = {
+    query: "",
+    brand: null,
+    availability: null,
+    minPriceMinor: null,
+    maxPriceMinor: null,
+    attributes: {},
+    sort: "popular" as const,
+    page: 1,
+    pageSize: 9,
+  };
+
   it("demo repository has deterministic categories, products and lookups", async () => {
     const repository = new DemoCatalogRepository();
     await expect(repository.getPublishedCategories("ru")).resolves.toHaveLength(
@@ -150,5 +173,34 @@ describe("repository contracts", () => {
     await expect(repository.getPublishedProducts("ru")).rejects.toMatchObject({
       code: "query_failed",
     });
+  });
+
+  it("loads one search page in RPC order and reports page metadata", async () => {
+    const transport = mockTransport();
+    const repository = new SupabaseCatalogRepository(transport);
+    await expect(
+      repository.searchPublishedProducts("ru", "category", searchQuery),
+    ).resolves.toMatchObject({
+      products: [{ id: "product" }],
+      total: 1,
+      page: 1,
+      pageSize: 9,
+      pageCount: 1,
+    });
+    expect(transport.searchProductIds).toHaveBeenCalledWith(
+      "ru",
+      "category",
+      searchQuery,
+    );
+    expect(transport.listProducts).toHaveBeenCalledWith({ ids: ["product"] });
+  });
+
+  it("fails closed if the search RPC references an unavailable product", async () => {
+    const transport = mockTransport();
+    transport.listProducts = vi.fn().mockResolvedValue([]);
+    const repository = new SupabaseCatalogRepository(transport);
+    await expect(
+      repository.searchPublishedProducts("ru", undefined, searchQuery),
+    ).rejects.toMatchObject({ code: "invalid_data" });
   });
 });

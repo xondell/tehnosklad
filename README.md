@@ -1,6 +1,6 @@
 # Tehnosklad
 
-Production-сайт магазина бытовой техники в Комрате. Завершены **Этап 3: безопасный Supabase foundation, серверный каталог и Auth** и его **Этап 3.5: локальная runtime-валидация**.
+Production-сайт магазина бытовой техники в Комрате. Завершены безопасный Supabase foundation, runtime-валидация и **Этап 4: серверный каталог и SEO**.
 
 ## Реализовано
 
@@ -11,6 +11,9 @@ Production-сайт магазина бытовой техники в Комра
 - Strict RU/RO mapping без скрытой подмены отсутствующего перевода.
 - Supabase SSR Auth, `proxy.ts`, защищённый `/admin` и проверка роли на сервере.
 - 5-минутный cache публичных запросов с locale в аргументах; admin всегда dynamic.
+- URL-driven server search, фильтры, сортировка и пагинация без client-only состояния.
+- Localized metadata, canonical/hreflang, JSON-LD, sitemap, robots и Open Graph images.
+- История опубликованных slug с постоянным redirect на актуальный URL.
 
 Полный admin CRUD, загрузчик изображений, заявки/Telegram и AI намеренно не реализованы.
 
@@ -76,6 +79,7 @@ npm run db:stop
 
 - `supabase/config.toml` — локальный CLI/Auth/Storage config;
 - `supabase/migrations/20260805111516_initial_schema.sql` — исходная production migration;
+- `supabase/migrations/20260805190000_stage_4_catalog_seo.sql` — server search RPC и slug route history;
 - `supabase/seed.sql` — детерминированные 3 категории, 12 товаров, RU/RO, характеристики и настройки;
 - `supabase/verification/rls.sql` — transactional/rollback assertions для RLS;
 - `supabase/schema.sql` — только сохранённый исторический draft Этапа 1.
@@ -84,6 +88,7 @@ npm run db:stop
 
 - [docs/stage-3.md](docs/stage-3.md) — результат этапа и ограничения;
 - [docs/stage-3-runtime-validation.md](docs/stage-3-runtime-validation.md) — фактические local runtime-проверки Этапа 3.5;
+- [docs/stage-4.md](docs/stage-4.md) — URL-контракт каталога, SEO, slug redirects и cache invalidation;
 - [docs/supabase-setup.md](docs/supabase-setup.md) — локальная/remote настройка и первый admin;
 - [docs/rls-access-matrix.md](docs/rls-access-matrix.md) — матрица доступа и ручная проверка;
 - [docs/architecture.md](docs/architecture.md) — приложение и data layer;
