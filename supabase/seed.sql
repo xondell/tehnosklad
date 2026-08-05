@@ -130,11 +130,11 @@ insert into public.product_attribute_values (
   id, product_id, attribute_id, ordinal, text_value_key, option_id
 )
 select md5(product_id::text || ':capacity')::uuid, product_id,
-  '31000000-0000-4000-8000-000000000001', 0, 'capacity', null
+  '31000000-0000-4000-8000-000000000001'::uuid, 0, 'capacity', null
 from seed_values
 union all
 select md5(product_id::text || ':class')::uuid, product_id,
-  '31000000-0000-4000-8000-000000000002', 0, null,
+  '31000000-0000-4000-8000-000000000002'::uuid, 0, null,
   case class_code
     when 'a_plus' then '32000000-0000-4000-8000-000000000002'::uuid
     else '32000000-0000-4000-8000-000000000001'::uuid
@@ -142,7 +142,7 @@ select md5(product_id::text || ':class')::uuid, product_id,
 from seed_values
 union all
 select md5(product_id::text || ':feature')::uuid, product_id,
-  '31000000-0000-4000-8000-000000000003', 0, 'feature', null
+  '31000000-0000-4000-8000-000000000003'::uuid, 0, 'feature', null
 from seed_values;
 
 with seed_values (
@@ -164,13 +164,13 @@ with seed_values (
 insert into public.product_attribute_value_translations (
   value_id, locale, text_value
 )
-select md5(product_id::text || ':capacity')::uuid, 'ru', capacity_ru from seed_values
+select md5(product_id::text || ':capacity')::uuid, 'ru'::public.app_locale, capacity_ru from seed_values
 union all
-select md5(product_id::text || ':capacity')::uuid, 'ro', capacity_ro from seed_values
+select md5(product_id::text || ':capacity')::uuid, 'ro'::public.app_locale, capacity_ro from seed_values
 union all
-select md5(product_id::text || ':feature')::uuid, 'ru', feature_ru from seed_values
+select md5(product_id::text || ':feature')::uuid, 'ru'::public.app_locale, feature_ru from seed_values
 union all
-select md5(product_id::text || ':feature')::uuid, 'ro', feature_ro from seed_values;
+select md5(product_id::text || ':feature')::uuid, 'ro'::public.app_locale, feature_ro from seed_values;
 
 update public.products set is_published = true;
 

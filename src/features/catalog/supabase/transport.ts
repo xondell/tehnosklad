@@ -46,6 +46,8 @@ export class SupabaseCatalogTransport implements CatalogTransport {
       .select(
         "id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)",
       )
+      .eq("is_published", true)
+      .is("archived_at", null)
       .order("sort_order");
     if (error) throw queryFailure("categories");
     return data as unknown as DbCategoryRow[];
@@ -69,6 +71,8 @@ export class SupabaseCatalogTransport implements CatalogTransport {
         "id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)",
       )
       .eq("id", lookup.data.category_id)
+      .eq("is_published", true)
+      .is("archived_at", null)
       .maybeSingle();
     if (error) throw queryFailure("category");
     return data as unknown as DbCategoryRow | null;
@@ -82,6 +86,8 @@ export class SupabaseCatalogTransport implements CatalogTransport {
       .select(
         "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description),categories!inner(id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))",
       )
+      .eq("is_published", true)
+      .is("archived_at", null)
       .order("sort_order");
     if (queryOptions.categoryId) {
       query = query.eq("category_id", queryOptions.categoryId);
@@ -126,6 +132,8 @@ export class SupabaseCatalogTransport implements CatalogTransport {
         "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description),categories!inner(id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))",
       )
       .eq("id", lookup.data.product_id)
+      .eq("is_published", true)
+      .is("archived_at", null)
       .maybeSingle();
     if (error) throw queryFailure("product");
     if (!data) return null;

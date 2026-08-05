@@ -1,4 +1,4 @@
-export default function PublicLoading() {
+export default function CatalogLoading() {
   return (
     <div
       aria-busy="true"

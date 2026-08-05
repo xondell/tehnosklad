@@ -14,6 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "test:integration:local": "node scripts/test-integration-local.mjs --local-only",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset:local": "supabase db reset --local",

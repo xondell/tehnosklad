@@ -10,7 +10,12 @@ export function safeAdminRedirectTarget(
     if (url.pathname !== "/admin" && !url.pathname.startsWith("/admin/")) {
       return "/admin";
     }
-    if (url.pathname === "/admin/login") return "/admin";
+    if (
+      url.pathname === "/admin/login" ||
+      url.pathname.startsWith("/admin/login/")
+    ) {
+      return "/admin";
+    }
     return `${url.pathname}${url.search}`;
   } catch {
     return "/admin";

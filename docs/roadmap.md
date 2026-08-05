@@ -20,6 +20,15 @@
 
 Подробности: [stage-3.md](stage-3.md).
 
+## Этап 3.5 — Supabase runtime validation — завершён
+
+- Clean migration/seed и повторные local reset.
+- DB lint и executable schema/RLS/integrity assertions.
+- Реальные Auth/JWT/RLS/Storage/repository/production HTTP tests.
+- Local-only harness с защитой от remote target.
+
+Подробности: [stage-3-runtime-validation.md](stage-3-runtime-validation.md).
+
 ## Этап 4 — каталог и SEO
 
 - Перенести клиентские фильтры в URL/server query по мере роста каталога.

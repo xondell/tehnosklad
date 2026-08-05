@@ -127,14 +127,15 @@ CATALOG_DATA_SOURCE=supabase
 
 Service-role key добавляйте только когда появится использующая его server-only операция. Проверьте Supabase Auth Site URL/allowed redirects, `/ru`, `/ro`, catalog, product и `/admin/login`. Docker/local filesystem в production не требуются.
 
-## 10. Что не проверено в Codex
+## 10. Статус проверки
 
-- чистое применение migration/seed;
-- повторный local reset;
-- Postgres/Supabase DB lint/advisors;
-- реальные anon/authenticated/admin RLS запросы;
-- Storage upload denial/allow;
-- реальный email/password login и cookie refresh;
-- автоматически generated Database types.
+Локально подтверждены clean migration/seed, повторные reset, DB lint, SQL
+assertions, anon/non-admin/admin/inactive-admin RLS, Storage, реальный
+email/password login/logout/cookie refresh, repository и production server.
+Запуск: `npm run test:integration:local`; harness перед HTTP-проверками сам
+делает свежий production build с локальными Supabase URL и publishable key.
+Подробный отчёт:
+[stage-3-runtime-validation.md](stage-3-runtime-validation.md).
 
-Причина: в среде отсутствует Docker binary. Remote-проект не подключался и не изменялся.
+Remote-проект, hosted Advisors и автоматически generated Database types не
+проверялись. Remote Supabase не подключался и не изменялся.

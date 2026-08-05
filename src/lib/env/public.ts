@@ -9,6 +9,38 @@ export type SupabasePublicEnvironment = {
   supabasePublishableKey: string;
 };
 
+function jwtRole(value: string): string | null {
+  const parts = value.split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const payload = parts[1]!.replace(/-/g, "+").replace(/_/g, "/");
+    const padding = "=".repeat((4 - (payload.length % 4)) % 4);
+    const parsed = JSON.parse(atob(`${payload}${padding}`)) as {
+      role?: unknown;
+    };
+    return typeof parsed.role === "string" ? parsed.role : null;
+  } catch {
+    return null;
+  }
+}
+
+export function requireSupabasePublishableKey(
+  name: string,
+  value: string,
+  serviceRoleKey?: string,
+): string {
+  const normalized = value.trim();
+  const role = jwtRole(normalized);
+  if (
+    normalized.toLowerCase().startsWith("sb_secret_") ||
+    role === "service_role" ||
+    (serviceRoleKey?.trim() && normalized === serviceRoleKey.trim())
+  ) {
+    throw new EnvironmentConfigurationError([name]);
+  }
+  return normalized;
+}
+
 export function getOptionalSupabasePublicEnvironment(): SupabasePublicEnvironment | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim();
@@ -22,7 +54,11 @@ export function getOptionalSupabasePublicEnvironment(): SupabasePublicEnvironmen
   }
   return {
     supabaseUrl: requireValidUrl("NEXT_PUBLIC_SUPABASE_URL", url),
-    supabasePublishableKey: key,
+    supabasePublishableKey: requireSupabasePublishableKey(
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      key,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+    ),
   };
 }
 

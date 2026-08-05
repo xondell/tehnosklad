@@ -1,6 +1,6 @@
 # Tehnosklad
 
-Production-сайт магазина бытовой техники в Комрате. Завершён **Этап 3: безопасный Supabase foundation, серверный каталог и Auth**.
+Production-сайт магазина бытовой техники в Комрате. Завершены **Этап 3: безопасный Supabase foundation, серверный каталог и Auth** и его **Этап 3.5: локальная runtime-валидация**.
 
 ## Реализовано
 
@@ -66,6 +66,7 @@ npm run db:start
 npm run db:reset:local
 npm run db:lint:local
 npm run db:types:local
+npm run test:integration:local
 npm run db:stop
 ```
 
@@ -76,12 +77,13 @@ npm run db:stop
 - `supabase/config.toml` — локальный CLI/Auth/Storage config;
 - `supabase/migrations/20260805111516_initial_schema.sql` — исходная production migration;
 - `supabase/seed.sql` — детерминированные 3 категории, 12 товаров, RU/RO, характеристики и настройки;
-- `supabase/verification/rls.sql` — безопасная read-only/rollback проверка anon;
+- `supabase/verification/rls.sql` — transactional/rollback assertions для RLS;
 - `supabase/schema.sql` — только сохранённый исторический draft Этапа 1.
 
 ## Документация
 
 - [docs/stage-3.md](docs/stage-3.md) — результат этапа и ограничения;
+- [docs/stage-3-runtime-validation.md](docs/stage-3-runtime-validation.md) — фактические local runtime-проверки Этапа 3.5;
 - [docs/supabase-setup.md](docs/supabase-setup.md) — локальная/remote настройка и первый admin;
 - [docs/rls-access-matrix.md](docs/rls-access-matrix.md) — матрица доступа и ручная проверка;
 - [docs/architecture.md](docs/architecture.md) — приложение и data layer;

@@ -6,6 +6,7 @@ import { parseCatalogDataSource } from "@/lib/env/catalog";
 import {
   getOptionalSupabasePublicEnvironment,
   getSupabasePublicEnvironment,
+  requireSupabasePublishableKey,
 } from "@/lib/env/public";
 import { EnvironmentConfigurationError } from "@/lib/env/shared";
 
@@ -34,6 +35,8 @@ describe("admin security helpers", () => {
       "/administrator",
       "/admin%2F..%2Fcatalog",
       "/admin/login",
+      "/admin/login/",
+      "/admin/login/reset",
     ]) {
       expect(safeAdminRedirectTarget(unsafe)).toBe("/admin");
     }
@@ -83,5 +86,27 @@ describe("Supabase public environment", () => {
     expect(() => getSupabasePublicEnvironment()).toThrow(
       EnvironmentConfigurationError,
     );
+  });
+
+  it("rejects secret and service-role keys in the public variable", () => {
+    const servicePayload = btoa(JSON.stringify({ role: "service_role" }))
+      .replace(/=/g, "")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_");
+    expect(() =>
+      requireSupabasePublishableKey("PUBLIC_KEY", "sb_secret_example"),
+    ).toThrow(EnvironmentConfigurationError);
+    expect(() =>
+      requireSupabasePublishableKey(
+        "PUBLIC_KEY",
+        `header.${servicePayload}.signature`,
+      ),
+    ).toThrow(EnvironmentConfigurationError);
+    expect(() =>
+      requireSupabasePublishableKey("PUBLIC_KEY", "same-key", "same-key"),
+    ).toThrow(EnvironmentConfigurationError);
+    expect(
+      requireSupabasePublishableKey("PUBLIC_KEY", "sb_publishable_ok"),
+    ).toBe("sb_publishable_ok");
   });
 });

@@ -27,6 +27,10 @@ function queryBuilder(result: QueryResult) {
       calls.push([`neq:${column}`, value]);
       return builder;
     },
+    is(column: string, value: unknown) {
+      calls.push([`is:${column}`, value]);
+      return builder;
+    },
     limit(value: number) {
       calls.push(["limit", value]);
       return builder;
@@ -61,6 +65,20 @@ function clientFor(...builders: ReturnType<typeof queryBuilder>["builder"][]) {
 }
 
 describe("Supabase catalog transport", () => {
+  it("filters category lists to published, non-archived rows", async () => {
+    const query = queryBuilder({ data: [], error: null });
+    const transport = new SupabaseCatalogTransport(clientFor(query.builder));
+
+    await transport.listCategories();
+
+    expect(query.calls).toEqual(
+      expect.arrayContaining([
+        ["eq:is_published", true],
+        ["is:archived_at", null],
+      ]),
+    );
+  });
+
   it("applies category, exclusion and limit before mapping public URLs", async () => {
     const product = {
       id: "product",
@@ -77,6 +95,8 @@ describe("Supabase catalog transport", () => {
 
     expect(query.calls).toEqual(
       expect.arrayContaining([
+        ["eq:is_published", true],
+        ["is:archived_at", null],
         ["eq:category_id", "category"],
         ["neq:id", "current"],
         ["limit", 3],
@@ -129,6 +149,8 @@ describe("Supabase catalog transport", () => {
     expect(entity.calls).toEqual(
       expect.arrayContaining([
         ["eq:id", "product"],
+        ["eq:is_published", true],
+        ["is:archived_at", null],
         ["maybeSingle", true],
       ]),
     );
@@ -149,6 +171,28 @@ describe("Supabase catalog transport", () => {
       expect.arrayContaining([
         ["eq:locale", "ru"],
         ["eq:slug", "missing"],
+      ]),
+    );
+  });
+
+  it("filters a category entity resolved from a localized slug", async () => {
+    const lookup = queryBuilder({
+      data: { category_id: "category" },
+      error: null,
+    });
+    const entity = queryBuilder({ data: { id: "category" }, error: null });
+    const transport = new SupabaseCatalogTransport(
+      clientFor(lookup.builder, entity.builder),
+    );
+
+    await transport.findCategoryBySlug("ru", "category");
+
+    expect(entity.calls).toEqual(
+      expect.arrayContaining([
+        ["eq:id", "category"],
+        ["eq:is_published", true],
+        ["is:archived_at", null],
+        ["maybeSingle", true],
       ]),
     );
   });

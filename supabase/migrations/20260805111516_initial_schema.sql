@@ -121,7 +121,7 @@ create table public.product_images (
   id uuid primary key default gen_random_uuid(),
   product_id uuid not null references public.products (id) on delete cascade,
   storage_path text not null unique check (
-    storage_path ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}\.(avif|jpe?g|png|webp)$'
+    storage_path ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(avif|jpe?g|png|webp)$'
   ),
   sort_order integer not null default 0 check (sort_order >= 0),
   is_primary boolean not null default false,
@@ -656,11 +656,14 @@ $$;
 
 create index categories_parent_sort_idx
   on public.categories (parent_id, sort_order) where archived_at is null;
+create index categories_parent_fk_idx
+  on public.categories (parent_id) where parent_id is not null;
 create index categories_public_sort_idx
   on public.categories (is_published, sort_order) where archived_at is null;
 create index products_category_public_idx
   on public.products (category_id, is_published, sort_order)
   where archived_at is null;
+create index products_category_fk_idx on public.products (category_id);
 create index products_public_popular_idx
   on public.products (is_popular desc, sort_order)
   where is_published and archived_at is null;
@@ -672,6 +675,10 @@ create index attributes_group_sort_idx
   on public.attributes (group_id, sort_order);
 create index category_attributes_sort_idx
   on public.category_attributes (category_id, sort_order);
+create index category_attributes_attribute_fk_idx
+  on public.category_attributes (attribute_id);
+create index product_attribute_values_attribute_fk_idx
+  on public.product_attribute_values (attribute_id);
 create index product_attribute_number_idx
   on public.product_attribute_values (attribute_id, number_value)
   where number_value is not null;
@@ -856,8 +863,8 @@ begin
 end;
 $$;
 
-revoke all on all tables in schema public from anon, authenticated;
-revoke all on all sequences in schema public from anon, authenticated;
+revoke all on all tables in schema public from anon, authenticated, service_role;
+revoke all on all sequences in schema public from anon, authenticated, service_role;
 
 grant select on table
   public.categories, public.category_translations, public.products,
@@ -887,11 +894,13 @@ grant select, insert, update, delete on all tables in schema public to service_r
 grant usage, select on all sequences in schema public to service_role;
 
 alter default privileges for role postgres in schema public
-  revoke select, insert, update, delete on tables from anon, authenticated, service_role;
+  revoke all on tables from public, anon, authenticated, service_role;
 alter default privileges for role postgres in schema public
-  revoke execute on functions from anon, authenticated, service_role, public;
+  revoke all on functions from public, anon, authenticated, service_role;
 alter default privileges for role postgres in schema public
-  revoke usage, select on sequences from anon, authenticated, service_role;
+  revoke all on sequences from public, anon, authenticated, service_role;
+alter default privileges for role postgres
+  revoke all on functions from public, anon, authenticated, service_role;
 
 insert into storage.buckets (
   id, name, public, file_size_limit, allowed_mime_types

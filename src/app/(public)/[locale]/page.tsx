@@ -10,6 +10,7 @@ import {
   getPublishedCategories,
   getPublicSiteSettings,
 } from "@/features/catalog/data";
+import { getCategoryTone } from "@/features/catalog/presentation";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, localizedPath } from "@/i18n/config";
 export default async function HomePage({
@@ -92,13 +93,7 @@ export default async function HomePage({
               >
                 <ProductIllustration
                   category={category.presentationKey}
-                  tone={
-                    category.id === "stoves"
-                      ? "coral"
-                      : category.id === "vacuums"
-                        ? "mint"
-                        : "blue"
-                  }
+                  tone={getCategoryTone(category.presentationKey)}
                   label={category.name}
                   className="h-40"
                 />

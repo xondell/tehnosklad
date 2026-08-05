@@ -47,7 +47,7 @@ Seed намеренно не создаёт metadata для отсутствую
 
 Подтверждены TypeScript, ESLint, Prettier, unit tests и production build. Public shell request-rendered, поэтому build не обращается к Supabase; runtime production всё равно требует source `supabase`. Supabase CLI 2.111.0 установлен локально и migration создан штатной CLI-командой.
 
-Docker отсутствовал (`docker: command not found`), поэтому migration/seed/db lint/types generation не выдаются за выполненные. Команды владельцу приведены в [supabase-setup.md](supabase-setup.md).
+На исходном Этапе 3 Docker отсутствовал, поэтому runtime-проверки тогда не выдавались за выполненные. Позднее Этап 3.5 применил migration/seed на чистой локальной базе, выполнил повторные reset, DB lint и реальные RLS/Auth/Storage/repository/production HTTP-сценарии. Результаты: [stage-3-runtime-validation.md](stage-3-runtime-validation.md).
 
 ## Осознанные ограничения
 

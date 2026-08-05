@@ -4,7 +4,10 @@ import { NextResponse } from "next/server";
 import { updateAdminSession } from "@/lib/supabase/proxy";
 
 export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  if (
+    request.nextUrl.pathname === "/admin" ||
+    request.nextUrl.pathname.startsWith("/admin/")
+  ) {
     return updateAdminSession(request);
   }
   const requestHeaders = new Headers(request.headers);
