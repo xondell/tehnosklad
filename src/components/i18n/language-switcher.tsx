@@ -13,6 +13,7 @@ const languageNames: Record<Locale, string> = {
 type LanguageSwitcherProps = {
   currentLocale: Locale;
   label: string;
+  alternateHref?: string;
 };
 
 function pathForLocale(pathname: string, locale: Locale): string {
@@ -29,6 +30,7 @@ function pathForLocale(pathname: string, locale: Locale): string {
 export function LanguageSwitcher({
   currentLocale,
   label,
+  alternateHref,
 }: LanguageSwitcherProps) {
   const pathname = usePathname();
 
@@ -45,7 +47,11 @@ export function LanguageSwitcher({
                 className={`flex min-h-9 min-w-10 items-center justify-center rounded-md px-2 text-sm font-bold ${
                   isCurrent ? "bg-stone-900 text-white" : "hover:bg-stone-100"
                 }`}
-                href={pathForLocale(pathname, locale)}
+                href={
+                  !isCurrent && alternateHref
+                    ? alternateHref
+                    : pathForLocale(pathname, locale)
+                }
                 hrefLang={locale}
                 lang={locale}
               >

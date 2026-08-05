@@ -1,17 +1,30 @@
-import type { DemoCategory, DemoProduct } from "@/features/catalog/types";
+import type { ImageTone, PresentationKey } from "@/features/catalog/types";
 
 type Props = {
-  category: DemoCategory["icon"];
-  tone: DemoProduct["imageTone"];
+  category: PresentationKey;
+  tone: ImageTone;
   label: string;
+  imageUrl?: string;
   className?: string;
 };
+
 export function ProductIllustration({
   category,
   tone,
   label,
+  imageUrl,
   className = "",
 }: Props) {
+  if (imageUrl) {
+    return (
+      <div
+        aria-label={label}
+        role="img"
+        className={`bg-contain bg-center bg-no-repeat ${className}`}
+        style={{ backgroundImage: `url(${JSON.stringify(imageUrl)})` }}
+      />
+    );
+  }
   return (
     <div
       aria-label={label}

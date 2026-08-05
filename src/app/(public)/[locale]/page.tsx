@@ -5,8 +5,11 @@ import { ProductIllustration } from "@/components/catalog/product-illustration";
 import { ContactButton } from "@/components/public/contact-button";
 import { CopyPhoneButton } from "@/components/public/copy-phone-button";
 import { PageContainer } from "@/components/layout/page-container";
-import { siteConfig } from "@/config/site";
-import { demoCategories, demoProducts } from "@/features/catalog/demo-data";
+import {
+  getPopularProducts,
+  getPublishedCategories,
+  getPublicSiteSettings,
+} from "@/features/catalog/data";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale, localizedPath } from "@/i18n/config";
 export default async function HomePage({
@@ -17,9 +20,11 @@ export default async function HomePage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const d = getDictionary(locale);
-  const popular = demoProducts
-    .filter((product) => product.isPopular)
-    .slice(0, 3);
+  const [categories, popular, settings] = await Promise.all([
+    getPublishedCategories(locale),
+    getPopularProducts(locale, 3),
+    getPublicSiteSettings(locale),
+  ]);
   return (
     <>
       <section className="border-b border-stone-200 bg-stone-50 py-10 sm:py-16">
@@ -41,8 +46,8 @@ export default async function HomePage({
               >
                 {d.actions.openCatalog}
               </Link>
-              <a className="button-secondary" href={siteConfig.phoneHref}>
-                {d.actions.call}: {siteConfig.phoneDisplay}
+              <a className="button-secondary" href={settings.phoneHref}>
+                {d.actions.call}: {settings.phoneDisplay}
               </a>
             </div>
             <p className="mt-6 text-sm font-semibold text-stone-600">
@@ -79,14 +84,14 @@ export default async function HomePage({
             </Link>
           </div>
           <div className="mt-7 grid gap-4 md:grid-cols-3">
-            {demoCategories.map((category) => (
+            {categories.map((category) => (
               <Link
                 className="group rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 key={category.id}
                 href={localizedPath(locale, `category/${category.slug}`)}
               >
                 <ProductIllustration
-                  category={category.icon}
+                  category={category.presentationKey}
                   tone={
                     category.id === "stoves"
                       ? "coral"
@@ -94,14 +99,12 @@ export default async function HomePage({
                         ? "mint"
                         : "blue"
                   }
-                  label={category.name[locale]}
+                  label={category.name}
                   className="h-40"
                 />
-                <h3 className="mt-4 text-xl font-black">
-                  {category.name[locale]}
-                </h3>
+                <h3 className="mt-4 text-xl font-black">{category.name}</h3>
                 <p className="mt-1 text-sm text-stone-600">
-                  {category.description[locale]}
+                  {category.shortDescription}
                 </p>
               </Link>
             ))}
@@ -113,7 +116,12 @@ export default async function HomePage({
           <h2 className="text-3xl font-black">{d.home.popularTitle}</h2>
           <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
           <div className="mt-7">
-            <ProductGrid products={popular} locale={locale} dictionary={d} />
+            <ProductGrid
+              products={popular}
+              locale={locale}
+              dictionary={d}
+              settings={settings}
+            />
           </div>
         </PageContainer>
       </section>
@@ -141,21 +149,20 @@ export default async function HomePage({
               <p className="mt-2 max-w-xl text-stone-300">
                 {d.home.contactDescription}
               </p>
-              <p className="mt-5 font-bold">
-                {d.common.city}, {d.common.address}
-              </p>
+              <p className="mt-5 font-bold">{settings.address}</p>
               <p>
-                {d.common.openDays}: {siteConfig.hours.openTime}
+                {settings.openDays}: {settings.openTime}
               </p>
-              <p className="text-stone-300">{d.common.closed}</p>
+              <p className="text-stone-300">{settings.closedDay}</p>
             </div>
             <div className="flex flex-wrap content-start gap-2">
-              <a className="button-primary" href={siteConfig.phoneHref}>
+              <a className="button-primary" href={settings.phoneHref}>
                 {d.actions.call}
               </a>
               <CopyPhoneButton
                 copy={d.actions.copy}
                 copied={d.actions.copied}
+                phone={settings.phoneDisplay}
               />
               <Link
                 className="button-secondary"
@@ -163,7 +170,11 @@ export default async function HomePage({
               >
                 {d.navigation.contacts}
               </Link>
-              <ContactButton dictionary={d} label={d.actions.contact} />
+              <ContactButton
+                dictionary={d}
+                label={d.actions.contact}
+                settings={settings}
+              />
             </div>
           </div>
         </PageContainer>

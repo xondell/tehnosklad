@@ -5,9 +5,11 @@ import { locales, type Locale, localizedPath } from "@/i18n/config";
 export function LanguageSwitcherFallback({
   currentLocale,
   label,
+  alternateHref,
 }: {
   currentLocale: Locale;
   label: string;
+  alternateHref?: string;
 }) {
   return (
     <nav aria-label={label}>
@@ -21,7 +23,11 @@ export function LanguageSwitcherFallback({
                   ? "bg-stone-900 text-white"
                   : "hover:bg-stone-100"
               }`}
-              href={localizedPath(locale)}
+              href={
+                locale !== currentLocale && alternateHref
+                  ? alternateHref
+                  : localizedPath(locale)
+              }
               hrefLang={locale}
               lang={locale}
             >

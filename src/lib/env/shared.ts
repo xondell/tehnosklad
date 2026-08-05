@@ -5,6 +5,17 @@ export class EnvironmentConfigurationError extends Error {
   }
 }
 
+export function requireValidUrl(name: string, value: string): string {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "http:" && url.protocol !== "https:")
+      throw new Error();
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    throw new EnvironmentConfigurationError([name]);
+  }
+}
+
 export function requireEnvironmentVariables<
   const T extends Record<string, string | undefined>,
 >(values: T): { [Key in keyof T]: string } {

@@ -4,13 +4,12 @@ import { ProductGrid } from "@/components/catalog/product-grid";
 import { ContactButton } from "@/components/public/contact-button";
 import { Breadcrumbs } from "@/components/public/breadcrumbs";
 import { PageContainer } from "@/components/layout/page-container";
-import { siteConfig } from "@/config/site";
-import { demoCategories, demoProducts } from "@/features/catalog/demo-data";
 import {
-  formatPrice,
-  getDiscountPercent,
-  getLocalizedProduct,
-} from "@/features/catalog/logic";
+  getProductBySlug,
+  getPublicSiteSettings,
+  getSimilarProducts,
+} from "@/features/catalog/data";
+import { formatPrice, getDiscountPercent } from "@/features/catalog/logic";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale } from "@/i18n/config";
 export default async function ProductPage({
@@ -20,40 +19,38 @@ export default async function ProductPage({
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
-  const product = demoProducts.find((item) => item.slug === slug);
+  const product = await getProductBySlug(locale, slug);
   if (!product) notFound();
   const d = getDictionary(locale);
-  const category = demoCategories.find(
-    (item) => item.id === product.categoryId,
-  )!;
-  const copy = getLocalizedProduct(product, locale);
-  const discount = getDiscountPercent(product.price, product.oldPrice);
-  const similar = demoProducts
-    .filter(
-      (item) =>
-        item.categoryId === product.categoryId && item.id !== product.id,
-    )
-    .slice(0, 3);
+  const [similar, settings] = await Promise.all([
+    getSimilarProducts(locale, product.id, product.category.id, 3),
+    getPublicSiteSettings(locale),
+  ]);
+  const discount = getDiscountPercent(
+    product.priceMinor,
+    product.oldPriceMinor,
+  );
   return (
     <PageContainer className="py-8 sm:py-12">
       <Breadcrumbs
         locale={locale}
         home={d.common.breadcrumbsHome}
-        items={[d.catalog.title, category.name[locale], copy.name]}
+        items={[d.catalog.title, product.category.name, product.name]}
       />
       <div className="mt-6 grid gap-8 lg:grid-cols-2">
         <ProductGallery
           product={product}
-          locale={locale}
           label={d.product.galleryLabel}
           previous={d.product.previousImage}
           next={d.product.nextImage}
         />
         <div>
           <p className="text-sm font-bold uppercase tracking-wide text-stone-500">
-            {category.name[locale]} · {product.brand}
+            {product.category.name} · {product.brand}
           </p>
-          <h1 className="mt-2 text-3xl font-black sm:text-4xl">{copy.name}</h1>
+          <h1 className="mt-2 text-3xl font-black sm:text-4xl">
+            {product.name}
+          </h1>
           <dl className="mt-5 grid grid-cols-2 gap-x-5 gap-y-3 text-sm">
             <div>
               <dt className="text-stone-500">{d.product.brand}</dt>
@@ -71,11 +68,11 @@ export default async function ProductPage({
           <div className="mt-6 rounded-2xl bg-stone-50 p-5">
             <div className="flex flex-wrap items-end gap-3">
               <strong className="text-3xl font-black">
-                {formatPrice(product.price, locale)}
+                {formatPrice(product.priceMinor, locale)}
               </strong>
-              {product.oldPrice && discount ? (
+              {product.oldPriceMinor && discount ? (
                 <s className="text-stone-500">
-                  {formatPrice(product.oldPrice, locale)}
+                  {formatPrice(product.oldPriceMinor, locale)}
                 </s>
               ) : null}
               {discount ? (
@@ -89,15 +86,18 @@ export default async function ProductPage({
             >
               {product.stockStatus === "in_stock"
                 ? d.common.inStock
-                : d.common.outOfStock}
+                : product.stockStatus === "on_order"
+                  ? d.common.onOrder
+                  : d.common.outOfStock}
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <ContactButton
                 dictionary={d}
                 label={d.actions.contact}
-                productName={copy.name}
+                productName={product.name}
+                settings={settings}
               />
-              <a className="button-secondary" href={siteConfig.phoneHref}>
+              <a className="button-secondary" href={settings.phoneHref}>
                 {d.actions.call}
               </a>
             </div>
@@ -107,7 +107,7 @@ export default async function ProductPage({
       <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_.8fr]">
         <section>
           <h2 className="text-2xl font-black">{d.product.description}</h2>
-          <p className="mt-3 max-w-3xl text-stone-700">{copy.description}</p>
+          <p className="mt-3 max-w-3xl text-stone-700">{product.description}</p>
         </section>
         <section>
           <h2 className="text-2xl font-black">{d.product.characteristics}</h2>
@@ -115,10 +115,10 @@ export default async function ProductPage({
             {product.specifications.map((spec) => (
               <div
                 className="flex justify-between gap-4 py-3 text-sm"
-                key={spec.label[locale]}
+                key={`${spec.code}-${spec.displayValue}`}
               >
-                <dt className="text-stone-600">{spec.label[locale]}</dt>
-                <dd className="font-bold text-right">{spec.value[locale]}</dd>
+                <dt className="text-stone-600">{spec.label}</dt>
+                <dd className="font-bold text-right">{spec.displayValue}</dd>
               </div>
             ))}
           </dl>
@@ -127,7 +127,12 @@ export default async function ProductPage({
       <section className="mt-12">
         <h2 className="text-2xl font-black">{d.product.similar}</h2>
         <div className="mt-5">
-          <ProductGrid products={similar} locale={locale} dictionary={d} />
+          <ProductGrid
+            products={similar}
+            locale={locale}
+            dictionary={d}
+            settings={settings}
+          />
         </div>
       </section>
     </PageContainer>

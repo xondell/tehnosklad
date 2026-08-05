@@ -39,7 +39,7 @@ const p = (
   categoryId: string,
   brand: string,
   model: string,
-  price: number,
+  priceMinor: number,
   options: Partial<
     Omit<
       DemoProduct,
@@ -47,7 +47,7 @@ const p = (
       | "categoryId"
       | "brand"
       | "model"
-      | "price"
+      | "priceMinor"
       | "name"
       | "shortDescription"
       | "description"
@@ -78,21 +78,21 @@ const p = (
   brand,
   model,
   sku: `DEMO-${id.toUpperCase()}`,
-  price,
+  priceMinor,
   ...options,
 });
-const specs = (a: string, b: string, c: string) => [
+const specs = (a: string, b: string, cRu: string, cRo: string) => [
   { label: { ru: "Объём", ro: "Capacitate" }, value: { ru: a, ro: a } },
   { label: { ru: "Класс", ro: "Clasă" }, value: { ru: b, ro: b } },
   {
     label: { ru: "Особенность", ro: "Caracteristică" },
-    value: { ru: c, ro: c },
+    value: { ru: cRu, ro: cRo },
   },
 ];
 
 export const demoProducts: DemoProduct[] = [
-  p("nord-cool-300", "refrigerators", "Nord", "Cool 300", 7890, {
-    oldPrice: 8490,
+  p("nord-cool-300", "refrigerators", "Nord", "Cool 300", 789000, {
+    oldPriceMinor: 849000,
     stockStatus: "in_stock",
     isPopular: true,
     isNew: false,
@@ -106,9 +106,9 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная модель с продуманным внутренним пространством.",
       ro: "Model demonstrativ cu spațiu interior bine organizat.",
     },
-    specifications: specs("300 л", "A", "две камеры"),
+    specifications: specs("300 л", "A", "две камеры", "două compartimente"),
   }),
-  p("vesta-fresh-280", "refrigerators", "Vesta", "Fresh 280", 6990, {
+  p("vesta-fresh-280", "refrigerators", "Vesta", "Fresh 280", 699000, {
     stockStatus: "in_stock",
     isPopular: false,
     isNew: true,
@@ -122,10 +122,15 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационный вариант для повседневного хранения продуктов.",
       ro: "Variantă demonstrativă pentru păstrarea zilnică a produselor.",
     },
-    specifications: specs("280 л", "A", "нижняя морозильная камера"),
+    specifications: specs(
+      "280 л",
+      "A",
+      "нижняя морозильная камера",
+      "congelator inferior",
+    ),
   }),
-  p("orion-frost-360", "refrigerators", "Orion", "Frost 360", 9290, {
-    oldPrice: 9990,
+  p("orion-frost-360", "refrigerators", "Orion", "Frost 360", 929000, {
+    oldPriceMinor: 999000,
     stockStatus: "out_of_stock",
     isPopular: true,
     isNew: false,
@@ -139,9 +144,14 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная карточка вместительного холодильника.",
       ro: "Card demonstrativ pentru un frigider încăpător.",
     },
-    specifications: specs("360 л", "A+", "система охлаждения"),
+    specifications: specs(
+      "360 л",
+      "A+",
+      "система охлаждения",
+      "sistem de răcire",
+    ),
   }),
-  p("doma-line-240", "refrigerators", "Doma", "Line 240", 6190, {
+  p("doma-line-240", "refrigerators", "Doma", "Line 240", 619000, {
     stockStatus: "in_stock",
     isPopular: false,
     isNew: false,
@@ -155,10 +165,15 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная модель с базовым набором возможностей.",
       ro: "Model demonstrativ cu funcții esențiale.",
     },
-    specifications: specs("240 л", "A", "перенавешиваемая дверь"),
+    specifications: specs(
+      "240 л",
+      "A",
+      "перенавешиваемая дверь",
+      "ușă reversibilă",
+    ),
   }),
-  p("vesta-chef-50", "stoves", "Vesta", "Chef 50", 5290, {
-    oldPrice: 5790,
+  p("vesta-chef-50", "stoves", "Vesta", "Chef 50", 529000, {
+    oldPriceMinor: 579000,
     stockStatus: "in_stock",
     isPopular: true,
     isNew: false,
@@ -172,9 +187,9 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная плита с понятным управлением.",
       ro: "Aragaz demonstrativ cu control intuitiv.",
     },
-    specifications: specs("50 см", "A", "духовой шкаф"),
+    specifications: specs("50 см", "A", "духовой шкаф", "cuptor"),
   }),
-  p("nord-heat-60", "stoves", "Nord", "Heat 60", 6890, {
+  p("nord-heat-60", "stoves", "Nord", "Heat 60", 689000, {
     stockStatus: "in_stock",
     isPopular: false,
     isNew: true,
@@ -188,9 +203,9 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная модель для просторной кухни.",
       ro: "Model demonstrativ pentru o bucătărie spațioasă.",
     },
-    specifications: specs("60 см", "A", "четыре зоны"),
+    specifications: specs("60 см", "A", "четыре зоны", "patru zone"),
   }),
-  p("orion-flame-50", "stoves", "Orion", "Flame 50", 4590, {
+  p("orion-flame-50", "stoves", "Orion", "Flame 50", 459000, {
     stockStatus: "out_of_stock",
     isPopular: false,
     isNew: false,
@@ -204,10 +219,15 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная карточка компактной плиты.",
       ro: "Card demonstrativ al unui aragaz compact.",
     },
-    specifications: specs("50 см", "A", "эмалированная поверхность"),
+    specifications: specs(
+      "50 см",
+      "A",
+      "эмалированная поверхность",
+      "suprafață emailată",
+    ),
   }),
-  p("doma-kitchen-55", "stoves", "Doma", "Kitchen 55", 5990, {
-    oldPrice: 6490,
+  p("doma-kitchen-55", "stoves", "Doma", "Kitchen 55", 599000, {
+    oldPriceMinor: 649000,
     stockStatus: "in_stock",
     isPopular: true,
     isNew: true,
@@ -221,9 +241,14 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационный вариант с удобной зоной приготовления.",
       ro: "Variantă demonstrativă cu zonă de gătit comodă.",
     },
-    specifications: specs("55 см", "A", "подсветка духовки"),
+    specifications: specs(
+      "55 см",
+      "A",
+      "подсветка духовки",
+      "iluminarea cuptorului",
+    ),
   }),
-  p("nord-air-700", "vacuums", "Nord", "Air 700", 2190, {
+  p("nord-air-700", "vacuums", "Nord", "Air 700", 219000, {
     stockStatus: "in_stock",
     isPopular: true,
     isNew: false,
@@ -237,10 +262,10 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная модель для сухой уборки дома.",
       ro: "Model demonstrativ pentru curățarea uscată a casei.",
     },
-    specifications: specs("1,8 л", "A", "контейнер"),
+    specifications: specs("1,8 л", "A", "контейнер", "recipient"),
   }),
-  p("vesta-clean-900", "vacuums", "Vesta", "Clean 900", 2890, {
-    oldPrice: 3190,
+  p("vesta-clean-900", "vacuums", "Vesta", "Clean 900", 289000, {
+    oldPriceMinor: 319000,
     stockStatus: "in_stock",
     isPopular: false,
     isNew: true,
@@ -254,9 +279,14 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационный пылесос с набором базовых насадок.",
       ro: "Aspirator demonstrativ cu accesorii de bază.",
     },
-    specifications: specs("2 л", "A", "регулировка мощности"),
+    specifications: specs(
+      "2 л",
+      "A",
+      "регулировка мощности",
+      "reglarea puterii",
+    ),
   }),
-  p("orion-sweep-500", "vacuums", "Orion", "Sweep 500", 1790, {
+  p("orion-sweep-500", "vacuums", "Orion", "Sweep 500", 179000, {
     stockStatus: "out_of_stock",
     isPopular: false,
     isNew: false,
@@ -270,9 +300,14 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационный вариант для регулярной уборки.",
       ro: "Variantă demonstrativă pentru curățenie regulată.",
     },
-    specifications: specs("1,5 л", "A", "компактный корпус"),
+    specifications: specs(
+      "1,5 л",
+      "A",
+      "компактный корпус",
+      "carcasă compactă",
+    ),
   }),
-  p("doma-dust-800", "vacuums", "Doma", "Dust 800", 2490, {
+  p("doma-dust-800", "vacuums", "Doma", "Dust 800", 249000, {
     stockStatus: "in_stock",
     isPopular: true,
     isNew: true,
@@ -286,6 +321,11 @@ export const demoProducts: DemoProduct[] = [
       ru: "Демонстрационная модель для комфортного домашнего использования.",
       ro: "Model demonstrativ pentru utilizare confortabilă acasă.",
     },
-    specifications: specs("2,2 л", "A", "телескопическая трубка"),
+    specifications: specs(
+      "2,2 л",
+      "A",
+      "телескопическая трубка",
+      "tub telescopic",
+    ),
   }),
 ];

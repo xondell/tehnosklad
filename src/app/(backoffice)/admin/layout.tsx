@@ -8,10 +8,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const dynamic = "force-dynamic";
+
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
-      <body className="bg-stone-100">{children}</body>
+      <body className="min-h-screen bg-stone-100">{children}</body>
     </html>
   );
 }

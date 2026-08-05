@@ -1,4 +1,4 @@
-import type { CatalogFilters, DemoProduct } from "@/features/catalog/types";
+import type { CatalogFilters, CatalogProduct } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 
 export const defaultCatalogFilters: CatalogFilters = {
@@ -8,62 +8,76 @@ export const defaultCatalogFilters: CatalogFilters = {
   availability: "all",
   minPrice: "",
   maxPrice: "",
+  attributes: {},
   sort: "popular",
 };
+
 export function getDiscountPercent(
-  price: number,
-  oldPrice?: number,
+  priceMinor: number,
+  oldPriceMinor?: number | null,
 ): number | null {
-  if (!oldPrice || oldPrice <= price || price < 0) return null;
-  return Math.round(((oldPrice - price) / oldPrice) * 100);
+  if (!oldPriceMinor || oldPriceMinor <= priceMinor || priceMinor < 0)
+    return null;
+  return Math.round(((oldPriceMinor - priceMinor) / oldPriceMinor) * 100);
 }
-export function formatPrice(value: number, locale: Locale): string {
+
+export function formatPrice(valueMinor: number, locale: Locale): string {
+  if (!Number.isSafeInteger(valueMinor) || valueMinor < 0) {
+    throw new RangeError("Price must be a non-negative safe integer");
+  }
   return `${new Intl.NumberFormat(locale === "ru" ? "ru-MD" : "ro-MD", {
-    maximumFractionDigits: 0,
-  }).format(value)} MDL`;
+    minimumFractionDigits: valueMinor % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(valueMinor / 100)} MDL`;
 }
-export function getLocalizedProduct(product: DemoProduct, locale: Locale) {
-  return {
-    name: product.name[locale],
-    shortDescription: product.shortDescription[locale],
-    description: product.description[locale],
-  };
-}
+
 export function filterProducts(
-  products: DemoProduct[],
+  products: CatalogProduct[],
   filters: CatalogFilters,
   locale: Locale,
-): DemoProduct[] {
+): CatalogProduct[] {
   const query = filters.query.trim().toLocaleLowerCase(locale);
-  const min = Number(filters.minPrice);
-  const max = Number(filters.maxPrice);
+  const minMinor = Number(filters.minPrice) * 100;
+  const maxMinor = Number(filters.maxPrice) * 100;
   const result = products.filter((product) => {
     const haystack =
-      `${product.name[locale]} ${product.brand} ${product.model}`.toLocaleLowerCase(
+      `${product.name} ${product.brand} ${product.model}`.toLocaleLowerCase(
         locale,
       );
     return (
       (!query || haystack.includes(query)) &&
       (filters.categoryId === "all" ||
-        product.categoryId === filters.categoryId) &&
+        product.category.id === filters.categoryId) &&
       (filters.brand === "all" || product.brand === filters.brand) &&
       (filters.availability === "all" ||
         product.stockStatus === filters.availability) &&
-      (!filters.minPrice || (Number.isFinite(min) && product.price >= min)) &&
-      (!filters.maxPrice || (Number.isFinite(max) && product.price <= max))
+      (!filters.minPrice ||
+        (Number.isFinite(minMinor) && product.priceMinor >= minMinor)) &&
+      (!filters.maxPrice ||
+        (Number.isFinite(maxMinor) && product.priceMinor <= maxMinor)) &&
+      Object.entries(filters.attributes).every(
+        ([code, value]) =>
+          !value ||
+          product.specifications.some(
+            (specification) =>
+              specification.code === code &&
+              specification.isFilterable &&
+              specification.filterValue === value,
+          ),
+      )
     );
   });
   return result.toSorted((a, b) =>
     filters.sort === "price_asc"
-      ? a.price - b.price
+      ? a.priceMinor - b.priceMinor
       : filters.sort === "price_desc"
-        ? b.price - a.price
+        ? b.priceMinor - a.priceMinor
         : filters.sort === "name"
-          ? a.name[locale].localeCompare(b.name[locale], locale)
+          ? a.name.localeCompare(b.name, locale)
           : filters.sort === "new"
             ? Number(b.isNew) - Number(a.isNew) ||
-              a.name[locale].localeCompare(b.name[locale], locale)
+              a.name.localeCompare(b.name, locale)
             : Number(b.isPopular) - Number(a.isPopular) ||
-              a.name[locale].localeCompare(b.name[locale], locale),
+              a.name.localeCompare(b.name, locale),
   );
 }

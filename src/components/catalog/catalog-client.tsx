@@ -1,23 +1,40 @@
 "use client";
+
 import { useMemo, useState } from "react";
+
 import { ProductGrid } from "@/components/catalog/product-grid";
-import { demoCategories, demoProducts } from "@/features/catalog/demo-data";
 import {
   defaultCatalogFilters,
   filterProducts,
 } from "@/features/catalog/logic";
-import type { CatalogFilters } from "@/features/catalog/types";
+import type {
+  CatalogCategory,
+  CatalogFacets,
+  CatalogFilters,
+  CatalogProduct,
+  PublicSiteSettings,
+} from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
 export function CatalogClient({
   locale,
   dictionary,
+  categories,
+  products: sourceProducts,
+  facets,
+  settings,
   initialCategory,
+  lockCategory = false,
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  categories: CatalogCategory[];
+  products: CatalogProduct[];
+  facets: CatalogFacets;
+  settings: PublicSiteSettings;
   initialCategory?: string;
+  lockCategory?: boolean;
 }) {
   const [filters, setFilters] = useState<CatalogFilters>({
     ...defaultCatalogFilters,
@@ -25,12 +42,16 @@ export function CatalogClient({
   });
   const [mobileOpen, setMobileOpen] = useState(false);
   const products = useMemo(
-    () => filterProducts(demoProducts, filters, locale),
-    [filters, locale],
+    () => filterProducts(sourceProducts, filters, locale),
+    [sourceProducts, filters, locale],
   );
-  const brands = [...new Set(demoProducts.map((item) => item.brand))].sort();
   const update = (key: keyof CatalogFilters, value: string) =>
     setFilters((old) => ({ ...old, [key]: value }));
+  const updateAttribute = (code: string, value: string) =>
+    setFilters((old) => ({
+      ...old,
+      attributes: { ...old.attributes, [code]: value },
+    }));
   const reset = () =>
     setFilters({
       ...defaultCatalogFilters,
@@ -47,21 +68,23 @@ export function CatalogClient({
           onChange={(event) => update("query", event.target.value)}
         />
       </label>
-      <label className="field-label">
-        {dictionary.catalog.category}
-        <select
-          className="field"
-          value={filters.categoryId}
-          onChange={(event) => update("categoryId", event.target.value)}
-        >
-          <option value="all">{dictionary.catalog.allCategories}</option>
-          {demoCategories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name[locale]}
-            </option>
-          ))}
-        </select>
-      </label>
+      {!lockCategory ? (
+        <label className="field-label">
+          {dictionary.catalog.category}
+          <select
+            className="field"
+            value={filters.categoryId}
+            onChange={(event) => update("categoryId", event.target.value)}
+          >
+            <option value="all">{dictionary.catalog.allCategories}</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="field-label">
         {dictionary.catalog.brand}
         <select
@@ -70,7 +93,7 @@ export function CatalogClient({
           onChange={(event) => update("brand", event.target.value)}
         >
           <option value="all">{dictionary.catalog.allBrands}</option>
-          {brands.map((brand) => (
+          {facets.brands.map((brand) => (
             <option key={brand}>{brand}</option>
           ))}
         </select>
@@ -84,6 +107,7 @@ export function CatalogClient({
         >
           <option value="all">{dictionary.catalog.allAvailability}</option>
           <option value="in_stock">{dictionary.common.inStock}</option>
+          <option value="on_order">{dictionary.common.onOrder}</option>
           <option value="out_of_stock">{dictionary.common.outOfStock}</option>
         </select>
       </label>
@@ -108,6 +132,25 @@ export function CatalogClient({
           />
         </div>
       </div>
+      {facets.attributes.map((attribute) => (
+        <label className="field-label" key={attribute.code}>
+          {attribute.label}
+          <select
+            className="field"
+            value={filters.attributes[attribute.code] ?? ""}
+            onChange={(event) =>
+              updateAttribute(attribute.code, event.target.value)
+            }
+          >
+            <option value="">—</option>
+            {attribute.options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ))}
       <button className="button-secondary w-full" type="button" onClick={reset}>
         {dictionary.actions.reset}
       </button>
@@ -187,6 +230,7 @@ export function CatalogClient({
               products={products}
               locale={locale}
               dictionary={dictionary}
+              settings={settings}
             />
           ) : (
             <div className="rounded-2xl border border-dashed border-stone-300 p-10 text-center">

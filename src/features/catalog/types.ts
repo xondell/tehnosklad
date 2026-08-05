@@ -1,16 +1,109 @@
 import type { Locale } from "@/i18n/config";
 
 export type LocalizedText = Record<Locale, string>;
-export type StockStatus = "in_stock" | "out_of_stock";
+export type StockStatus = "in_stock" | "out_of_stock" | "on_order";
+export type PresentationKey = "fridge" | "stove" | "vacuum" | "generic";
+export type ImageTone = "yellow" | "blue" | "mint" | "coral";
+export type AttributeDataType =
+  "text" | "number" | "boolean" | "single_select" | "multi_select" | "color";
 
+export type CatalogCategory = {
+  id: string;
+  slug: string;
+  alternateSlug: string;
+  presentationKey: PresentationKey;
+  name: string;
+  shortDescription: string;
+  description: string;
+};
+
+export type ProductImage = {
+  id: string;
+  url: string;
+  storagePath: string;
+  alt: string;
+  isPrimary: boolean;
+};
+
+export type ProductSpecification = {
+  code: string;
+  groupCode: string | null;
+  groupName: string | null;
+  label: string;
+  displayValue: string;
+  filterValue: string;
+  dataType: AttributeDataType;
+  isFilterable: boolean;
+  sortOrder: number;
+};
+
+export type CatalogProduct = {
+  id: string;
+  slug: string;
+  alternateSlug: string;
+  category: CatalogCategory;
+  brand: string;
+  model: string;
+  sku: string;
+  name: string;
+  shortDescription: string;
+  description: string;
+  priceMinor: number;
+  oldPriceMinor: number | null;
+  currency: "MDL";
+  stockStatus: StockStatus;
+  isPopular: boolean;
+  isNew: boolean;
+  specifications: ProductSpecification[];
+  images: ProductImage[];
+  imageTone: ImageTone;
+};
+
+export type CatalogFilterOption = { value: string; label: string };
+export type CatalogAttributeFilter = {
+  code: string;
+  label: string;
+  dataType: AttributeDataType;
+  options: CatalogFilterOption[];
+};
+export type CatalogFacets = {
+  brands: string[];
+  availability: StockStatus[];
+  minPriceMinor: number | null;
+  maxPriceMinor: number | null;
+  attributes: CatalogAttributeFilter[];
+};
+
+export type PublicSiteSettings = {
+  phoneDisplay: string;
+  phoneHref: string;
+  address: string;
+  openDays: string;
+  openTime: string;
+  closedDay: string;
+  contactText: string;
+};
+
+export type CatalogFilters = {
+  query: string;
+  categoryId: string;
+  brand: string;
+  availability: "all" | StockStatus;
+  minPrice: string;
+  maxPrice: string;
+  attributes: Record<string, string>;
+  sort: "popular" | "new" | "price_asc" | "price_desc" | "name";
+};
+
+// Raw localized fixtures are kept separate from production DTOs.
 export type DemoCategory = {
   id: string;
   slug: string;
-  icon: "fridge" | "stove" | "vacuum";
+  icon: Exclude<PresentationKey, "generic">;
   name: LocalizedText;
   description: LocalizedText;
 };
-export type ProductSpecification = {
+export type DemoProductSpecification = {
   label: LocalizedText;
   value: LocalizedText;
 };
@@ -24,21 +117,11 @@ export type DemoProduct = {
   name: LocalizedText;
   shortDescription: LocalizedText;
   description: LocalizedText;
-  price: number;
-  oldPrice?: number;
+  priceMinor: number;
+  oldPriceMinor?: number;
   stockStatus: StockStatus;
   isPopular: boolean;
   isNew: boolean;
-  specifications: ProductSpecification[];
-  imageTone: "yellow" | "blue" | "mint" | "coral";
-};
-
-export type CatalogFilters = {
-  query: string;
-  categoryId: string;
-  brand: string;
-  availability: "all" | StockStatus;
-  minPrice: string;
-  maxPrice: string;
-  sort: "popular" | "new" | "price_asc" | "price_desc" | "name";
+  specifications: DemoProductSpecification[];
+  imageTone: ImageTone;
 };

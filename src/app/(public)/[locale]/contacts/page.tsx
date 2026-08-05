@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { ContactButton } from "@/components/public/contact-button";
 import { CopyPhoneButton } from "@/components/public/copy-phone-button";
 import { PageContainer } from "@/components/layout/page-container";
-import { siteConfig } from "@/config/site";
+import { getPublicSiteSettings } from "@/features/catalog/data";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale } from "@/i18n/config";
 export default async function ContactsPage({
@@ -13,6 +13,7 @@ export default async function ContactsPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const d = getDictionary(locale);
+  const settings = await getPublicSiteSettings(locale);
   return (
     <PageContainer className="py-10 sm:py-14">
       <p className="text-sm font-bold uppercase tracking-wide text-stone-500">
@@ -27,9 +28,7 @@ export default async function ContactsPage({
               <dt className="text-sm font-bold text-stone-500">
                 {d.common.address}
               </dt>
-              <dd className="mt-1 font-bold">
-                {d.common.city}, {d.common.address}
-              </dd>
+              <dd className="mt-1 font-bold">{settings.address}</dd>
             </div>
             <div>
               <dt className="text-sm font-bold text-stone-500">
@@ -38,9 +37,9 @@ export default async function ContactsPage({
               <dd className="mt-1">
                 <a
                   className="text-xl font-black hover:underline"
-                  href={siteConfig.phoneHref}
+                  href={settings.phoneHref}
                 >
-                  {siteConfig.phoneDisplay}
+                  {settings.phoneDisplay}
                 </a>
               </dd>
             </div>
@@ -49,18 +48,26 @@ export default async function ContactsPage({
                 {d.common.hours}
               </dt>
               <dd className="mt-1">
-                {d.common.openDays}: {siteConfig.hours.openTime}
+                {settings.openDays}: {settings.openTime}
                 <br />
-                {d.common.closed}
+                {settings.closedDay}
               </dd>
             </div>
           </dl>
           <div className="mt-7 flex flex-wrap gap-2">
-            <a className="button-primary" href={siteConfig.phoneHref}>
+            <a className="button-primary" href={settings.phoneHref}>
               {d.actions.call}
             </a>
-            <CopyPhoneButton copy={d.actions.copy} copied={d.actions.copied} />
-            <ContactButton dictionary={d} label={d.actions.contact} />
+            <CopyPhoneButton
+              copy={d.actions.copy}
+              copied={d.actions.copied}
+              phone={settings.phoneDisplay}
+            />
+            <ContactButton
+              dictionary={d}
+              label={d.actions.contact}
+              settings={settings}
+            />
           </div>
         </section>
         <section className="grid min-h-72 place-items-center rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-center">

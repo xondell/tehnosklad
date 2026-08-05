@@ -1,102 +1,78 @@
 # Архитектура Tehnosklad
 
-## Принципы
+## Границы
 
-- Next.js App Router и React Server Components используются по умолчанию.
-- Клиентский JavaScript добавляется только для действительно интерактивных частей.
-- Публичные маршруты всегда содержат язык: `/ru` или `/ro`.
-- Административная зона `/admin` отделена от публичного layout.
-- Чтение каталога в следующих этапах выполняется прямо из Server Components через серверный Supabase client. Внутренний REST-слой для этого не нужен.
-- Route Handlers понадобятся только для внешних границ: приём заявок, Telegram и AI streaming.
-- Секреты доступны только серверным модулям. Значения с `NEXT_PUBLIC_` считаются публичными.
+- React Server Components используются по умолчанию.
+- Публичные URL всегда содержат `/ru` или `/ro`.
+- `/admin` имеет отдельный root layout, Auth proxy и защищённую route group.
+- UI не импортирует Supabase и demo fixtures. Все чтения идут через `CatalogRepository`.
+- Browser, user-server, public-server и service-role clients разделены по доверительным зонам.
+- Service role находится в отдельном leaf module с `server-only` и не экспортируется через barrel.
+
+## Data flow каталога
+
+```text
+Public page (Server Component)
+  -> cached query function (locale является аргументом/cache key)
+    -> CatalogRepository
+      -> DemoCatalogRepository (явный local/test режим)
+      -> SupabaseCatalogRepository
+        -> SupabaseCatalogTransport (bulk queries)
+          -> mapper DB rows -> locale-resolved domain DTO
+            -> UI components / CatalogClient local filtering
+```
+
+Supabase transport получает списки товаров одним bulk query и характеристики вторым bulk query. Slug lookup использует точечную цепочку translation→id→entity, а similar применяет category/exclude/limit до bulk-запроса характеристик. Запросов на товар/атрибут в цикле нет. DB row shapes остаются в `features/catalog/supabase`; компоненты получают только `CatalogProduct`, `CatalogCategory`, `CatalogFacets` и `PublicSiteSettings`.
+
+## Доменные решения
+
+- Деньги: integer minor units (`priceMinor`), валюта фиксирована как MDL.
+- Переводы: strict. Для опубликованной сущности обязательны RU и RO; mapper не подставляет другой язык.
+- Slug локализован в БД и уникален внутри locale. Domain DTO содержит текущий и alternate slug.
+- Публикация, availability, archive, popular и new независимы.
+- Характеристики нормализованы по group/attribute/type/options/value. DTO отделяет локализованный `displayValue` от canonical `filterValue`; category binding может переопределить filterability/sort. UI строит динамические facets для canonical number/boolean/select/color; локализованный free-text намеренно не может быть filterable.
+- Для category/product proxy передаёт только pathname в request header, layout точечно резолвит alternate slug и уже в SSR формирует правильный language-switch href.
+- Реальные Storage images опциональны; при отсутствии изображения сохраняется CSS fallback Этапа 2.
+
+## Рендеринг и cache
+
+- Public locale shell и все public страницы request-rendered (`force-dynamic`), поэтому build не требует доступного remote Supabase и не замораживает demo-data в production artifact.
+- Category/product slug обслуживаются on demand.
+- Публичные repository queries кэшируются на 300 секунд. Все locale/slug/category параметры входят в ключ.
+- В будущем admin mutations смогут использовать tags `catalog`, `products`, `categories`, `site-settings` для on-demand invalidation.
+- `/admin` и `/admin/login` — `force-dynamic`; auth responses получают `private, no-store`.
+
+## Auth flow
+
+1. Лёгкий `src/proxy.ts` исключает static assets. На public routes он только передаёт pathname для SSR locale links; на `/admin/:path*` вызывает `getClaims()` для refresh/оптимистического redirect и синхронизирует cookies/anti-cache headers.
+2. Login Server Action вызывает `signInWithPassword` пользовательским SSR client.
+3. После входа сервер запрашивает свежего пользователя через `getUser()` и читает собственные `profiles`/`user_roles` под RLS.
+4. Protected layout и dashboard повторно вызывают `requireAdmin()`.
+5. RLS остаётся последней линией защиты будущих catalog mutations.
+
+Proxy не запрашивает роль из БД и не является единственной защитой.
 
 ## Структура
 
 ```text
 src/
-  app/
-    (entry)/                    # перенаправление / -> /ru
-    (public)/[locale]/          # публичный сайт ru/ro
-      catalog/
-      category/[slug]/
-      product/[slug]/
-      search/
-      contacts/
-      privacy/
-      personal-data/
-    (backoffice)/admin/         # отдельная административная граница
-  components/
-    catalog/                    # UI каталога и client-фильтры
-    public/                     # диалог связи, breadcrumbs, copy-to-clipboard
-    i18n/
-    layout/
-  config/                       # несекретные настройки приложения
-  features/                     # доменные модули по мере реализации
-    catalog/                    # типы, demo-source и чистая логика Этапа 2
-    catalog/
-    products/
-    leads/
-    admin/
-    telegram/
-    assistant/
-  i18n/                         # локали и типизированные словари интерфейса
-  lib/
-    env/                        # разделённые public/server env
+  app/(public)/[locale]/
+  app/(backoffice)/admin/login/
+  app/(backoffice)/admin/(protected)/
+  features/catalog/
+    data.ts, repository.ts, demo-repository.ts
+    supabase/{transport,repository,mapper,rows}.ts
+  features/admin/auth/
+  lib/env/
+  lib/supabase/{browser,server,public-server,service,proxy}.ts
+  proxy.ts
 supabase/
-  schema.sql                    # проект схемы Этапа 1, ещё не применён
-docs/
+  config.toml
+  migrations/
+  seed.sql
+  verification/
 ```
 
-Пустые `features` не создаются заранее: они появятся вместе с реальным кодом соответствующего этапа. Это не даёт фиктивным интеграциям выглядеть работающими.
+## Следующие внешние границы
 
-На Этапе 2 `features/catalog/demo-data.ts` — единственный локальный источник карточек. UI зависит от доменных типов и функций из `logic.ts`, а не от способа хранения. При интеграции Supabase demo-source должен быть заменён серверным repository с тем же контрактом; фильтры сначала остаются в клиентском UI, затем получают query-параметры и серверную выборку.
-
-## Карта маршрутов
-
-| URL                         | Назначение                  | Этап полной реализации |
-| --------------------------- | --------------------------- | ---------------------- |
-| `/`                         | Redirect на `/ru`           | 1                      |
-| `/ru`, `/ro`                | Главная                     | 2                      |
-| `/[locale]/catalog`         | Каталог                     | 2, 4                   |
-| `/[locale]/category/[slug]` | Категория                   | 4                      |
-| `/[locale]/product/[slug]`  | Товар                       | 4                      |
-| `/[locale]/search`          | Поиск                       | 4                      |
-| `/[locale]/contacts`        | Контакты                    | 2                      |
-| `/[locale]/privacy`         | Политика конфиденциальности | 2, 8                   |
-| `/[locale]/personal-data`   | Обработка данных            | 2, 8                   |
-| `/admin`                    | Административная граница    | 6                      |
-
-Динамические slug хранятся отдельно для каждого языка. На этапе каталога переключатель языка должен получать альтернативный URL из перевода сущности, а не механически менять только locale.
-
-## Интеграции
-
-### Supabase
-
-На Этапе 1 есть схема и env-контракт, но клиентская библиотека намеренно не установлена. На Этапе 3 появятся отдельные server, browser и service-role фабрики. Service role разрешён только в server-only коде.
-
-### Заявки и Telegram
-
-Поток следующего этапа:
-
-1. Route Handler проверяет размер и тип запроса, телефон, согласие, honeypot и rate limit.
-2. `client_request_id` обеспечивает идемпотентность.
-3. Сервер сохраняет заявку через service role.
-4. Отправка Telegram выполняется после сохранения.
-5. Ошибка Telegram записывается отдельно и не откатывает заявку.
-
-Прямой `anon INSERT` в `leads` запрещён.
-
-На Этапе 2 диалог заявки выполняет лишь client-side validation и не отправляет данные. Он прямо сообщает об этом пользователю. Никакие Route Handler, серверные действия или фиктивный успех до Этапа 5 не создаются.
-
-### AI
-
-Будущий AI-модуль получает заменяемый provider interface, серверный API, ограниченную историю, grounded-контекст каталога и fallback-поиск. До Этапа 7 UI и endpoint не создаются.
-
-## Риски бесплатных тарифов
-
-- Free Supabase может приостанавливать неактивный проект; нужны экспорт и резервное копирование.
-- Лимиты Storage требуют WebP/AVIF, ограничений размера и удаления неиспользуемых объектов.
-- Память Vercel Function не подходит для надёжного rate limit или очереди; идемпотентность и outbox следует хранить в PostgreSQL.
-- Кэш публичного каталога нужно инвалидировать после административных изменений.
-- Смена локализованного slug требует redirect-истории, canonical и hreflang.
-- На новых проектах Supabase таблицы могут не публиковаться в Data API автоматически, поэтому схема задаёт `GRANT` явно вместе с RLS.
+Route Handlers появятся только для заявок/Telegram/AI. Прямой anon INSERT в будущие заявки не предусматривается. CRUD и Storage upload UI относятся к следующему административному этапу.

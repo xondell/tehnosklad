@@ -6,6 +6,7 @@ import { LanguageSwitcherFallback } from "@/components/i18n/language-switcher-fa
 import { Logo } from "@/components/layout/logo";
 import { PageContainer } from "@/components/layout/page-container";
 import { siteConfig } from "@/config/site";
+import type { PublicSiteSettings } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import { localizedPath } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -13,9 +14,13 @@ import type { Dictionary } from "@/i18n/types";
 export function SiteFooter({
   locale,
   dictionary,
+  settings,
+  alternateHref,
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  settings: PublicSiteSettings;
+  alternateHref?: string;
 }) {
   return (
     <footer className="mt-auto border-t border-stone-200 bg-stone-950 text-white">
@@ -25,22 +30,20 @@ export function SiteFooter({
           <p className="text-sm text-stone-300">
             {dictionary.footer.description}
           </p>
-          <p className="text-sm text-stone-300">
-            {dictionary.common.city}, {dictionary.common.address}
-          </p>
+          <p className="text-sm text-stone-300">{settings.address}</p>
           <a
             className="inline-flex min-h-11 items-center font-bold"
-            href={siteConfig.phoneHref}
+            href={settings.phoneHref}
           >
-            {siteConfig.phoneDisplay}
+            {settings.phoneDisplay}
           </a>
         </div>
         <div>
           <h2 className="mb-3 font-bold">{dictionary.footer.schedule}</h2>
           <p className="text-sm text-stone-300">
-            {dictionary.common.openDays}: {siteConfig.hours.openTime}
+            {settings.openDays}: {settings.openTime}
           </p>
-          <p className="text-sm text-stone-300">{dictionary.common.closed}</p>
+          <p className="text-sm text-stone-300">{settings.closedDay}</p>
         </div>
         <div>
           <h2 className="mb-3 font-bold">{dictionary.footer.catalog}</h2>
@@ -71,12 +74,14 @@ export function SiteFooter({
                 <LanguageSwitcherFallback
                   currentLocale={locale}
                   label={dictionary.languageSwitcherLabel}
+                  alternateHref={alternateHref}
                 />
               }
             >
               <LanguageSwitcher
                 currentLocale={locale}
                 label={dictionary.languageSwitcherLabel}
+                alternateHref={alternateHref}
               />
             </Suspense>
           </div>

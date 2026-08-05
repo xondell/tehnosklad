@@ -27,12 +27,13 @@ export const ru: Dictionary = {
   },
   common: {
     city: "г. Комрат",
-    address: "ул. Победы, 97",
+    address: "Адрес",
     phone: "Телефон",
     hours: "График",
     openDays: "Вторник–воскресенье",
     closed: "Понедельник — выходной",
     inStock: "В наличии",
+    onOrder: "Под заказ",
     outOfStock: "Нет в наличии",
     demoNotice: "Демонстрационные данные для разработки",
     mapPlaceholder: "Карта будет добавлена перед запуском",
@@ -51,13 +52,12 @@ export const ru: Dictionary = {
     categoriesTitle: "Выберите технику",
     categoriesDescription: "Три основные категории для обустройства дома.",
     popularTitle: "Популярный выбор",
-    popularDescription:
-      "Подборка демонстрационных карточек для будущего каталога.",
+    popularDescription: "Подборка популярных товаров нашего каталога.",
     benefitsTitle: "Всё по делу",
     benefits: {
       location: {
         title: "В Комрате",
-        text: "Магазин по адресу ул. Победы, 97.",
+        text: "Удобный магазин в Комрате.",
       },
       choice: {
         title: "Поможем выбрать",
@@ -76,7 +76,7 @@ export const ru: Dictionary = {
   catalog: {
     title: "Каталог техники",
     description:
-      "Демонстрационная витрина: фильтры работают локально и будут заменены источником Supabase на следующем этапе.",
+      "Выберите подходящую технику по категории, бренду, цене и наличию.",
     searchLabel: "Поиск по каталогу",
     searchPlaceholder: "Название или бренд",
     category: "Категория",

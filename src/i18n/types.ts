@@ -31,6 +31,7 @@ export type Dictionary = {
     openDays: string;
     closed: string;
     inStock: string;
+    onOrder: string;
     outOfStock: string;
     demoNotice: string;
     mapPlaceholder: string;

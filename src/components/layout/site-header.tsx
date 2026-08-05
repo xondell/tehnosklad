@@ -3,16 +3,20 @@ import { Logo } from "@/components/layout/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { PageContainer } from "@/components/layout/page-container";
 import { PrimaryNav } from "@/components/layout/primary-nav";
-import { siteConfig } from "@/config/site";
+import type { PublicSiteSettings } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
 export function SiteHeader({
   locale,
   dictionary,
+  settings,
+  alternateHref,
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  settings: PublicSiteSettings;
+  alternateHref?: string;
 }) {
   return (
     <header className="border-b border-stone-200 bg-white">
@@ -35,13 +39,13 @@ export function SiteHeader({
           </a>
           <a
             className="hidden text-sm font-bold xl:block"
-            href={siteConfig.phoneHref}
+            href={settings.phoneHref}
           >
-            {siteConfig.phoneDisplay}
+            {settings.phoneDisplay}
           </a>
           <a
             className="hidden min-h-11 items-center rounded-lg bg-[var(--brand)] px-4 font-bold text-black hover:bg-[var(--brand-strong)] sm:inline-flex"
-            href={siteConfig.phoneHref}
+            href={settings.phoneHref}
           >
             {dictionary.actions.call}
           </a>
@@ -49,9 +53,15 @@ export function SiteHeader({
             <LanguageSwitcher
               currentLocale={locale}
               label={dictionary.languageSwitcherLabel}
+              alternateHref={alternateHref}
             />
           </div>
-          <MobileMenu locale={locale} dictionary={dictionary} />
+          <MobileMenu
+            locale={locale}
+            dictionary={dictionary}
+            settings={settings}
+            alternateHref={alternateHref}
+          />
         </div>
       </PageContainer>
     </header>

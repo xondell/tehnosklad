@@ -3,16 +3,20 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { PrimaryNav } from "@/components/layout/primary-nav";
-import { siteConfig } from "@/config/site";
+import type { PublicSiteSettings } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import { localizedPath } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 export function MobileMenu({
   locale,
   dictionary,
+  settings,
+  alternateHref,
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  settings: PublicSiteSettings;
+  alternateHref?: string;
 }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -40,7 +44,7 @@ export function MobileMenu({
         <a
           aria-label={dictionary.actions.call}
           className="icon-button"
-          href={siteConfig.phoneHref}
+          href={settings.phoneHref}
         >
           ☎
         </a>
@@ -79,10 +83,11 @@ export function MobileMenu({
               <LanguageSwitcher
                 currentLocale={locale}
                 label={dictionary.languageSwitcherLabel}
+                alternateHref={alternateHref}
               />
             </div>
-            <a className="button-primary mt-5" href={siteConfig.phoneHref}>
-              {dictionary.actions.call}: {siteConfig.phoneDisplay}
+            <a className="button-primary mt-5" href={settings.phoneHref}>
+              {dictionary.actions.call}: {settings.phoneDisplay}
             </a>
           </aside>
         </div>

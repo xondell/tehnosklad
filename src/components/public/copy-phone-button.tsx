@@ -1,17 +1,18 @@
 "use client";
 import { useState } from "react";
-import { siteConfig } from "@/config/site";
 export function CopyPhoneButton({
   copy,
   copied,
+  phone,
 }: {
   copy: string;
   copied: string;
+  phone: string;
 }) {
   const [done, setDone] = useState(false);
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(siteConfig.phoneDisplay);
+      await navigator.clipboard.writeText(phone);
       setDone(true);
       window.setTimeout(() => setDone(false), 1800);
     } catch {

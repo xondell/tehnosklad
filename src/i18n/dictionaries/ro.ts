@@ -27,12 +27,13 @@ export const ro: Dictionary = {
   },
   common: {
     city: "mun. Comrat",
-    address: "str. Victoriei, 97",
+    address: "Adresă",
     phone: "Telefon",
     hours: "Program",
     openDays: "Marți–duminică",
     closed: "Luni — zi liberă",
     inStock: "În stoc",
+    onOrder: "La comandă",
     outOfStock: "Nu este în stoc",
     demoNotice: "Date demonstrative pentru dezvoltare",
     mapPlaceholder: "Harta va fi adăugată înainte de lansare",
@@ -52,13 +53,12 @@ export const ro: Dictionary = {
     categoriesDescription:
       "Trei categorii principale pentru casa dumneavoastră.",
     popularTitle: "Alegeri populare",
-    popularDescription:
-      "O selecție demonstrativă de carduri pentru viitorul catalog.",
+    popularDescription: "O selecție de produse populare din catalog.",
     benefitsTitle: "Simplu și practic",
     benefits: {
       location: {
         title: "În Comrat",
-        text: "Magazinul se află pe str. Victoriei, 97.",
+        text: "Magazin accesibil în Comrat.",
       },
       choice: {
         title: "Ajutor la alegere",
@@ -80,7 +80,7 @@ export const ro: Dictionary = {
   catalog: {
     title: "Catalog de electrocasnice",
     description:
-      "Vitrină demonstrativă: filtrele funcționează local și vor fi înlocuite cu o sursă Supabase într-o etapă viitoare.",
+      "Alegeți tehnica potrivită după categorie, marcă, preț și disponibilitate.",
     searchLabel: "Căutare în catalog",
     searchPlaceholder: "Nume sau marcă",
     category: "Categorie",

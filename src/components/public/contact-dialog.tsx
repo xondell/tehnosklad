@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CopyPhoneButton } from "@/components/public/copy-phone-button";
-import { siteConfig } from "@/config/site";
+import type { PublicSiteSettings } from "@/features/catalog/types";
 import type { Dictionary } from "@/i18n/types";
 
 type Errors = { name?: string; phone?: string; consent?: string };
@@ -19,10 +19,12 @@ export function validateLead(
 export function ContactDialog({
   dictionary,
   productName,
+  settings,
   onClose,
 }: {
   dictionary: Dictionary;
   productName?: string;
+  settings: PublicSiteSettings;
   onClose: () => void;
 }) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -119,26 +121,27 @@ export function ContactDialog({
               </p>
               <a
                 className="mt-1 block text-2xl font-black hover:underline"
-                href={siteConfig.phoneHref}
+                href={settings.phoneHref}
               >
-                {siteConfig.phoneDisplay}
+                {settings.phoneDisplay}
               </a>
             </div>
             <div className="flex flex-wrap gap-2">
-              <a className="button-primary" href={siteConfig.phoneHref}>
+              <a className="button-primary" href={settings.phoneHref}>
                 {dictionary.actions.call}
               </a>
               <CopyPhoneButton
                 copy={dictionary.actions.copy}
                 copied={dictionary.actions.copied}
+                phone={settings.phoneDisplay}
               />
             </div>
             <div className="rounded-xl bg-stone-100 p-4">
               <p className="font-bold">{dictionary.contactModal.hoursTitle}</p>
               <p className="mt-1 text-stone-600">
-                {dictionary.common.openDays}: {siteConfig.hours.openTime}
+                {settings.openDays}: {settings.openTime}
               </p>
-              <p className="text-stone-600">{dictionary.common.closed}</p>
+              <p className="text-stone-600">{settings.closedDay}</p>
             </div>
           </div>
         ) : (
