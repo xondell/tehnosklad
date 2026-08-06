@@ -60,10 +60,9 @@ function data<T>(
         : "unknown local integration error";
     throw new Error(`${label}: ${message}`);
   }
-  if (result.data === null || result.data === undefined) {
-    throw new Error(`${label}: local integration response has no data`);
-  }
-  return result.data;
+  // Successful PostgREST mutations and void RPCs legitimately return null.
+  // Call sites that require rows assert their shape after this error guard.
+  return result.data as NonNullable<T>;
 }
 
 async function createUser(email: string) {
@@ -528,13 +527,19 @@ suite.sequential("Stage 6 complete admin workflow", () => {
     );
     storagePath = "";
 
-    data(
-      await admin.rpc("admin_set_product_archived", {
-        p_id: productId,
-        p_archived: true,
-      }),
-      "archive product",
-    );
+    const archiveForm = new FormData();
+    archiveForm.set("id", productId);
+    archiveForm.set("archived", "true");
+    expect(
+      (
+        await postAdminForm(
+          jar,
+          `/admin/products/${productId}`,
+          "archive-product",
+          archiveForm,
+        )
+      ).status,
+    ).toBe(303);
     expect(
       (await fetch(`${siteUrl}/ru/product/${fixture.productSlugRu}-new`))
         .status,

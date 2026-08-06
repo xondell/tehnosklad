@@ -88,9 +88,23 @@ export function SiteFooter({
         </div>
       </PageContainer>
       <div className="border-t border-stone-800">
-        <PageContainer className="py-4 text-sm text-stone-400">
-          © {new Date().getFullYear()} {siteConfig.name}.{" "}
-          {dictionary.footer.rights}
+        <PageContainer className="flex flex-col gap-2 py-4 text-sm text-stone-400 sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            © {new Date().getFullYear()} {siteConfig.name}.{" "}
+            {dictionary.footer.rights}
+          </span>
+          <span>
+            {dictionary.footer.developedBy}{" "}
+            <a
+              aria-label={dictionary.footer.osmiLinkLabel}
+              className="inline-flex min-h-11 items-center font-bold text-stone-200 underline decoration-stone-500 underline-offset-4 hover:text-white"
+              href="https://osmi-topaz.vercel.app"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              OSMI
+            </a>
+          </span>
         </PageContainer>
       </div>
     </footer>

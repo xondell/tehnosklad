@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContactButton } from "@/components/public/contact-button";
 import { CopyPhoneButton } from "@/components/public/copy-phone-button";
+import { StoreMap } from "@/components/public/store-map";
 import { PageContainer } from "@/components/layout/page-container";
 import { getPublicSiteSettings } from "@/features/catalog/data";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -93,19 +94,7 @@ export default async function ContactsPage({
             />
           </div>
         </section>
-        <section className="grid min-h-72 place-items-center rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-center">
-          <div>
-            <p className="font-bold">{d.common.mapPlaceholder}</p>
-            <a
-              className="mt-3 inline-flex font-bold underline"
-              href="https://www.openstreetmap.org/search?query=Comrat%20strada%20Victoriei%2097"
-              rel="noreferrer"
-              target="_blank"
-            >
-              {d.contacts.mapLink}
-            </a>
-          </div>
-        </section>
+        <StoreMap dictionary={d} />
       </div>
     </PageContainer>
   );

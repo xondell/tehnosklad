@@ -189,14 +189,14 @@ export function ContactDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-3 sm:items-center"
+      className="fixed inset-0 z-70 flex items-end justify-center bg-black/45 p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] sm:items-center"
       role="presentation"
     >
       <div
         aria-labelledby="contact-dialog-title"
         aria-modal="true"
         ref={dialogRef}
-        className="max-h-[calc(100vh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
+        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
         role="dialog"
       >
         <div className="flex items-center justify-between gap-4">
@@ -398,13 +398,13 @@ export function ContactDialog({
                     />
                   </label>
                 </div>
-                <label className="flex gap-3 text-sm">
+                <label className="flex min-h-11 cursor-pointer gap-3 rounded-lg p-1 text-sm focus-within:bg-amber-50">
                   <input
                     aria-describedby={
                       errors.consent ? "lead-consent-error" : undefined
                     }
                     aria-invalid={Boolean(errors.consent)}
-                    className="mt-1 size-4"
+                    className="mt-0.5 size-5 shrink-0 accent-stone-950"
                     disabled={submitting}
                     name="consent"
                     type="checkbox"
@@ -412,10 +412,17 @@ export function ContactDialog({
                   <span>
                     {dictionary.contactModal.consent}{" "}
                     <Link
-                      className="underline"
+                      className="font-semibold underline underline-offset-2"
                       href={localizedPath(locale, "personal-data")}
                     >
                       {dictionary.footer.personalData}
+                    </Link>
+                    {" · "}
+                    <Link
+                      className="font-semibold underline underline-offset-2"
+                      href={localizedPath(locale, "privacy")}
+                    >
+                      {dictionary.footer.privacy}
                     </Link>
                     {errors.consent ? (
                       <span

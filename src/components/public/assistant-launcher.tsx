@@ -33,7 +33,7 @@ export function AssistantLauncher({
       <button
         ref={launcher}
         type="button"
-        className="fixed bottom-20 right-4 z-40 rounded-full bg-yellow-400 px-4 py-3 text-sm font-bold text-stone-950 shadow-lg focus:outline-none focus:ring-2 focus:ring-stone-950 sm:bottom-5"
+        className="fixed bottom-[max(5rem,calc(env(safe-area-inset-bottom)+1rem))] right-3 z-30 min-h-11 max-w-[calc(100vw-1.5rem)] rounded-full bg-yellow-400 px-4 py-3 text-sm font-bold text-stone-950 shadow-lg focus:outline-none focus:ring-2 focus:ring-stone-950 sm:bottom-[max(1.25rem,env(safe-area-inset-bottom))] sm:right-5"
         aria-expanded={open}
         onClick={openAssistant}
       >

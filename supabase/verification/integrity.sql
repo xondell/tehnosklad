@@ -7,6 +7,7 @@ do $$
 declare
   actual_tables text[];
   expected_tables constant text[] := array[
+    'assistant_knowledge', 'assistant_logs',
     'attribute_group_translations', 'attribute_groups',
     'attribute_option_translations', 'attribute_options',
     'attribute_translations', 'attributes', 'categories',
@@ -109,7 +110,7 @@ begin
   end if;
   if (
     select count(*) from pg_policies where schemaname = 'public'
-  ) <> 44 then
+  ) <> 46 then
     raise exception 'public policy inventory mismatch';
   end if;
   if exists (
@@ -287,7 +288,7 @@ begin
     join pg_namespace as namespace on namespace.oid = function_row.pronamespace
     where namespace.nspname = 'public'
       and function_row.proname like 'admin\_%' escape '\'
-  ) <> 20 or exists (
+  ) <> 22 or exists (
     select 1
     from pg_proc as function_row
     join pg_namespace as namespace on namespace.oid = function_row.pronamespace

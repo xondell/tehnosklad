@@ -115,7 +115,7 @@ export function AssistantWidget({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-3 sm:items-center"
+        className="fixed inset-0 z-60 flex items-end justify-center bg-black/40 p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] sm:items-center"
         role="presentation"
       >
         <section
@@ -123,7 +123,7 @@ export function AssistantWidget({
           role="dialog"
           aria-modal="true"
           aria-label={dictionary.assistant.title}
-          className="flex max-h-[min(80vh,640px)] w-full max-w-md flex-col rounded-2xl bg-white p-4 shadow-2xl"
+          className="flex max-h-[min(88dvh,640px)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white p-4 shadow-2xl"
         >
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-bold">{dictionary.assistant.title}</h2>
@@ -131,7 +131,7 @@ export function AssistantWidget({
               type="button"
               onClick={close}
               aria-label={dictionary.assistant.close}
-              className="rounded p-2"
+              className="icon-button shrink-0"
             >
               ×
             </button>
@@ -147,7 +147,7 @@ export function AssistantWidget({
               <div className="flex flex-wrap gap-2">
                 {dictionary.assistant.quickQuestions.map((quick) => (
                   <button
-                    className="rounded-full border px-3 py-2 text-left text-xs font-medium"
+                    className="min-h-11 rounded-full border px-3 py-2 text-left text-xs font-medium"
                     key={quick}
                     onClick={() => askQuickQuestion(quick)}
                     type="button"
@@ -207,7 +207,7 @@ export function AssistantWidget({
               {dictionary.assistant.send}
             </button>
           </form>
-          <div className="mt-2 flex gap-3 text-sm">
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
             <button
               type="button"
               disabled={pending}

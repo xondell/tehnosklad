@@ -10,6 +10,11 @@ const languageNames: Record<Locale, string> = {
   ro: "RO",
 };
 
+const languageFullNames: Record<Locale, string> = {
+  ru: "Русский",
+  ro: "Română",
+};
+
 type LanguageSwitcherProps = {
   currentLocale: Locale;
   label: string;
@@ -37,7 +42,7 @@ export function LanguageSwitcher({
 
   return (
     <nav aria-label={label}>
-      <ul className="flex items-center rounded-lg border border-stone-300 bg-white p-1">
+      <ul className="flex w-[6.25rem] items-center rounded-xl border border-stone-400 bg-white p-1 shadow-sm">
         {locales.map((locale) => {
           const isCurrent = locale === currentLocale;
 
@@ -45,8 +50,11 @@ export function LanguageSwitcher({
             <li key={locale}>
               <Link
                 aria-current={isCurrent ? "page" : undefined}
-                className={`flex min-h-9 min-w-10 items-center justify-center rounded-md px-2 text-sm font-bold ${
-                  isCurrent ? "bg-stone-900 text-white" : "hover:bg-stone-100"
+                aria-label={`${label}: ${languageFullNames[locale]}`}
+                className={`relative flex size-11 shrink-0 items-center justify-center rounded-lg border text-sm font-black transition-colors focus-visible:z-10 ${
+                  isCurrent
+                    ? "border-stone-950 bg-stone-950 text-white shadow-sm"
+                    : "border-transparent bg-white text-stone-950 hover:border-stone-400 hover:bg-amber-100 active:bg-amber-200"
                 }`}
                 href={`${
                   !isCurrent && alternateHref
@@ -57,6 +65,12 @@ export function LanguageSwitcher({
                 lang={locale}
               >
                 {languageNames[locale]}
+                {isCurrent ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute bottom-1 size-1 rounded-full bg-[var(--brand)]"
+                  />
+                ) : null}
               </Link>
             </li>
           );

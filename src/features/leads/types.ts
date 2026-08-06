@@ -21,6 +21,7 @@ export type LeadSubmission = {
   telegramUsername: string | null;
   comment: string | null;
   productId: string | null;
+  privacyNoticeVersion: string;
 };
 
 export type LeadField =

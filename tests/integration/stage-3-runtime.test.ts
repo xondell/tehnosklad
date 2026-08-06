@@ -216,7 +216,7 @@ async function postLead(
       "Content-Type": "application/json",
       Origin: options.origin ?? siteUrl,
       "Idempotency-Key": requestId,
-      "X-Forwarded-For": options.address ?? "198.51.100.10",
+      "X-Vercel-Forwarded-For": options.address ?? "198.51.100.10",
     },
     body: JSON.stringify(payload),
   });

@@ -14,6 +14,7 @@ npm run format:check
 npm run lint
 npm run typecheck
 npm test
+npm run test:e2e
 NEXT_PUBLIC_SITE_URL=https://YOUR_PRODUCTION_DOMAIN CATALOG_DATA_SOURCE=demo npm run build
 ```
 
@@ -29,6 +30,7 @@ npm run format:check
 npm run lint
 npm run typecheck
 npm test
+npm run test:e2e
 $env:NEXT_PUBLIC_SITE_URL = 'https://YOUR_PRODUCTION_DOMAIN'; $env:CATALOG_DATA_SOURCE = 'demo'; npm run build
 ```
 
@@ -52,6 +54,16 @@ perform write-flow testing. Do not put a server value in `NEXT_PUBLIC_*`.
 | `AI_RATE_LIMIT_SECRET`                                    | server | yes; distinct random value, at least 32 characters    |
 | `AI_PROVIDER_API_KEY`, `AI_PROVIDER_BASE_URL`, `AI_MODEL` | server | only for `openai-compatible`                          |
 | `AI_TIMEOUT_MS`                                           | server | optional                                              |
+| `LEGAL_OPERATOR_NAME`                                     | server | required before enabling public lead forms            |
+| `LEGAL_OPERATOR_IDNO`                                     | server | required before enabling public lead forms            |
+| `LEGAL_OPERATOR_ADDRESS`                                  | server | required before enabling public lead forms            |
+| `LEGAL_PRIVACY_EMAIL`                                     | server | required before enabling public lead forms            |
+| `LEGAL_RESPONSIBLE_PERSON`                                | server | optional; only for an appointed published contact     |
+
+After applying migrations, schedule
+`select * from private.enforce_privacy_retention();` at least daily in
+Supabase Cron. Review the production backup and verify the affected row counts
+on staging before enabling the schedule.
 
 `NEXT_PUBLIC_SITE_URL` stays the production canonical origin in all production
 deployments. In a Vercel Preview, POST endpoints additionally accept only the

@@ -34,7 +34,7 @@ export function createLeadSecurityHashes(
     telegramUsername: submission.telegramUsername,
     comment: submission.comment,
     productId: submission.productId,
-    consentVersion: "stage-5-v1",
+    privacyNoticeVersion: submission.privacyNoticeVersion,
   });
   return {
     requestHash: hmac(secret, `request:${canonicalPayload}`),

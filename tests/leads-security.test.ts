@@ -6,6 +6,7 @@ import {
   createLeadSecurityHashes,
   extractClientAddress,
 } from "@/features/leads/security";
+import { PRIVACY_NOTICE } from "@/config/privacy";
 
 const submission = {
   locale: "ro" as const,
@@ -16,6 +17,7 @@ const submission = {
   telegramUsername: null,
   comment: null,
   productId: null,
+  privacyNoticeVersion: PRIVACY_NOTICE.storageVersion,
 };
 
 describe("lead abuse protection", () => {

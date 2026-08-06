@@ -39,7 +39,7 @@ export function AdminNavigation() {
       <button
         aria-expanded={open}
         aria-label="Открыть навигацию"
-        className="icon-button lg:hidden"
+        className="icon-button lg:!hidden"
         onClick={() => setOpen(true)}
         type="button"
       >

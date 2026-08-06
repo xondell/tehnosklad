@@ -92,8 +92,8 @@ export default async function PublicLayout({
   ]);
 
   return (
-    <html lang={locale}>
-      <body className="flex min-h-screen flex-col">
+    <html data-scroll-behavior="smooth" lang={locale}>
+      <body className="flex min-h-dvh flex-col">
         <a className="skip-link" href="#main-content">
           {dictionary.skipToContent}
         </a>
@@ -103,7 +103,7 @@ export default async function PublicLayout({
           settings={settings}
           alternateHref={alternateHref}
         />
-        <main id="main-content" className="flex-1">
+        <main id="main-content" className="min-w-0 flex-1" tabIndex={-1}>
           {children}
         </main>
         <SiteFooter

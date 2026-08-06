@@ -170,9 +170,11 @@ describe("production URL environment", () => {
     expect(requireValidUrl("URL", "https://example.test")).toBe(
       "https://example.test",
     );
-    vi.stubEnv("NODE_ENV", "test");
     expect(requireValidUrl("URL", "http://127.0.0.1:3100")).toBe(
       "http://127.0.0.1:3100",
+    );
+    expect(requireValidUrl("URL", "http://localhost:3100")).toBe(
+      "http://localhost:3100",
     );
   });
 });

@@ -5,6 +5,7 @@ import {
   normalizeTelegramUsername,
   validateLeadPayload,
 } from "@/features/leads/validation";
+import { PRIVACY_NOTICE } from "@/config/privacy";
 
 const valid = {
   locale: "ru",
@@ -31,6 +32,7 @@ describe("lead validation", () => {
         telegramUsername: "@anna_test",
         comment: "Интересует доставка",
         productId: "20000000-0000-4000-8000-000000000001",
+        privacyNoticeVersion: PRIVACY_NOTICE.storageVersion,
       },
     });
   });

@@ -80,13 +80,13 @@ export function MobileMenu({
         </button>
       </div>
       {open ? (
-        <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
+        <div className="fixed inset-0 z-60 bg-black/40 lg:hidden">
           <aside
             ref={dialog}
             role="dialog"
             aria-modal="true"
             aria-label={dictionary.navigationLabel}
-            className="ml-auto flex h-full w-[min(22rem,90vw)] flex-col bg-white p-5 shadow-xl"
+            className="safe-bottom ml-auto flex h-dvh w-[min(22rem,92vw)] flex-col overflow-y-auto bg-white p-5 pt-[max(1.25rem,env(safe-area-inset-top))] shadow-xl"
           >
             <div className="flex items-center justify-between">
               <strong>{dictionary.navigationLabel}</strong>

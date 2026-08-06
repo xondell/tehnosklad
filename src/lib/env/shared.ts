@@ -10,7 +10,14 @@ export function requireValidUrl(name: string, value: string): string {
     const url = new URL(value);
     if (url.protocol !== "http:" && url.protocol !== "https:")
       throw new Error();
-    if (process.env.NODE_ENV === "production" && url.protocol !== "https:")
+    const isLoopback = ["localhost", "127.0.0.1", "[::1]"].includes(
+      url.hostname,
+    );
+    if (
+      process.env.NODE_ENV === "production" &&
+      url.protocol !== "https:" &&
+      !isLoopback
+    )
       throw new Error();
     return url.toString().replace(/\/$/, "");
   } catch {

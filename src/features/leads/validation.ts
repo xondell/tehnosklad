@@ -5,6 +5,7 @@ import {
   type LeadSource,
   type LeadSubmission,
 } from "@/features/leads/types";
+import { PRIVACY_NOTICE } from "@/config/privacy";
 
 const uuidPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -107,6 +108,7 @@ export function validateLeadPayload(value: unknown): LeadValidationResult {
       telegramUsername,
       comment: comment || null,
       productId: productId || null,
+      privacyNoticeVersion: PRIVACY_NOTICE.storageVersion,
     },
   };
 }

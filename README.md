@@ -70,6 +70,7 @@ npm run typecheck
 npm run lint
 npm run format:check
 npm test
+npm run test:e2e
 npm run build
 
 npm run db:start
@@ -90,6 +91,7 @@ npm run db:stop
 - `supabase/migrations/20260805213000_stage_5_leads_telegram.sql` — заявки, статусы, rate limit и Telegram outbox;
 - `supabase/migrations/20260805213001_stage_6_admin_crud.sql` — atomic admin RPC, дополнительные integrity guards, grants/indexes и компенсирующий Storage workflow;
 - `supabase/migrations/20260806053422_stage_6_7_completion_security.sql` — category media, audited Telegram requeue, assistant telemetry и RLS/rate-limit hardening;
+- `supabase/migrations/20260806120000_privacy_retention.sql` — удаление заявок старше 24 месяцев, AI-логов старше 90 дней и истёкших rate-limit записей;
 - `supabase/seed.sql` — детерминированные 3 категории, 12 товаров, RU/RO, характеристики и настройки;
 - `supabase/verification/rls.sql` — transactional/rollback assertions для RLS;
 - `supabase/schema.sql` — только сохранённый исторический draft Этапа 1.
@@ -113,3 +115,23 @@ Production build использует `--webpack`, потому что Turbopack
 # Grounded AI assistant
 
 The optional RU/RO catalog helper is enabled by the public shell and uses `POST /api/assistant`. It never receives leads, uses published catalog records only, and falls back to deterministic catalog search when no provider is configured. Set `AI_RATE_LIMIT_SECRET` for every deployed environment. `AI_PROVIDER=fallback` is free and safe by default; `openai-compatible` additionally requires `AI_PROVIDER_BASE_URL`, `AI_PROVIDER_API_KEY` and `AI_MODEL`. The local integration harness forcibly uses `fallback`, so it never calls a paid provider. See [docs/stage-7.md](docs/stage-7.md).
+
+## Обязательный pre-deploy checklist: оператор и приватность
+
+До включения публичной формы заявок владелец обязан задать в Vercel Production и Preview (если Preview принимает реальные заявки):
+
+- `LEGAL_OPERATOR_NAME` — точное юридическое наименование оператора;
+- `LEGAL_OPERATOR_IDNO` — IDNO оператора;
+- `LEGAL_OPERATOR_ADDRESS` — юридический/почтовый адрес для запросов субъектов данных;
+- `LEGAL_PRIVACY_EMAIL` — рабочий email для таких запросов;
+- `LEGAL_RESPONSIBLE_PERSON` — только если ответственное лицо действительно назначено и его имя следует публиковать.
+
+Дополнительно до production:
+
+- практикующий юрист Республики Молдова должен проверить RU/RO редакции политик, реквизиты и правовые основания с учётом перехода от Закона №133/2011 к Закону №195/2024 23 августа 2026 года;
+- проверить DPA, фактические регионы и субпроцессоров Supabase/Vercel/Telegram/настроенного AI-провайдера и допустимый механизм трансграничной передачи; внешний AI оставить в `fallback`, пока проверка не завершена;
+- настроить в Supabase Cron не реже одного раза в сутки `select * from private.enforce_privacy_retention();`, сначала проверив backup/restore и результат на staging;
+- подтвердить, что runtime/security logs Vercel ограничены целевым сроком 30 дней, а административные доступы отключаются сразу после прекращения полномочий;
+- выполнить `npm run test:e2e` в Chromium и WebKit и ручную проверку карты, формы и юридических страниц на реальном production-домене.
+
+Если четыре обязательных `LEGAL_*` значения отсутствуют, юридические страницы честно показывают предупреждение, а production-запуск формы считается заблокированным процессом развёртывания. Код не подставляет фиктивные реквизиты.

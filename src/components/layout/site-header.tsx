@@ -19,20 +19,20 @@ export function SiteHeader({
   alternateHref?: string;
 }) {
   return (
-    <header className="border-b border-stone-200 bg-white">
+    <header className="site-header" data-testid="site-header">
       <PageContainer className="flex min-h-20 items-center gap-3 py-3">
         <Logo locale={locale} />
         <div className="ml-auto flex items-center gap-2">
           <PrimaryNav locale={locale} dictionary={dictionary} />
           <a
-            className="button-secondary hidden min-h-11 items-center lg:inline-flex"
+            className="button-secondary min-h-11 items-center max-lg:!hidden lg:inline-flex"
             href={`/` + locale + "/catalog"}
           >
             {dictionary.navigation.catalogMenu}
           </a>
           <a
             aria-label={dictionary.navigation.search}
-            className="icon-button hidden lg:inline-flex"
+            className="icon-button max-lg:!hidden lg:inline-flex"
             href={`/` + locale + "/catalog"}
           >
             ⌕

@@ -307,7 +307,11 @@ export default async function ProductPage({
         <p className="mt-2 text-sm text-stone-600">
           Архивирование снимает товар с публикации и сохраняет историю URL.
         </p>
-        <form action={setProductArchivedAction} className="mt-4">
+        <form
+          action={setProductArchivedAction}
+          className="mt-4"
+          data-admin-form="archive-product"
+        >
           <input name="id" type="hidden" value={product.id} />
           <input
             name="archived"

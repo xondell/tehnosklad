@@ -90,7 +90,10 @@ export class SupabaseLeadStore implements LeadStore {
       p_telegram_username: submission.telegramUsername,
       p_comment: submission.comment,
       p_product_id: submission.productId,
-      p_consent_version: "stage-5-v1",
+      // The database keeps the legacy column/parameter name for a safe,
+      // backward-compatible migration path. The value identifies the privacy
+      // notice acknowledged by the visitor, not a marketing consent.
+      p_consent_version: submission.privacyNoticeVersion,
     });
     if (error) throw submissionError(error.message);
     const row = (data as Array<Record<string, unknown>> | null)?.[0];

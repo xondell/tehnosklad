@@ -1,3 +1,9 @@
+export type LegalSection = {
+  title: string;
+  paragraphs: string[];
+  items?: string[];
+};
+
 export type Dictionary = {
   localeName: string;
   skipToContent: string;
@@ -147,13 +153,37 @@ export type Dictionary = {
     quickQuestions: string[];
     leaveRequest: string;
   };
-  contacts: { title: string; description: string; mapLink: string };
+  contacts: {
+    title: string;
+    description: string;
+    mapTitle: string;
+    mapDescription: string;
+    mapMarkerLabel: string;
+    mapAccessibleLabel: string;
+    mapLink: string;
+    mapLinkAccessibleLabel: string;
+  };
   legal: {
-    draft: string;
+    versionLabel: string;
+    effectiveDateLabel: string;
+    effectiveDate: string;
+    operatorIncompleteTitle: string;
+    operatorIncompleteText: string;
+    operatorTitle: string;
+    tradeNameLabel: string;
+    operatorNameLabel: string;
+    idnoLabel: string;
+    legalAddressLabel: string;
+    privacyEmailLabel: string;
+    responsibleLabel: string;
+    storeContactLabel: string;
     privacyIntro: string;
-    privacySections: Array<{ title: string; text: string }>;
+    privacySections: LegalSection[];
     personalIntro: string;
-    personalSections: Array<{ title: string; text: string }>;
+    personalSections: LegalSection[];
+    sourcesTitle: string;
+    sources: Array<{ label: string; url: string }>;
+    legalReviewNotice: string;
   };
   footer: {
     description: string;
@@ -164,6 +194,8 @@ export type Dictionary = {
     privacy: string;
     personalData: string;
     rights: string;
+    developedBy: string;
+    osmiLinkLabel: string;
   };
   notFound: { title: string; text: string; back: string };
   languageSwitcherLabel: string;
