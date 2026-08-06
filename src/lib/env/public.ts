@@ -41,6 +41,21 @@ export function requireSupabasePublishableKey(
   return normalized;
 }
 
+function requireSupabaseProjectUrl(value: string): string {
+  const normalized = requireValidUrl("NEXT_PUBLIC_SUPABASE_URL", value);
+  const url = new URL(normalized);
+  if (
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  ) {
+    throw new EnvironmentConfigurationError(["NEXT_PUBLIC_SUPABASE_URL"]);
+  }
+  return url.origin;
+}
+
 export function getOptionalSupabasePublicEnvironment(): SupabasePublicEnvironment | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim();
@@ -53,7 +68,7 @@ export function getOptionalSupabasePublicEnvironment(): SupabasePublicEnvironmen
     ]);
   }
   return {
-    supabaseUrl: requireValidUrl("NEXT_PUBLIC_SUPABASE_URL", url),
+    supabaseUrl: requireSupabaseProjectUrl(url),
     supabasePublishableKey: requireSupabasePublishableKey(
       "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
       key,

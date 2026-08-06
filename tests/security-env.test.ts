@@ -95,6 +95,13 @@ describe("Supabase public environment", () => {
     expect(() => getSupabasePublicEnvironment()).toThrow(
       EnvironmentConfigurationError,
     );
+    vi.stubEnv(
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "https://project.supabase.co/rest/v1",
+    );
+    expect(() => getSupabasePublicEnvironment()).toThrow(
+      EnvironmentConfigurationError,
+    );
   });
 
   it("rejects secret and service-role keys in the public variable", () => {
