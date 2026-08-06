@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ProductGrid } from "@/components/catalog/product-grid";
+import { PriceFilterInput } from "@/components/catalog/price-filter-input";
 import {
   catalogQueryHref,
   type CatalogUrlState,
@@ -63,19 +64,15 @@ function FilterFields({
       <div>
         <span className="field-label">{dictionary.catalog.price}</span>
         <div className="grid grid-cols-2 gap-2">
-          <input
-            aria-label={dictionary.catalog.priceFrom}
-            className="field"
+          <PriceFilterInput
+            ariaLabel={dictionary.catalog.priceFrom}
             defaultValue={state.minPrice}
-            inputMode="decimal"
             name="price_min"
             placeholder={dictionary.catalog.priceFrom}
           />
-          <input
-            aria-label={dictionary.catalog.priceTo}
-            className="field"
+          <PriceFilterInput
+            ariaLabel={dictionary.catalog.priceTo}
             defaultValue={state.maxPrice}
-            inputMode="decimal"
             name="price_max"
             placeholder={dictionary.catalog.priceTo}
           />

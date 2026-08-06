@@ -224,7 +224,7 @@ export function AssistantWidget({
                 maxLength={600}
                 rows={2}
                 placeholder={dictionary.assistant.placeholder}
-                className="max-h-[287px] w-full resize-y rounded border p-2 text-sm"
+                className="min-h-[25px] max-h-[287px] w-full resize-y rounded border p-2 text-sm"
               />
             </div>
             <button type="submit" disabled={pending} className="button-primary">
