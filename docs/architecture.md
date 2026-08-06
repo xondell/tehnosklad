@@ -113,3 +113,7 @@ supabase/
 ## Следующие внешние границы
 
 AI Route Handler и provider interface появятся только после определения контракта; прямой anon INSERT ни для заявок, ни для AI-истории не предусматривается.
+
+# Grounded assistant boundary
+
+`src/features/assistant` is server-only except the UI widget. Route validation → HMAC rate-limit RPC → bounded public catalog search → `AssistantProvider` → response normalization. The fallback and product references are deterministic and do not rely on a provider response.

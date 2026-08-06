@@ -83,3 +83,7 @@ Browser не передаёт доверенный bucket/path: bucket фикс�
 - Authenticated role не может insert/delete или менять ключ/locale публичной настройки; RPC разрешает менять только `value` для семи заранее существующих ключей и сразу RU/RO парой.
 - Supabase transport отбрасывает внутренний error object и выбрасывает санитизированный application error; UI не получает SQL/stack/cookies/token.
 - Server log содержит только имя ресурса и application error code; keys, cookies, tokens и user object не логируются.
+
+# Grounded assistant
+
+The assistant endpoint has same-origin, content-type/body limits, strict schema and role validation, an isolated HMAC rate limit, timeout and no-store response. It uses the public RLS catalog client only—never the service-role client or leads tables. Provider output is plain text and product cards/URLs are built server-side from allowlisted published DTOs. Conversation text is not retained.

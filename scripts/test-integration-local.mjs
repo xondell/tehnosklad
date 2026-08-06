@@ -108,6 +108,12 @@ function cleanChildEnvironment() {
     "LEAD_IP_HASH_SECRET",
     "TELEGRAM_BOT_TOKEN",
     "TELEGRAM_CHAT_ID",
+    "AI_PROVIDER",
+    "AI_PROVIDER_API_KEY",
+    "AI_MODEL",
+    "AI_PROVIDER_BASE_URL",
+    "AI_RATE_LIMIT_SECRET",
+    "AI_TIMEOUT_MS",
   ]) {
     delete environment[name];
   }
@@ -230,6 +236,8 @@ const nextEnvironment = {
   SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,
   LEAD_IP_HASH_SECRET: "local-integration-lead-secret-32-characters-minimum",
   CATALOG_DATA_SOURCE: "supabase",
+  AI_PROVIDER: "fallback",
+  AI_RATE_LIMIT_SECRET: "local-integration-ai-secret-32-characters-minimum",
 };
 
 run(

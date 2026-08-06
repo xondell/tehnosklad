@@ -151,6 +151,24 @@ export const ro: Dictionary = {
     phoneError: "Introduceți un număr de telefon valid",
     consentError: "Este necesar acordul pentru prelucrarea datelor",
   },
+  assistant: {
+    open: "Asistent pentru catalog",
+    title: "Asistentul Tehnosklad",
+    close: "Închide asistentul",
+    placeholder: "De exemplu: am nevoie de frigider",
+    send: "Întreabă",
+    loading: "Căutăm în catalog…",
+    retry: "Reîncearcă",
+    cancel: "Anulează",
+    clear: "Șterge",
+    catalog: "Deschide catalogul",
+    disclaimer:
+      "Răspunsul este generat automat. Verificați disponibilitatea și condițiile la magazin.",
+    unavailable:
+      "Asistentul nu este disponibil acum. Deschideți catalogul sau sunați magazinul.",
+    fallback: "Sunt afișate rezultate din căutarea în catalog.",
+    product: "Deschide produsul",
+  },
   contacts: {
     title: "Contacte",
     description: "Vizitați magazinul sau contactați-ne prin telefon.",

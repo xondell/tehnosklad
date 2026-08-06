@@ -128,6 +128,22 @@ export type Dictionary = {
     phoneError: string;
     consentError: string;
   };
+  assistant: {
+    open: string;
+    title: string;
+    close: string;
+    placeholder: string;
+    send: string;
+    loading: string;
+    retry: string;
+    cancel: string;
+    clear: string;
+    catalog: string;
+    disclaimer: string;
+    unavailable: string;
+    fallback: string;
+    product: string;
+  };
   contacts: { title: string; description: string; mapLink: string };
   legal: {
     draft: string;

@@ -1,6 +1,6 @@
 # Tehnosklad
 
-Production-сайт магазина бытовой техники в Комрате. Завершены безопасный Supabase foundation, серверный каталог/SEO, заявки/Telegram delivery и **Этап 6: защищённый административный CRUD**.
+Production-сайт магазина бытовой техники в Комрате. Завершены безопасный Supabase foundation, серверный каталог/SEO, заявки/Telegram delivery, защищённый административный CRUD и **Этап 7: grounded AI-ассистент каталога**.
 
 ## Реализовано
 
@@ -20,7 +20,7 @@ Production-сайт магазина бытовой техники в Комра
 - Все административные изменения выполняются через Server Actions и узкие atomic RPC, повторно проверяют активную admin-роль и инвалидируют нужные cache tags.
 - Безопасная загрузка изображений без overwrite с MIME/magic/size-проверкой, compensating delete и отдельным экраном сверки Storage/metadata orphan-файлов.
 
-AI-ассистент относится к Этапу 7 и намеренно ещё не реализован.
+- RU/RO grounded AI-ассистент: bounded published-catalog context, provider-neutral server boundary, fallback без внешнего AI и HMAC rate limit.
 
 ## Требования
 
@@ -106,3 +106,7 @@ npm run db:stop
 - [docs/roadmap.md](docs/roadmap.md) — последующие этапы.
 
 Production build использует `--webpack`, потому что Turbopack в управляемой среде разработки не может открыть внутренний PostCSS-порт.
+
+# Grounded AI assistant
+
+The optional RU/RO catalog helper is enabled by the public shell and uses `POST /api/assistant`. It never receives leads, uses published catalog records only, and falls back to deterministic catalog search when no provider is configured. Set `AI_RATE_LIMIT_SECRET` for every deployed environment. `AI_PROVIDER=fallback` is free and safe by default; `openai-compatible` additionally requires `AI_PROVIDER_BASE_URL`, `AI_PROVIDER_API_KEY` and `AI_MODEL`. The local integration harness forcibly uses `fallback`, so it never calls a paid provider. See [docs/stage-7.md](docs/stage-7.md).

@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import "@/app/globals.css";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { AssistantWidget } from "@/components/public/assistant-widget";
 import {
   getCategoryBySlug,
   getProductBySlug,
@@ -111,6 +112,7 @@ export default async function PublicLayout({
           settings={settings}
           alternateHref={alternateHref}
         />
+        <AssistantWidget locale={locale} dictionary={dictionary} />
       </body>
     </html>
   );

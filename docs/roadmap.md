@@ -59,9 +59,9 @@
 
 Подробности: [stage-6.md](stage-6.md).
 
-## Этап 7 — AI-ассистент
+## Этап 7 — AI-ассистент — завершён
 
-Grounded provider interface, rate limit, короткая история и fallback-поиск. AI schema появится только после определения контракта.
+Grounded provider interface, отдельный HMAC rate limit, короткая in-memory история и deterministic fallback-поиск. См. [stage-7.md](stage-7.md).
 
 ## Этап 8 — production hardening/deploy
 

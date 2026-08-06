@@ -52,3 +52,49 @@ export function getOptionalTelegramEnvironment(): TelegramEnvironment | null {
   }
   return { botToken, chatId };
 }
+
+export type AssistantEnvironment =
+  | { provider: "fallback"; timeoutMs: number }
+  | {
+      provider: "openai-compatible";
+      apiKey: string;
+      model: string;
+      baseUrl: string;
+      timeoutMs: number;
+    };
+
+export function getAssistantEnvironment(): AssistantEnvironment {
+  const provider = (process.env.AI_PROVIDER ?? "fallback").trim().toLowerCase();
+  const timeoutRaw = process.env.AI_TIMEOUT_MS?.trim();
+  const timeoutMs = timeoutRaw ? Number(timeoutRaw) : 8_000;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1_000 || timeoutMs > 15_000) {
+    throw new EnvironmentConfigurationError(["AI_TIMEOUT_MS"]);
+  }
+  if (provider === "fallback") return { provider, timeoutMs };
+  if (provider === "openai-compatible") {
+    const environment = requireEnvironmentVariables({
+      AI_PROVIDER_API_KEY: process.env.AI_PROVIDER_API_KEY,
+      AI_MODEL: process.env.AI_MODEL,
+      AI_PROVIDER_BASE_URL: process.env.AI_PROVIDER_BASE_URL,
+    });
+    return {
+      provider,
+      apiKey: environment.AI_PROVIDER_API_KEY,
+      model: environment.AI_MODEL,
+      baseUrl: requireValidUrl(
+        "AI_PROVIDER_BASE_URL",
+        environment.AI_PROVIDER_BASE_URL,
+      ).replace(/\/$/, ""),
+      timeoutMs,
+    };
+  }
+  throw new EnvironmentConfigurationError(["AI_PROVIDER"]);
+}
+
+export function getAssistantRateLimitSecret(): string {
+  const secret = process.env.AI_RATE_LIMIT_SECRET?.trim();
+  if (!secret || secret.length < 32) {
+    throw new EnvironmentConfigurationError(["AI_RATE_LIMIT_SECRET"]);
+  }
+  return secret;
+}
