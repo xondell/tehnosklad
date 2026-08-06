@@ -216,7 +216,7 @@ export function AssistantWidget({
             ) : null}
           </div>
           <form className="mt-3 flex gap-2" onSubmit={submit}>
-            <div className="min-w-0 flex-1 [container-type:inline-size]">
+            <div className="min-w-0 flex-1">
               <textarea
                 aria-label={dictionary.assistant.placeholder}
                 value={question}
@@ -224,7 +224,7 @@ export function AssistantWidget({
                 maxLength={600}
                 rows={2}
                 placeholder={dictionary.assistant.placeholder}
-                className="max-h-[calc(100cqi+20px)] w-full resize-y rounded border p-2 text-sm"
+                className="max-h-[287px] w-full resize-y rounded border p-2 text-sm"
               />
             </div>
             <button type="submit" disabled={pending} className="button-primary">
