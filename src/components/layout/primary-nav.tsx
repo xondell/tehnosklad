@@ -17,10 +17,14 @@ export function PrimaryNav({
 }: PrimaryNavProps) {
   const links = [
     { href: localizedPath(locale), label: dictionary.navigation.home },
-    {
-      href: localizedPath(locale, "catalog"),
-      label: dictionary.navigation.catalog,
-    },
+    ...(mobile
+      ? [
+          {
+            href: localizedPath(locale, "catalog"),
+            label: dictionary.navigation.catalog,
+          },
+        ]
+      : []),
     {
       href: localizedPath(locale, "contacts"),
       label: dictionary.navigation.contacts,
