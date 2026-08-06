@@ -98,6 +98,7 @@ npm run db:stop
 
 ## Документация
 
+- [ADMIN_GUIDE.md](ADMIN_GUIDE.md) — подробное руководство по работе с административной панелью;
 - [docs/stage-3.md](docs/stage-3.md) — результат этапа и ограничения;
 - [docs/stage-3-runtime-validation.md](docs/stage-3-runtime-validation.md) — фактические local runtime-проверки Этапа 3.5;
 - [docs/stage-4.md](docs/stage-4.md) — URL-контракт каталога, SEO, slug redirects и cache invalidation;
