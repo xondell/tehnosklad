@@ -8,16 +8,21 @@ import { sanitizeAdminError } from "@/features/admin/errors";
 import {
   adminClientForStorage,
   callAdminRpc,
+  getAdminCategory,
   getAdminProduct,
   listAdminAttributes,
   scanAdminProductOrphans,
 } from "@/features/admin/repository";
 import { revalidateCatalogAfterMutation } from "@/features/catalog/cache";
+import { processTelegramDelivery } from "@/features/leads/delivery";
+import { createLeadStore } from "@/features/leads/repository";
+import { getOptionalTelegramEnvironment } from "@/lib/env/server";
 import {
   AdminValidationError,
   attributeDataType,
   checkboxValue,
   codeValue,
+  createCategoryImagePath,
   createProductImagePath,
   integerValue,
   moneyToMinor,
@@ -111,6 +116,58 @@ export async function setCategoryArchivedAction(
     error = caught;
   }
   redirect(destination(`/admin/categories/${id}`, error));
+}
+
+export async function uploadCategoryImageAction(
+  formData: FormData,
+): Promise<never> {
+  await requireAdmin();
+  const categoryId = uuidValue(formData.get("category_id"), "category_id");
+  let error: unknown;
+  let uploadedPath: string | null = null;
+  try {
+    const file = formData.get("image");
+    if (!(file instanceof File)) throw new AdminValidationError("image");
+    const validated = await validateProductImage(file);
+    const category = await getAdminCategory(categoryId);
+    if (!category) throw new AdminValidationError("category_id");
+    uploadedPath = createCategoryImagePath(validated.extension);
+    const { supabase } = await adminClientForStorage();
+    const uploaded = await supabase.storage
+      .from("category-images")
+      .upload(uploadedPath, file, {
+        contentType: validated.mimeType,
+        upsert: false,
+        cacheControl: "31536000",
+      });
+    if (uploaded.error) throw uploaded.error;
+    try {
+      await callAdminRpc("admin_set_category_image", {
+        p_category_id: categoryId,
+        p_storage_path: uploadedPath,
+      });
+    } catch (metadataError) {
+      await supabase.storage.from("category-images").remove([uploadedPath]);
+      throw metadataError;
+    }
+    if (category.imageStoragePath) {
+      const removed = await supabase.storage
+        .from("category-images")
+        .remove([category.imageStoragePath]);
+      if (removed.error)
+        console.error("Category image cleanup failed", {
+          code: "category_image_orphan",
+        });
+    }
+    revalidateCatalogAfterMutation("category");
+    revalidatePath(`/admin/categories/${categoryId}`);
+  } catch (caught) {
+    error =
+      caught instanceof AdminValidationError
+        ? caught
+        : sanitizeAdminError(caught);
+  }
+  redirect(destination(`/admin/categories/${categoryId}`, error));
 }
 
 export async function saveAttributeGroupAction(
@@ -627,6 +684,32 @@ export async function setLeadStatusAction(formData: FormData): Promise<never> {
       p_lead_id: id,
       p_status: status,
     });
+    revalidatePath("/admin/leads");
+    revalidatePath(`/admin/leads/${id}`);
+  } catch (caught) {
+    error = caught;
+  }
+  redirect(destination(`/admin/leads/${id}`, error));
+}
+
+export async function retryLeadTelegramDeliveryAction(
+  formData: FormData,
+): Promise<never> {
+  await requireAdmin();
+  const id = uuidValue(formData.get("lead_id"), "lead_id");
+  let error: unknown;
+  try {
+    await callAdminRpc("admin_requeue_lead_telegram_delivery", {
+      p_lead_id: id,
+      p_confirm_uncertain: checkboxValue(formData, "confirm_uncertain"),
+    });
+    // This runs only after an intentional authenticated admin mutation; it is
+    // never a background retry of an uncertain Telegram outcome.
+    await processTelegramDelivery(
+      createLeadStore(),
+      getOptionalTelegramEnvironment(),
+      id,
+    );
     revalidatePath("/admin/leads");
     revalidatePath(`/admin/leads/${id}`);
   } catch (caught) {

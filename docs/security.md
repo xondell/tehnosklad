@@ -83,6 +83,9 @@ Browser не передаёт доверенный bucket/path: bucket фикс�
 - Authenticated role не может insert/delete или менять ключ/locale публичной настройки; RPC разрешает менять только `value` для семи заранее существующих ключей и сразу RU/RO парой.
 - Supabase transport отбрасывает внутренний error object и выбрасывает санитизированный application error; UI не получает SQL/stack/cookies/token.
 - Server log содержит только имя ресурса и application error code; keys, cookies, tokens и user object не логируются.
+- Assistant rate-limit RPC не выдаётся `anon`/`authenticated`: его вызывает только server-only service-role client после HMAC subject derivation. Это исключает Data API flood с произвольными hash.
+- Для lead/assistant rate limiting читается только Vercel-managed `x-vercel-forwarded-for`; generic forwarding headers не считаются trustworthy.
+- В production URL сайта, Supabase и external AI provider принимаются только по HTTPS. Local development/test допускают HTTP localhost.
 
 # Grounded assistant
 

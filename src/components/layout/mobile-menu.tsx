@@ -20,13 +20,33 @@ export function MobileMenu({
 }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
+  const dialog = useRef<HTMLElement>(null);
   useEffect(() => {
+    if (!open) return;
     const esc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") close();
+      if (event.key === "Tab" && dialog.current) {
+        const nodes = Array.from(
+          dialog.current.querySelectorAll<HTMLElement>(
+            "button:not([disabled]), a[href], input:not([disabled])",
+          ),
+        );
+        const first = nodes[0];
+        const last = nodes.at(-1);
+        if (!first || !last) return;
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     };
     document.addEventListener("keydown", esc);
+    dialog.current?.querySelector<HTMLElement>("button")?.focus();
     return () => document.removeEventListener("keydown", esc);
-  }, []);
+  }, [open]);
   function close() {
     setOpen(false);
     trigger.current?.focus();
@@ -62,6 +82,9 @@ export function MobileMenu({
       {open ? (
         <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
           <aside
+            ref={dialog}
+            role="dialog"
+            aria-modal="true"
             aria-label={dictionary.navigationLabel}
             className="ml-auto flex h-full w-[min(22rem,90vw)] flex-col bg-white p-5 shadow-xl"
           >

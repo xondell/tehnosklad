@@ -7,7 +7,7 @@ import {
   extractClientAddress,
 } from "@/features/leads/security";
 import { isUuid, validateLeadPayload } from "@/features/leads/validation";
-import { getSiteUrl } from "@/lib/env/public";
+import { isAllowedMutationOrigin } from "@/lib/request-origin";
 import {
   getLeadSecurityEnvironment,
   getOptionalTelegramEnvironment,
@@ -24,7 +24,7 @@ function json(body: object, status: number, headers?: HeadersInit) {
 
 function sameOrigin(request: Request): boolean {
   try {
-    return request.headers.get("origin") === getSiteUrl();
+    return isAllowedMutationOrigin(request.headers.get("origin"));
   } catch {
     return false;
   }

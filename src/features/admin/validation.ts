@@ -158,6 +158,12 @@ export function createProductImagePath(productId: string, extension: string) {
   return `${productId}/${randomUUID()}.${extension}`;
 }
 
+export function createCategoryImagePath(extension: string) {
+  if (!["jpg", "png", "webp", "avif"].includes(extension))
+    throw new AdminValidationError("imagePath");
+  return `categories/${randomUUID()}.${extension}`;
+}
+
 export function isUuid(value: string) {
   return uuidPattern.test(value);
 }

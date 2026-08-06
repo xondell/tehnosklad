@@ -10,6 +10,8 @@ export function requireValidUrl(name: string, value: string): string {
     const url = new URL(value);
     if (url.protocol !== "http:" && url.protocol !== "https:")
       throw new Error();
+    if (process.env.NODE_ENV === "production" && url.protocol !== "https:")
+      throw new Error();
     return url.toString().replace(/\/$/, "");
   } catch {
     throw new EnvironmentConfigurationError([name]);

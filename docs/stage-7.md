@@ -16,8 +16,10 @@ System instruction запрещает disclosure/role changes/admin operations/s
 
 ## Rate limit и secrets
 
-Migration создаёт закрытую `private.assistant_rate_limits` и узкий `SECURITY DEFINER` RPC, который принимает только HMAC-SHA256 subject hash. Лимит: 8 запросов/минуту. Нужен отдельный `AI_RATE_LIMIT_SECRET` (>=32 chars), не `LEAD_IP_HASH_SECRET`. `AI_PROVIDER`, `AI_PROVIDER_BASE_URL`, `AI_PROVIDER_API_KEY`, `AI_MODEL`, `AI_TIMEOUT_MS` server-only; no key is bundled.
+Migration создаёт закрытую `private.assistant_rate_limits` и узкий `SECURITY DEFINER` RPC, который принимает только HMAC-SHA256 subject hash. RPC исполняется только service-role клиентом server endpoint и не доступен через publishable Data API key. Лимит: 8 запросов/минуту. Нужен отдельный `AI_RATE_LIMIT_SECRET` (>=32 chars), не `LEAD_IP_HASH_SECRET`. `AI_PROVIDER`, `AI_PROVIDER_BASE_URL`, `AI_PROVIDER_API_KEY`, `AI_MODEL`, `AI_TIMEOUT_MS` server-only; no key is bundled.
+
+`assistant_logs` хранит только UUID запроса, locale, outcome/provider, duration bucket, fallback и число references — без IP, prompt, истории или PII. `assistant_knowledge` подготовлена как RLS-защищённая двуязычная база знаний для дальнейшего admin workflow.
 
 ## Known limitations
 
-Current catalog RPC has substring search primarily for localized name/brand/model/SKU; natural-language specs may fall back to a broader catalog search. No conversation persistence, analytics or provider billing is enabled. Before production set `AI_RATE_LIMIT_SECRET`; for external AI also set provider/key/model, review provider data-processing terms and cost caps.
+Current catalog RPC has substring search primarily for localized name/brand/model/SKU; natural-language specs may fall back to a broader catalog search. No conversation persistence or provider billing is enabled. Before production set `AI_RATE_LIMIT_SECRET`; for external AI also set provider/key/model, review provider data-processing terms and cost caps. Production endpoint URLs must use HTTPS.

@@ -21,6 +21,7 @@ Production-сайт магазина бытовой техники в Комра
 - Безопасная загрузка изображений без overwrite с MIME/magic/size-проверкой, compensating delete и отдельным экраном сверки Storage/metadata orphan-файлов.
 
 - RU/RO grounded AI-ассистент: bounded published-catalog context, provider-neutral server boundary, fallback без внешнего AI и HMAC rate limit.
+- Category image upload, explicit audited Telegram requeue and privacy-preserving assistant technical logs.
 
 ## Требования
 
@@ -88,6 +89,7 @@ npm run db:stop
 - `supabase/migrations/20260805190000_stage_4_catalog_seo.sql` — server search RPC и slug route history;
 - `supabase/migrations/20260805213000_stage_5_leads_telegram.sql` — заявки, статусы, rate limit и Telegram outbox;
 - `supabase/migrations/20260805213001_stage_6_admin_crud.sql` — atomic admin RPC, дополнительные integrity guards, grants/indexes и компенсирующий Storage workflow;
+- `supabase/migrations/20260806053422_stage_6_7_completion_security.sql` — category media, audited Telegram requeue, assistant telemetry и RLS/rate-limit hardening;
 - `supabase/seed.sql` — детерминированные 3 категории, 12 товаров, RU/RO, характеристики и настройки;
 - `supabase/verification/rls.sql` — transactional/rollback assertions для RLS;
 - `supabase/schema.sql` — только сохранённый исторический draft Этапа 1.
@@ -103,6 +105,7 @@ npm run db:stop
 - [docs/rls-access-matrix.md](docs/rls-access-matrix.md) — матрица доступа и ручная проверка;
 - [docs/architecture.md](docs/architecture.md) — приложение и data layer;
 - [docs/security.md](docs/security.md) — границы доверия и threat decisions;
+- [docs/deployment.md](docs/deployment.md) — production/Preview deployment, переменные окружения и безопасный rollback;
 - [docs/roadmap.md](docs/roadmap.md) — последующие этапы.
 
 Production build использует `--webpack`, потому что Turbopack в управляемой среде разработки не может открыть внутренний PostCSS-порт.

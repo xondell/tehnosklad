@@ -143,6 +143,9 @@ export type Dictionary = {
     unavailable: string;
     fallback: string;
     product: string;
+    welcome: string;
+    quickQuestions: string[];
+    leaveRequest: string;
   };
   contacts: { title: string; description: string; mapLink: string };
   legal: {

@@ -22,7 +22,7 @@ describe("lead abuse protection", () => {
   it("uses only a validated proxy address and falls back deterministically", () => {
     expect(
       extractClientAddress(
-        new Headers({ "x-forwarded-for": "203.0.113.7, 10.0.0.1" }),
+        new Headers({ "x-vercel-forwarded-for": "203.0.113.7" }),
       ),
     ).toBe("203.0.113.7");
     expect(

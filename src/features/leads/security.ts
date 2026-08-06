@@ -10,14 +10,13 @@ function hmac(secret: string, value: string): string {
 }
 
 export function extractClientAddress(headers: Headers): string {
-  for (const name of [
-    "x-vercel-forwarded-for",
-    "x-forwarded-for",
-    "x-real-ip",
-  ]) {
-    const candidate = headers.get(name)?.split(",", 1)[0]?.trim();
-    if (candidate && isIP(candidate)) return candidate;
-  }
+  // Vercel supplies this header after removing untrusted client forwarding
+  // headers. Do not trust generic X-Forwarded-For from arbitrary proxies.
+  const candidate = headers
+    .get("x-vercel-forwarded-for")
+    ?.split(",", 1)[0]
+    ?.trim();
+  if (candidate && isIP(candidate)) return candidate;
   return "unknown";
 }
 

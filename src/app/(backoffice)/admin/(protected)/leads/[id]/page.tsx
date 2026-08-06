@@ -7,7 +7,10 @@ import {
   StatusBadge,
 } from "@/components/admin/admin-ui";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { setLeadStatusAction } from "@/features/admin/actions";
+import {
+  retryLeadTelegramDeliveryAction,
+  setLeadStatusAction,
+} from "@/features/admin/actions";
 import { requireAdmin } from "@/features/admin/auth/guard";
 import { getAdminLead } from "@/features/admin/repository";
 import { isUuid, minorToMoney } from "@/features/admin/validation";
@@ -215,10 +218,27 @@ export default async function LeadPage({
                 </div>
               ))}
             </div>
-            <p className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
-              Delivery read-only. Для manual_review и неопределённых исходов
-              повторная отправка отключена: Telegram мог уже принять сообщение.
-            </p>
+            {lead.delivery.state !== "succeeded" &&
+            lead.delivery.state !== "processing" ? (
+              <form
+                action={retryLeadTelegramDeliveryAction}
+                className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-900"
+              >
+                <input name="lead_id" type="hidden" value={lead.id} />
+                {lead.delivery.state === "manual_review" ? (
+                  <label className="flex items-start gap-2">
+                    <input name="confirm_uncertain" required type="checkbox" />
+                    <span>
+                      Понимаю риск дубликата: предыдущая попытка могла быть
+                      принята Telegram.
+                    </span>
+                  </label>
+                ) : null}
+                <div className="mt-3">
+                  <SubmitButton>Повторно отправить в Telegram</SubmitButton>
+                </div>
+              </form>
+            ) : null}
           </>
         ) : (
           <p className="mt-4 text-sm text-stone-600">Delivery отсутствует.</p>

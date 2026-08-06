@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { answerAssistant } from "@/features/assistant/service";
 import { assistantSubjectHash } from "@/features/assistant/security";
 import { validateAssistantPayload } from "@/features/assistant/validation";
-import { getSiteUrl } from "@/lib/env/public";
+import { isAllowedMutationOrigin } from "@/lib/request-origin";
 import { getAssistantRateLimitSecret } from "@/lib/env/server";
-import { createPublicCatalogSupabaseClient } from "@/lib/supabase/public-server";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/service";
 const MAX_BODY_BYTES = 8 * 1024;
 function json(body: object, status: number, headers?: HeadersInit) {
   return NextResponse.json(body, {
@@ -13,7 +13,7 @@ function json(body: object, status: number, headers?: HeadersInit) {
   });
 }
 export async function POST(request: Request) {
-  if (request.headers.get("origin") !== getSiteUrl())
+  if (!isAllowedMutationOrigin(request.headers.get("origin")))
     return json({ ok: false, code: "forbidden" }, 403);
   if (
     request.headers.get("content-type")?.split(";", 1)[0] !== "application/json"
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       request.headers,
       getAssistantRateLimitSecret(),
     );
-    const { data, error } = await createPublicCatalogSupabaseClient().rpc(
+    const { data, error } = await createServiceRoleSupabaseClient().rpc(
       "consume_assistant_rate_limit",
       { subject_hash: subjectHash },
     );

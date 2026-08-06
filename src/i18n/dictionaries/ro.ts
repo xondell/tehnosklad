@@ -168,6 +168,13 @@ export const ro: Dictionary = {
       "Asistentul nu este disponibil acum. Deschideți catalogul sau sunați magazinul.",
     fallback: "Sunt afișate rezultate din căutarea în catalog.",
     product: "Deschide produsul",
+    welcome: "Bună! Vă ajut să găsiți tehnică din catalogul actual.",
+    quickQuestions: [
+      "Ce frigidere sunt în stoc?",
+      "Ajută-mă să aleg un aspirator",
+      "Unde se află magazinul?",
+    ],
+    leaveRequest: "Lasă o cerere",
   },
   contacts: {
     title: "Contacte",

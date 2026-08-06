@@ -14,6 +14,7 @@ import type {
   AssistantResponse,
 } from "@/features/assistant/types";
 import { getAssistantEnvironment } from "@/lib/env/server";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/service";
 
 function durationBucket(start: number) {
   const elapsed = Date.now() - start;
@@ -45,13 +46,36 @@ export async function answerAssistant(
   const answer = result.ok
     ? result.answer
     : fallbackAnswer(request.locale, references);
-  console.info("Assistant request", {
+  const telemetry = {
     requestId,
     outcome: result.ok ? "provider_success" : result.code,
     provider: environment.provider,
     duration: durationBucket(started),
     fallbackUsed,
     referenceCount: references.length,
-  });
+  };
+  console.info("Assistant request", telemetry);
+  // Best effort only: the assistant remains available if telemetry is down.
+  void (async () => {
+    const { error } = await createServiceRoleSupabaseClient()
+      .from("assistant_logs")
+      .insert({
+        request_id: requestId,
+        locale: request.locale,
+        outcome: telemetry.outcome,
+        provider: telemetry.provider,
+        duration_bucket: telemetry.duration,
+        fallback_used: telemetry.fallbackUsed,
+        reference_count: telemetry.referenceCount,
+      });
+    if (error)
+      console.error("Assistant telemetry failed", {
+        code: "assistant_telemetry_failed",
+      });
+  })().catch(() =>
+    console.error("Assistant telemetry failed", {
+      code: "assistant_telemetry_failed",
+    }),
+  );
   return { requestId, answer, references, fallbackUsed };
 }

@@ -67,7 +67,7 @@ Scan намеренно ограничен 1000 product folders и 1000 objects 
 
 Администратор видит сохранённые контактные данные, authoritative snapshot товара, status history, delivery state, attempts, HTTP status и безопасные error codes. Разрешены только переходы в `new`, `in_progress`, `contacted`, `closed`, `spam`; trigger пишет `changed_by=auth.uid()`.
 
-Имя, телефон, source, locale, consent, комментарий и product snapshot остаются immutable. Telegram delivery полностью read-only: ручной retry не добавлен, потому что `manual_review`/uncertain delivery мог быть принят Telegram и повтор создал бы дубликат.
+Имя, телефон, source, locale, consent, комментарий и product snapshot остаются immutable. Администратор может повторно поставить неуспешную Telegram delivery в очередь. Для `manual_review` UI требует отдельное подтверждение риска дубликата: неопределённая предыдущая попытка могла быть принята Telegram. Retry создаёт новую generation попыток и не переписывает delivery history.
 
 CSV формируется защищённым admin Route Handler. Значения, начинающиеся с `=`, `+`, `-` или `@`, экранируются от spreadsheet formula injection.
 
@@ -123,7 +123,7 @@ Integration harness требует явный `--local-only`, запрещает
 
 ## Известные ограничения
 
-- Telegram delivery admin UI сознательно read-only; отдельный безопасный retry может появиться только вместе с новой audited migration и подтверждением.
+- Ручная повторная Telegram-доставка несёт риск дубликата после `manual_review`; она требует явного подтверждения администратора и должна использоваться только после ручной проверки чата.
 - Категории и товары архивируются, а не hard-delete; используемые attribute entities удалять нельзя.
 - Orphan scan имеет описанный лимит 1000×1000 и запускается вручную.
 - Admin UI русскоязычный; управляемый публичный контент всегда требует RU и RO.

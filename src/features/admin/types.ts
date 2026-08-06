@@ -15,6 +15,8 @@ export type AdminCategory = {
   sortOrder: number;
   isPublished: boolean;
   archivedAt: string | null;
+  imageStoragePath: string | null;
+  imagePublicUrl: string | null;
   translations: Record<AdminLocale, AdminTranslation | null>;
   productCount: number;
 };

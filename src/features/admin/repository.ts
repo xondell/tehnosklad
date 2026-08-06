@@ -41,7 +41,7 @@ export async function listAdminCategories(): Promise<AdminCategory[]> {
     supabase
       .from("categories")
       .select(
-        "id,parent_id,presentation_key,sort_order,is_published,archived_at,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)",
+        "id,parent_id,presentation_key,sort_order,is_published,archived_at,image_storage_path,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)",
       )
       .order("sort_order"),
     supabase.from("products").select("id,category_id").is("archived_at", null),
@@ -60,6 +60,12 @@ export async function listAdminCategories(): Promise<AdminCategory[]> {
     sortOrder: row.sort_order,
     isPublished: row.is_published,
     archivedAt: row.archived_at,
+    imageStoragePath: row.image_storage_path,
+    imagePublicUrl: row.image_storage_path
+      ? supabase.storage
+          .from("category-images")
+          .getPublicUrl(row.image_storage_path).data.publicUrl
+      : null,
     translations: mapAdminTranslations(
       row.category_translations as AdminTranslationRow[],
     ),

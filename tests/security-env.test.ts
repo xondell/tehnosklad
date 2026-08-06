@@ -14,7 +14,10 @@ import {
   getLeadSecurityEnvironment,
   getOptionalTelegramEnvironment,
 } from "@/lib/env/server";
-import { EnvironmentConfigurationError } from "@/lib/env/shared";
+import {
+  EnvironmentConfigurationError,
+  requireValidUrl,
+} from "@/lib/env/shared";
 
 describe("admin security helpers", () => {
   it("requires both an active profile and the exact admin role", () => {
@@ -146,5 +149,23 @@ describe("lead delivery environment", () => {
       botToken: "123456:abcdefghijklmnopqrstuvwxyz_ABCD",
       chatId: "-1001234567890",
     });
+  });
+});
+
+describe("production URL environment", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("requires HTTPS in production while retaining local development support", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    expect(() => requireValidUrl("URL", "http://example.test")).toThrow(
+      EnvironmentConfigurationError,
+    );
+    expect(requireValidUrl("URL", "https://example.test")).toBe(
+      "https://example.test",
+    );
+    vi.stubEnv("NODE_ENV", "test");
+    expect(requireValidUrl("URL", "http://127.0.0.1:3100")).toBe(
+      "http://127.0.0.1:3100",
+    );
   });
 });
