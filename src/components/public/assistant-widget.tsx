@@ -70,6 +70,18 @@ export function AssistantWidget({
     if (pending) return;
     onClose();
   }
+  function cancelAndClose() {
+    controller.current?.abort();
+    onClose();
+  }
+  function clearConversation() {
+    controller.current?.abort();
+    controller.current = null;
+    setMessages([]);
+    setQuestion("");
+    setPending(false);
+    setError(false);
+  }
   async function submit(event: FormEvent) {
     event.preventDefault();
     const trimmed = question.trim();
@@ -81,13 +93,14 @@ export function AssistantWidget({
     setQuestion("");
     setPending(true);
     setError(false);
-    controller.current = new AbortController();
+    const requestController = new AbortController();
+    controller.current = requestController;
     try {
       const response = await fetch("/api/assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale, question: trimmed, history }),
-        signal: controller.current.signal,
+        signal: requestController.signal,
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || !data.ok) throw new Error("assistant");
@@ -99,11 +112,19 @@ export function AssistantWidget({
           references: data.references,
         },
       ]);
-    } catch {
+    } catch (requestError) {
+      if (
+        requestError instanceof DOMException &&
+        requestError.name === "AbortError"
+      ) {
+        return;
+      }
       setError(true);
     } finally {
-      setPending(false);
-      controller.current = null;
+      if (controller.current === requestController) {
+        setPending(false);
+        controller.current = null;
+      }
     }
   }
   function askQuickQuestion(question: string) {
@@ -143,7 +164,8 @@ export function AssistantWidget({
             className="mt-3 min-h-24 flex-1 space-y-3 overflow-y-auto"
             aria-live="polite"
           >
-            {messages.length === 1 && messages[0]?.role === "assistant" ? (
+            {messages.length === 0 ||
+            (messages.length === 1 && messages[0]?.role === "assistant") ? (
               <div className="flex flex-wrap gap-2">
                 {dictionary.assistant.quickQuestions.map((quick) => (
                   <button
@@ -194,15 +216,17 @@ export function AssistantWidget({
             ) : null}
           </div>
           <form className="mt-3 flex gap-2" onSubmit={submit}>
-            <textarea
-              aria-label={dictionary.assistant.placeholder}
-              value={question}
-              onChange={(event) => setQuestion(event.target.value)}
-              maxLength={600}
-              rows={2}
-              placeholder={dictionary.assistant.placeholder}
-              className="min-w-0 flex-1 rounded border p-2 text-sm"
-            />
+            <div className="min-w-0 flex-1 [container-type:inline-size]">
+              <textarea
+                aria-label={dictionary.assistant.placeholder}
+                value={question}
+                onChange={(event) => setQuestion(event.target.value)}
+                maxLength={600}
+                rows={2}
+                placeholder={dictionary.assistant.placeholder}
+                className="max-h-[calc(100cqi+20px)] w-full resize-y rounded border p-2 text-sm"
+              />
+            </div>
             <button type="submit" disabled={pending} className="button-primary">
               {dictionary.assistant.send}
             </button>
@@ -210,31 +234,23 @@ export function AssistantWidget({
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
             <button
               type="button"
-              disabled={pending}
-              onClick={() => {
-                controller.current?.abort();
-              }}
+              onClick={cancelAndClose}
               className="underline"
             >
               {dictionary.assistant.cancel}
             </button>
             <button
               type="button"
-              disabled={pending}
-              onClick={() => {
-                setMessages([
-                  {
-                    role: "assistant",
-                    content: dictionary.assistant.welcome,
-                  },
-                ]);
-                setError(false);
-              }}
+              onClick={clearConversation}
               className="underline"
             >
               {dictionary.assistant.clear}
             </button>
-            <Link className="underline" href={localizedPath(locale, "catalog")}>
+            <Link
+              className="underline"
+              href={localizedPath(locale, "catalog")}
+              onClick={cancelAndClose}
+            >
               {dictionary.assistant.catalog}
             </Link>
             <button
