@@ -19,7 +19,7 @@ export function isAllowedMutationOrigin(
   if (!origin) return false;
   if (origin === environment.siteUrl) return true;
   if (
-    environment.vercelEnvironment !== "preview" ||
+    !["preview", "production"].includes(environment.vercelEnvironment ?? "") ||
     !environment.vercelUrl?.trim()
   ) {
     return false;

@@ -66,10 +66,10 @@ Supabase Cron. Review the production backup and verify the affected row counts
 on staging before enabling the schedule.
 
 `NEXT_PUBLIC_SITE_URL` stays the production canonical origin in all production
-deployments. In a Vercel Preview, POST endpoints additionally accept only the
-exact Vercel system deployment origin when `VERCEL_ENV=preview` and
-`VERCEL_URL` is supplied by Vercel; no wildcard or client-supplied Host header
-is trusted.
+deployments. In a Vercel Preview or a Vercel Production deployment, POST
+endpoints additionally accept only the exact Vercel system deployment origin
+when `VERCEL_URL` is supplied by Vercel; no wildcard or client-supplied Host
+header is trusted.
 
 ## Supabase
 
