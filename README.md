@@ -1,6 +1,6 @@
 # Tehnosklad
 
-Production-сайт магазина бытовой техники в Комрате. Завершены безопасный Supabase foundation, серверный каталог/SEO и **Этап 5: заявки и Telegram delivery**.
+Production-сайт магазина бытовой техники в Комрате. Завершены безопасный Supabase foundation, серверный каталог/SEO, заявки/Telegram delivery и **Этап 6: защищённый административный CRUD**.
 
 ## Реализовано
 
@@ -16,8 +16,11 @@ Production-сайт магазина бытовой техники в Комра
 - История опубликованных slug с постоянным redirect на актуальный URL.
 - Реальная RU/RO форма заявки с product context, server validation, honeypot, rate limit и idempotency.
 - Durable leads/status history и Telegram outbox: заявка фиксируется до внешней отправки, а каждый результат доставки журналируется.
+- Полный `/admin`: dashboard, категории/подкатегории, группы и конструктор характеристик, товары, изображения, заявки и whitelist публичных настроек.
+- Все административные изменения выполняются через Server Actions и узкие atomic RPC, повторно проверяют активную admin-роль и инвалидируют нужные cache tags.
+- Безопасная загрузка изображений без overwrite с MIME/magic/size-проверкой, compensating delete и отдельным экраном сверки Storage/metadata orphan-файлов.
 
-Полный admin CRUD, загрузчик изображений и AI намеренно не реализованы.
+AI-ассистент относится к Этапу 7 и намеренно ещё не реализован.
 
 ## Требования
 
@@ -84,6 +87,7 @@ npm run db:stop
 - `supabase/migrations/20260805111516_initial_schema.sql` — исходная production migration;
 - `supabase/migrations/20260805190000_stage_4_catalog_seo.sql` — server search RPC и slug route history;
 - `supabase/migrations/20260805213000_stage_5_leads_telegram.sql` — заявки, статусы, rate limit и Telegram outbox;
+- `supabase/migrations/20260805213001_stage_6_admin_crud.sql` — atomic admin RPC, дополнительные integrity guards, grants/indexes и компенсирующий Storage workflow;
 - `supabase/seed.sql` — детерминированные 3 категории, 12 товаров, RU/RO, характеристики и настройки;
 - `supabase/verification/rls.sql` — transactional/rollback assertions для RLS;
 - `supabase/schema.sql` — только сохранённый исторический draft Этапа 1.
@@ -94,6 +98,7 @@ npm run db:stop
 - [docs/stage-3-runtime-validation.md](docs/stage-3-runtime-validation.md) — фактические local runtime-проверки Этапа 3.5;
 - [docs/stage-4.md](docs/stage-4.md) — URL-контракт каталога, SEO, slug redirects и cache invalidation;
 - [docs/stage-5.md](docs/stage-5.md) — контракт заявок, защита endpoint и модель Telegram delivery;
+- [docs/stage-6.md](docs/stage-6.md) — административные разделы, mutation/storage boundaries, cache invalidation и проверки;
 - [docs/supabase-setup.md](docs/supabase-setup.md) — локальная/remote настройка и первый admin;
 - [docs/rls-access-matrix.md](docs/rls-access-matrix.md) — матрица доступа и ручная проверка;
 - [docs/architecture.md](docs/architecture.md) — приложение и data layer;

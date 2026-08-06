@@ -9,6 +9,7 @@ export default defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "sklad/**",
     "supabase/.temp/**",
     "next-env.d.ts",
   ]),

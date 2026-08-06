@@ -42,6 +42,8 @@
 - Login возвращает одинаковую ошибку для неправильного пароля и отсутствующей admin-role.
 - Non-admin после входа локально разлогинивается.
 - Server Actions рассматриваются как mutation endpoints; Next.js same-origin protection дополняет повторная проверка роли.
+- Каждый admin Server Action сначала вызывает authoritative `requireAdmin()`, затем mutation RPC независимо вызывает `private.is_admin()` и работает как `SECURITY INVOKER` под RLS.
+- Admin UI принимает только типизированные/нормализованные DTO; SQL message, stack, cookie и token заменяются стабильными безопасными кодами.
 
 ## Storage
 
@@ -57,7 +59,9 @@ Bucket `product-images` создаётся migration:
 
 Public bucket обходит Storage SELECT RLS при чтении известного URL. Поэтому туда нельзя загружать секретные материалы; random object UUID снижает угадываемость draft URL. Если будущему workflow потребуется строго скрывать draft media, bucket нужно мигрировать в private и выдавать signed URLs.
 
-Удаление DB row не удаляет object транзакционно. Будущий admin workflow сначала помечает запись, удаляет object, затем metadata; периодическая orphan-проверка остаётся обязательной.
+Удаление DB row не удаляет object транзакционно. Admin workflow сначала выставляет `deletion_pending_at` и скрывает metadata из public policy, затем удаляет object и только после этого metadata. При Storage error marker отменяется. `/admin/media/orphans` обнаруживает object без metadata, metadata без object и незавершённое удаление; действие повторно проверяет текущее состояние перед cleanup/reconcile.
+
+Browser не передаёт доверенный bucket/path: bucket фиксирован server-side, path генерируется как `<product_uuid>/<random_v4_uuid>.<canonical_extension>`, `upsert:false`. До upload проверяются лимит 5 MiB, MIME, extension и magic bytes JPEG/PNG/WebP/AVIF. Alt RU/RO создаются атомарно с metadata.
 
 ## Заявки и Telegram
 
@@ -76,5 +80,6 @@ Public bucket обходит Storage SELECT RLS при чтении извест
 - `SUPABASE_SERVICE_ROLE_KEY` никогда не имеет `NEXT_PUBLIC_` и доступен только leaf server module.
 - `LEAD_IP_HASH_SECRET`, `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` никогда не имеют `NEXT_PUBLIC_` и не находятся в `site_settings`.
 - `site_settings` имеет закрытый whitelist публичных ключей, поэтому secret нельзя случайно переключить флагом `is_public`.
+- Authenticated role не может insert/delete или менять ключ/locale публичной настройки; RPC разрешает менять только `value` для семи заранее существующих ключей и сразу RU/RO парой.
 - Supabase transport отбрасывает внутренний error object и выбрасывает санитизированный application error; UI не получает SQL/stack/cookies/token.
 - Server log содержит только имя ресурса и application error code; keys, cookies, tokens и user object не логируются.

@@ -167,7 +167,10 @@ begin
       'product_attribute_values_attribute_fk_idx',
       'category_slug_routes_entity_idx', 'product_slug_routes_entity_idx',
       'leads_product_created_idx', 'lead_status_history_lead_created_idx',
-      'lead_delivery_attempts_delivery_started_idx'
+      'lead_delivery_attempts_delivery_started_idx',
+      'product_attribute_values_option_fk_idx',
+      'lead_status_history_changed_by_fk_idx',
+      'leads_source_locale_created_idx'
     ]) as expected(index_name)
     where not exists (
       select 1 from pg_class as index_relation
@@ -244,6 +247,94 @@ begin
     'authenticated', 'public.claim_lead_telegram_delivery(uuid)', 'execute'
   ) then
     raise exception 'Stage 5 function grants mismatch';
+  end if;
+
+  if not has_function_privilege(
+    'authenticated',
+    'public.admin_save_category(uuid,uuid,text,integer,boolean,jsonb,jsonb)',
+    'execute'
+  ) or not has_function_privilege(
+    'authenticated',
+    'public.admin_save_product(uuid,uuid,text,text,text,bigint,bigint,public.availability_status,integer,boolean,boolean,boolean,integer,jsonb,jsonb)',
+    'execute'
+  ) or not has_function_privilege(
+    'authenticated',
+    'public.admin_create_product_image(uuid,text,text,text,integer,boolean)',
+    'execute'
+  ) or not has_function_privilege(
+    'authenticated',
+    'public.admin_set_lead_status(uuid,public.lead_status)',
+    'execute'
+  ) or not has_function_privilege(
+    'authenticated',
+    'public.admin_set_public_site_setting_pair(text,text,text)',
+    'execute'
+  ) or has_function_privilege(
+    'anon',
+    'public.admin_save_category(uuid,uuid,text,integer,boolean,jsonb,jsonb)',
+    'execute'
+  ) or has_function_privilege(
+    'service_role',
+    'public.admin_set_lead_status(uuid,public.lead_status)',
+    'execute'
+  ) then
+    raise exception 'Stage 6 function grants mismatch';
+  end if;
+
+  if (
+    select count(*)
+    from pg_proc as function_row
+    join pg_namespace as namespace on namespace.oid = function_row.pronamespace
+    where namespace.nspname = 'public'
+      and function_row.proname like 'admin\_%' escape '\'
+  ) <> 20 or exists (
+    select 1
+    from pg_proc as function_row
+    join pg_namespace as namespace on namespace.oid = function_row.pronamespace
+    where namespace.nspname = 'public'
+      and function_row.proname like 'admin\_%' escape '\'
+      and (
+        not has_function_privilege('authenticated', function_row.oid, 'execute')
+        or has_function_privilege('anon', function_row.oid, 'execute')
+        or has_function_privilege('service_role', function_row.oid, 'execute')
+        or exists (
+          select 1
+          from aclexplode(
+            coalesce(
+              function_row.proacl,
+              acldefault('f', function_row.proowner)
+            )
+          ) as privilege
+          where privilege.grantee = 0
+            and privilege.privilege_type = 'EXECUTE'
+        )
+      )
+  ) then
+    raise exception 'Stage 6 admin RPC privilege inventory mismatch';
+  end if;
+
+  if has_table_privilege('authenticated', 'public.site_settings', 'insert')
+    or has_table_privilege('authenticated', 'public.site_settings', 'delete')
+    or has_table_privilege('authenticated', 'public.site_settings', 'update')
+    or not has_column_privilege(
+      'authenticated', 'public.site_settings', 'value', 'update'
+    )
+    or has_column_privilege(
+      'authenticated', 'public.site_settings', 'key', 'update'
+    )
+    or has_column_privilege(
+      'authenticated', 'public.site_settings', 'locale', 'update'
+    )
+  then
+    raise exception 'Stage 6 site settings grants mismatch';
+  end if;
+
+  if not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'product_images'
+      and column_name = 'deletion_pending_at'
+  ) then
+    raise exception 'product image deletion marker is missing';
   end if;
 end;
 $$;
@@ -380,6 +471,14 @@ begin
   end if;
 
   begin
+    update public.leads set name = 'Изменённое имя'
+    where id = created_lead_id;
+    raise exception 'immutable lead name unexpectedly changed';
+  exception when invalid_parameter_value then
+    if sqlerrm <> 'lead fields are immutable' then raise; end if;
+  end;
+
+  begin
     perform public.submit_public_lead(
       '93000000-0000-4000-8000-000000000001',
       repeat('d', 64), repeat('b', 64), repeat('c', 64),
@@ -407,6 +506,48 @@ begin
   where id = '20000000-0000-4000-8000-000000000001';
   set constraints all immediate;
   set constraints all deferred;
+end;
+$$;
+
+insert into public.categories (
+  id, presentation_key, is_published, sort_order
+) values (
+  '90000000-0000-4000-8000-000000000020', 'generic', false, 997
+), (
+  '90000000-0000-4000-8000-000000000021', 'generic', false, 996
+);
+
+update public.categories
+set parent_id = '90000000-0000-4000-8000-000000000021'
+where id = '90000000-0000-4000-8000-000000000020';
+
+do $$
+begin
+  begin
+    update public.categories
+    set parent_id = '90000000-0000-4000-8000-000000000020'
+    where id = '90000000-0000-4000-8000-000000000021';
+    raise exception 'category parent cycle unexpectedly succeeded';
+  exception when check_violation then
+    if sqlerrm <> 'category_parent_cycle' then raise; end if;
+  end;
+end;
+$$;
+
+do $$
+begin
+  begin
+    insert into public.attribute_options (
+      id, attribute_id, code, sort_order
+    ) values (
+      '92000000-0000-4000-8000-000000000020',
+      '31000000-0000-4000-8000-000000000001',
+      'invalid_text_option', 999
+    );
+    raise exception 'option for text attribute unexpectedly succeeded';
+  exception when raise_exception then
+    if sqlerrm <> 'Options require a select attribute' then raise; end if;
+  end;
 end;
 $$;
 

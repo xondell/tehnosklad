@@ -103,6 +103,8 @@ function cleanChildEnvironment() {
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_SECRET_KEY",
     "TEST_SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_DB_PASSWORD",
     "LEAD_IP_HASH_SECRET",
     "TELEGRAM_BOT_TOKEN",
     "TELEGRAM_CHAT_ID",
@@ -115,6 +117,8 @@ function cleanChildEnvironment() {
 if (!process.argv.includes("--local-only")) {
   fail("the explicit --local-only flag is required");
 }
+
+run("docker", ["version"]);
 
 for (const fileName of [
   ".env",
@@ -230,7 +234,11 @@ const nextEnvironment = {
 
 run(
   process.execPath,
-  [path.join(root, "node_modules", "next", "dist", "bin", "next"), "build"],
+  [
+    path.join(root, "node_modules", "next", "dist", "bin", "next"),
+    "build",
+    "--webpack",
+  ],
   { env: nextEnvironment, stdio: "inherit" },
 );
 

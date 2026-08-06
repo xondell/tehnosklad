@@ -112,6 +112,10 @@ commit;
 4. Auth user без `user_roles.admin` должен получить нейтральную ошибку и не попасть в dashboard.
 5. После деактивации `profiles.is_active=false` существующий пользователь должен потерять доступ при следующей server check.
 
+После входа доступны реальные разделы `/admin/categories`, `/admin/attribute-groups`, `/admin/attributes`, `/admin/products`, `/admin/leads`, `/admin/settings` и `/admin/media/orphans`. Начинайте с draft-сущностей: создайте RU/RO, затем bindings/required values и только после этого включайте публикацию. Ошибка publication constraint показывается как безопасное сообщение, а транзакция сохраняет прежнее корректное состояние.
+
+Для изображения выберите JPEG/PNG/WebP/AVIF до 5 MiB и сразу заполните оба alt-текста. Не загружайте объект вручную под выбранным именем: имя генерирует Server Action, overwrite выключен. После аварии upload/delete откройте `/admin/media/orphans` и выполните точечную сверку. Экран ограничен 1000 product folders и 1000 objects в одной папке за один scan; при превышении используйте отдельный reviewed maintenance script с pagination.
+
 ## 8. Проверка RLS
 
 Запустите `supabase/verification/rls.sql` и `supabase/verification/integrity.sql` в локальном SQL Editor, затем сценарии из [rls-access-matrix.md](rls-access-matrix.md). В hosted Dashboard дополнительно запустите Security/Performance Advisors.
@@ -135,11 +139,12 @@ CATALOG_DATA_SOURCE=supabase
 
 ## 10. Статус проверки
 
-Локально подтверждены clean migration/seed, повторные reset, DB lint, SQL
-assertions, anon/non-admin/admin/inactive-admin RLS, Storage, реальный
-email/password login/logout/cookie refresh, repository и production server.
+Полный local прогон выполняет clean migration/seed, DB lint, SQL assertions,
+anon/non-admin/admin/inactive-admin RLS, Storage, реальный email/password
+login/logout/cookie refresh, административный CRUD, revalidation и production server.
 Запуск: `npm run test:integration:local`; harness перед HTTP-проверками сам
-делает свежий production build с локальными Supabase URL и publishable key.
+проверяет Docker/local target, выполняет SQL verification и делает свежий
+production build с локальными Supabase URL и publishable key.
 Подробный отчёт:
 [stage-3-runtime-validation.md](stage-3-runtime-validation.md).
 

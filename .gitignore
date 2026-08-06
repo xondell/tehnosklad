@@ -23,3 +23,6 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+# Imported nested archive copy (not part of this repository)
+/sklad/

@@ -39,7 +39,7 @@ Supabase transport получает списки товаров одним bulk 
 - Public locale shell и все public страницы request-rendered (`force-dynamic`), поэтому build не требует доступного remote Supabase и не замораживает demo-data в production artifact.
 - Category/product slug обслуживаются on demand.
 - Публичные repository queries кэшируются на 300 секунд. Все locale/slug/category параметры входят в ключ.
-- В будущем admin mutations смогут использовать tags `catalog`, `products`, `categories`, `site-settings` для on-demand invalidation.
+- Admin mutations инвалидируют tags `catalog`, `products`, `categories`, `site-settings` по доменному scope; admin pages дополнительно revalidate свои paths.
 - `/admin` и `/admin/login` — `force-dynamic`; auth responses получают `private, no-store`.
 
 ## Auth flow
@@ -51,6 +51,21 @@ Supabase transport получает списки товаров одним bulk 
 5. RLS остаётся последней линией защиты будущих catalog mutations.
 
 Proxy не запрашивает роль из БД и не является единственной защитой.
+
+## Admin mutation flow
+
+```text
+Admin Server Component
+  -> requireAdmin() + user-scoped Supabase reads under RLS
+    -> Server Action (повторный requireAdmin + server validation)
+      -> SECURITY INVOKER admin_* RPC (private.is_admin + RLS + DB constraints)
+        -> cache tag/path invalidation
+          -> 303 redirect с санитизированным result code
+```
+
+Atomic RPC не используют service role и временно оставляют сущность draft при сохранении переводов/полей, затем включают публикацию в той же транзакции. Deferred publication triggers проверяют итоговое состояние. Сырые SQL errors не переходят в URL/UI.
+
+Изображение проходит отдельную границу: Server Action валидирует фактическую сигнатуру/MIME/размер, генерирует immutable path, загружает object с `upsert:false`, затем создаёт metadata через RPC. Ошибка metadata вызывает compensating Storage delete. Удаление использует `mark -> object delete -> finalize`; экран `/admin/media/orphans` повторно сканирует Storage перед любой сверкой.
 
 ## Data flow заявки
 
@@ -81,6 +96,8 @@ src/
     data.ts, repository.ts, demo-repository.ts
     supabase/{transport,repository,mapper,rows}.ts
   features/admin/auth/
+  features/admin/{actions,repository,validation,mapper,types}.ts
+  components/admin/
   features/leads/
   app/api/leads/route.ts
   lib/env/
@@ -95,4 +112,4 @@ supabase/
 
 ## Следующие внешние границы
 
-CRUD и Storage upload UI относятся к следующему административному этапу. AI Route Handler и provider interface появятся только после определения контракта; прямой anon INSERT ни для заявок, ни для AI-истории не предусматривается.
+AI Route Handler и provider interface появятся только после определения контракта; прямой anon INSERT ни для заявок, ни для AI-истории не предусматривается.

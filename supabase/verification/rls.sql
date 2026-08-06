@@ -39,6 +39,19 @@ insert into public.product_translations (
     'rls-draft-product-ro', 'Nu este vizibil', 'Nu este vizibil'
   );
 
+insert into public.product_images (
+  id, product_id, storage_path, sort_order, is_primary, deletion_pending_at
+) values (
+  '90000000-0000-4000-8000-000000000030',
+  '20000000-0000-4000-8000-000000000001',
+  '20000000-0000-4000-8000-000000000001/90000000-0000-4000-8000-000000000031.webp',
+  999, false, now()
+);
+insert into public.product_image_translations (image_id, locale, alt_text)
+values
+  ('90000000-0000-4000-8000-000000000030', 'ru', 'Скрытое удаление'),
+  ('90000000-0000-4000-8000-000000000030', 'ro', 'Ștergere ascunsă');
+
 set local role anon;
 
 do $$
@@ -103,6 +116,16 @@ begin
     raise exception 'anon can read a draft product or child translation';
   end if;
 
+  if exists (
+    select 1 from public.product_images
+    where id = '90000000-0000-4000-8000-000000000030'
+  ) or exists (
+    select 1 from public.product_image_translations
+    where image_id = '90000000-0000-4000-8000-000000000030'
+  ) then
+    raise exception 'anon can read deletion-pending image metadata';
+  end if;
+
   if not exists (
     select 1 from public.attribute_groups where code = 'general'
   ) then
@@ -158,6 +181,17 @@ begin
   then
     raise exception 'anonymous lead storage access is public';
   end if;
+  if has_function_privilege(
+    'anon',
+    'public.admin_save_category(uuid,uuid,text,integer,boolean,jsonb,jsonb)',
+    'execute'
+  ) or has_function_privilege(
+    'anon',
+    'public.admin_set_lead_status(uuid,public.lead_status)',
+    'execute'
+  ) then
+    raise exception 'anonymous role can execute Stage 6 admin RPC';
+  end if;
 end;
 $$;
 
@@ -186,6 +220,14 @@ begin
     insert into public.user_roles (user_id, role)
     values ('90000000-0000-4000-8000-000000000099', 'admin');
     raise exception 'authenticated non-admin self-role insert succeeded';
+  exception when insufficient_privilege then
+      null;
+  end;
+  begin
+    perform public.admin_set_lead_status(
+      '90000000-0000-4000-8000-000000000099', 'spam'
+    );
+    raise exception 'authenticated non-admin admin RPC succeeded';
   exception when insufficient_privilege then
     null;
   end;

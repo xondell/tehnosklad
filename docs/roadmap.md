@@ -48,11 +48,16 @@
 
 Подробности: [stage-5.md](stage-5.md).
 
-## Этап 6 — административный CRUD
+## Этап 6 — административный CRUD — завершён
 
-- CRUD категорий, характеристик и товаров вертикальными срезами.
-- Storage upload workflow, orphan cleanup и revalidation tags.
-- Заявки и публичные настройки без фиктивных кнопок.
+- Защищённый responsive admin shell и dashboard.
+- CRUD категорий, групп/характеристик/options/category bindings и товаров со strict RU/RO и publication invariants.
+- Storage upload/delete workflow, metadata compensation, orphan reconciliation и точечная cache invalidation.
+- Фильтруемые заявки с immutable snapshot/history/read-only Telegram delivery и сменой статуса.
+- Публичные настройки только по закрытому whitelist.
+- Unit, SQL и local production integration coverage для полного admin-среза.
+
+Подробности: [stage-6.md](stage-6.md).
 
 ## Этап 7 — AI-ассистент
 
