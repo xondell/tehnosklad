@@ -121,12 +121,27 @@ test.describe("public shell", () => {
   test("footer contains the localized safe OSMI link", async ({ page }) => {
     await page.goto("/ru");
     const link = page.getByRole("link", { name: /Сайт компании OSMI/ });
+    const footer = page.getByRole("contentinfo");
+    const signature = page.getByTestId("osmi-signature");
     await expect(
       page.getByText("Разработано компанией", { exact: false }),
     ).toBeVisible();
     await expect(link).toHaveAttribute("href", "https://osmi-topaz.vercel.app");
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    const [footerBox, signatureBox] = await Promise.all([
+      footer.boundingBox(),
+      signature.boundingBox(),
+    ]);
+    expect(footerBox).not.toBeNull();
+    expect(signatureBox).not.toBeNull();
+    expect(
+      Math.abs(
+        signatureBox!.x +
+          signatureBox!.width / 2 -
+          (footerBox!.x + footerBox!.width / 2),
+      ),
+    ).toBeLessThanOrEqual(1);
 
     await page.goto("/ro");
     await expect(

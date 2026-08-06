@@ -88,12 +88,15 @@ export function SiteFooter({
         </div>
       </PageContainer>
       <div className="border-t border-stone-800">
-        <PageContainer className="flex flex-col gap-2 py-4 text-sm text-stone-400 sm:flex-row sm:items-center sm:justify-between">
-          <span>
+        <PageContainer className="grid gap-2 py-4 text-center text-sm text-stone-400 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:text-left">
+          <span className="sm:justify-self-start">
             © {new Date().getFullYear()} {siteConfig.name}.{" "}
             {dictionary.footer.rights}
           </span>
-          <span>
+          <span
+            className="justify-self-center text-center sm:col-start-2"
+            data-testid="osmi-signature"
+          >
             {dictionary.footer.developedBy}{" "}
             <a
               aria-label={dictionary.footer.osmiLinkLabel}
