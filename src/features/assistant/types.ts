@@ -27,6 +27,7 @@ export type AssistantResponse = {
 export type ProviderInput = {
   locale: Locale;
   question: string;
+  history: AssistantHistoryMessage[];
   context: string;
 };
 export type ProviderResult =

@@ -2,13 +2,15 @@
 
 ## Результат
 
-Добавлен публичный RU/RO виджет и `POST /api/assistant`. Браузер передаёт только locale, вопрос и не более шести коротких реплик; история остаётся в памяти вкладки и не пишется в БД/localStorage. Endpoint проверяет same-origin, JSON, 8 KiB body, whitelist полей/ролей и `Cache-Control: no-store`.
+Добавлен публичный RU/RO виджет и `POST /api/assistant`. Браузер передаёт только locale, вопрос и не более шести коротких реплик; история остаётся в памяти вкладки, передаётся provider для понимания уточнений и не пишется в БД/localStorage. Endpoint проверяет same-origin, JSON, 8 KiB body, whitelist полей/ролей и `Cache-Control: no-store`.
 
 ## Grounding и provider boundary
 
 `AssistantProvider` изолирует внешний adapter. Сейчас поддерживаются `fallback` (default, без сети) и `openai-compatible` adapter с server-only `AI_PROVIDER_BASE_URL`; автоматические тесты используют только deterministic fallback и никогда не вызывают provider. Перед provider сервер через публичный RLS-safe catalog repository выполняет bounded search (5 published products), allowlist-ит ID, localized name/category/brand/model/price/stock/specifications и canonical local URL. Service-role и tables leads/outbox не используются.
 
-Ответ provider — strict JSON; HTML, links и price tokens убираются. Ссылки, карточки, цены и availability UI собирает исключительно из authoritative DTO. При отсутствии ключа, timeout, 429/5xx или malformed response fallback возвращает результаты deterministic search, каталог и телефонный путь.
+Адрес, телефон, график и опубликованные юридические реквизиты обрабатываются детерминированно из public site settings и legal environment без обращения к AI. Для остальных вопросов provider получает общий grounding из публичных настроек, релевантных активных записей `assistant_knowledge`, публичных юридических документов и authoritative catalog DTO. История используется только как разговорный контекст и не считается источником фактов.
+
+Ответ provider — strict JSON; HTML, links и price tokens убираются. Ссылки, карточки, цены и availability UI собирает исключительно из authoritative DTO. При отсутствии ключа, timeout, 429/5xx или malformed response fallback возвращает релевантную подтверждённую статью, результаты deterministic catalog search либо безопасно предлагает связаться с магазином по номеру из public settings.
 
 ## Threat model
 
