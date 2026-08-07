@@ -42,7 +42,7 @@ test.describe("catalog assistant widget", () => {
     await expect(dialog).toBeHidden();
   });
 
-  test("question field stays between 25 and 287 pixels", async ({ page }) => {
+  test("question field stays between 40 and 287 pixels", async ({ page }) => {
     const question = page.getByRole("textbox", {
       name: "Например: нужен холодильник",
     });
@@ -54,7 +54,7 @@ test.describe("catalog assistant widget", () => {
       };
     });
 
-    expect(limits.minHeight).toBe(25);
+    expect(limits.minHeight).toBe(40);
     expect(limits.maxHeight).toBe(287);
   });
 });

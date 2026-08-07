@@ -188,6 +188,9 @@
   background: var(--brand);
   color: #171717;
 }
+.admin-nav-link--active:hover {
+  color: #e7e5e4;
+}
 .admin-form-grid {
   display: grid;
   gap: 1rem;
