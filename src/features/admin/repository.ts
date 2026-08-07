@@ -335,9 +335,11 @@ function mapProduct(
       .map((image) => ({
         id: image.id,
         storagePath: image.storage_path,
-        publicUrl: supabase.storage
-          .from("product-images")
-          .getPublicUrl(image.storage_path).data.publicUrl,
+        publicUrl: image.storage_path.startsWith("static/")
+          ? `/${image.storage_path.slice("static/".length)}`
+          : supabase.storage
+              .from("product-images")
+              .getPublicUrl(image.storage_path).data.publicUrl,
         sortOrder: image.sort_order,
         isPrimary: image.is_primary,
         deletionPendingAt: image.deletion_pending_at,

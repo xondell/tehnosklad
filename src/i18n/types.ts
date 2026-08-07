@@ -41,6 +41,7 @@ export type Dictionary = {
     inStock: string;
     onOrder: string;
     outOfStock: string;
+    priceOnRequest: string;
     demoNotice: string;
     mapPlaceholder: string;
     breadcrumbsHome: string;

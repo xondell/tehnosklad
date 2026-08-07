@@ -51,6 +51,12 @@ function minorUnits(value: number | string, field: string): number {
   return Number(parsed);
 }
 
+function imageUrl(storagePath: string, publicUrl: string): string {
+  return storagePath.startsWith("static/")
+    ? `/${storagePath.slice("static/".length)}`
+    : publicUrl;
+}
+
 export function mapCategoryRow(
   row: DbCategoryRow,
   locale: Locale,
@@ -233,7 +239,7 @@ export function mapProductRow(
     images: row.product_images
       .map((image) => ({
         id: image.id,
-        url: image.public_url,
+        url: imageUrl(image.storage_path, image.public_url),
         storagePath: image.storage_path,
         alt: translationFor(
           image.product_image_translations,

@@ -37,6 +37,7 @@ export const ru: Dictionary = {
     inStock: "В наличии",
     onOrder: "Под заказ",
     outOfStock: "Нет в наличии",
+    priceOnRequest: "Цена по запросу",
     demoNotice: "Демонстрационные данные для разработки",
     mapPlaceholder: "Карта будет добавлена перед запуском",
     breadcrumbsHome: "Главная",

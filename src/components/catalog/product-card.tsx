@@ -73,7 +73,9 @@ export function ProductCard({
         <div className="mt-auto pt-4">
           <div className="flex items-end gap-2">
             <strong className="text-xl font-black tracking-tight">
-              {formatPrice(product.priceMinor, locale)}
+              {product.priceMinor > 0
+                ? formatPrice(product.priceMinor, locale)
+                : dictionary.common.priceOnRequest}
             </strong>
             {product.oldPriceMinor && discount ? (
               <s className="mb-0.5 text-sm text-stone-500">
