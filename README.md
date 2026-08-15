@@ -1,69 +1,140 @@
-# Tehnosklad
+# 🏠 Tehnosklad
 
-Production-сайт магазина бытовой техники в Комрате. Завершены безопасный Supabase foundation, серверный каталог/SEO, заявки/Telegram delivery, защищённый административный CRUD и **Этап 7: grounded AI-ассистент каталога**.
+<div align="center">
 
-## Реализовано
+### Production-ready bilingual appliance storefront for Moldova
 
-- Next.js 16.3, React 19, TypeScript, App Router и Tailwind CSS 4.
-- Публичная адаптивная витрина на русском и румынском.
-- Версионируемая PostgreSQL-схема, seed, RLS, явные grants и Storage bucket.
-- Server-only repository/data layer с Supabase и demo implementations.
-- Strict RU/RO mapping без скрытой подмены отсутствующего перевода.
-- Supabase SSR Auth, `proxy.ts`, защищённый `/admin` и проверка роли на сервере.
-- 5-минутный cache публичных запросов с locale в аргументах; admin всегда dynamic.
-- URL-driven server search, фильтры, сортировка и пагинация без client-only состояния.
-- Localized metadata, canonical/hreflang, JSON-LD, sitemap, robots и Open Graph images.
-- История опубликованных slug с постоянным redirect на актуальный URL.
-- Реальная RU/RO форма заявки с product context, server validation, honeypot, rate limit и idempotency.
-- Durable leads/status history и Telegram outbox: заявка фиксируется до внешней отправки, а каждый результат доставки журналируется.
-- Полный `/admin`: dashboard, категории/подкатегории, группы и конструктор характеристик, товары, изображения, заявки и whitelist публичных настроек.
-- Все административные изменения выполняются через Server Actions и узкие atomic RPC, повторно проверяют активную admin-роль и инвалидируют нужные cache tags.
-- Безопасная загрузка изображений без overwrite с MIME/magic/size-проверкой, compensating delete и отдельным экраном сверки Storage/metadata orphan-файлов.
+![Next.js](https://img.shields.io/badge/Next.js-16.3-000000?logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?logo=supabase&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)
 
-- RU/RO grounded AI-ассистент: bounded published-catalog context, provider-neutral server boundary, fallback без внешнего AI и HMAC rate limit.
-- Category image upload, explicit audited Telegram requeue and privacy-preserving assistant technical logs.
+</div>
 
-## Требования
+A full-stack e-commerce lead-generation platform for **Comrat, Moldova**, with a public catalog, protected administration, Telegram delivery, Supabase backend, and a grounded RU/RO AI catalog assistant.
 
-- Node.js 22+ и npm 10+.
-- Docker-compatible runtime только для локального Supabase stack.
+## ✨ Core capabilities
 
-## Быстрый запуск в demo-режиме
+### Public storefront
+- 🇷🇺 / 🇷🇴 Russian and Romanian catalog
+- 🔎 URL-driven search, filters, sorting and pagination
+- 🧩 Categories, subcategories and configurable product attributes
+- 🔗 Stable localized product URLs with historical slug redirects
+- 📱 Responsive storefront
+- 🖼 Product and category media
+- 🔍 Canonical/hreflang, JSON-LD, sitemap, robots and Open Graph
+- 🤖 Grounded catalog AI assistant
+
+### Lead pipeline
+- localized contact forms;
+- product context;
+- server-side validation and honeypot;
+- rate limiting and idempotency;
+- durable lead storage;
+- Telegram delivery queue/history;
+- audited Telegram requeue.
+
+### Administration
+
+Protected `/admin` includes dashboard, category/subcategory management, attribute builder, product CRUD, images, leads, public settings, and storage/metadata reconciliation.
+
+## 🤖 Grounded AI assistant
+
+The RU/RO assistant uses bounded **published catalog context**. A deterministic fallback works without a paid external AI provider:
+
+```env
+AI_PROVIDER=fallback
+```
+
+The assistant does not receive customer lead records.
+
+## 🏗 Architecture
+
+```mermaid
+flowchart LR
+    U[Customer] --> N[Next.js storefront]
+    A[Admin] --> AD[/admin]
+    N --> S[Server data layer]
+    AD --> S
+    S --> DB[(Supabase PostgreSQL)]
+    S --> ST[Supabase Storage]
+    N --> L[Lead endpoint]
+    L --> DB
+    L --> T[Telegram outbox]
+    N --> AI[Grounded AI assistant]
+    AI --> C[Published catalog]
+```
+
+## 🛠 Tech stack
+
+| Area | Technology |
+|---|---|
+| Framework | Next.js 16.3 / App Router |
+| UI | React 19 |
+| Language | TypeScript 5.9 |
+| Styling | Tailwind CSS 4 |
+| Database | Supabase PostgreSQL |
+| Authentication | Supabase SSR Auth |
+| Storage | Supabase Storage |
+| Tests | Vitest + Playwright |
+| Deployment target | Vercel |
+
+## 🚀 Quick start
+
+Requires Node.js 22.x and npm 10+.
 
 ```bash
+git clone https://github.com/xondell/tehnosklad.git
+cd tehnosklad
 npm ci
 cp .env.example .env.local
+```
+
+For demo mode:
+
+```env
+CATALOG_DATA_SOURCE=demo
+```
+
+Then:
+
+```bash
 npm run dev
 ```
 
-В `.env.local` установите `CATALOG_DATA_SOURCE=demo` (example намеренно настроен на production-safe `supabase`). Корневой URL перенаправляет на `/ru`, румынская версия доступна на `/ro`.
+The root redirects to `/ru`; Romanian is available at `/ro`.
 
-## Запуск с Supabase
+## 🗄 Local Supabase
+
+A Docker-compatible runtime is required.
 
 ```bash
 npm run db:start
 npm run db:reset:local
 ```
 
-Скопируйте локальные URL и publishable key из вывода CLI в `.env.local`, установите `CATALOG_DATA_SOURCE=supabase` и перезапустите Next.js. Полная инструкция: [docs/supabase-setup.md](docs/supabase-setup.md).
+Then configure `.env.local` with local Supabase values and set:
 
-## Переменные окружения
+```env
+CATALOG_DATA_SOURCE=supabase
+```
 
-Browser-safe:
+See `docs/supabase-setup.md` for the complete flow.
 
-- `NEXT_PUBLIC_SITE_URL`;
-- `NEXT_PUBLIC_SUPABASE_URL`;
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+## 🔐 Environment model
 
-Server-only:
+Browser-safe variables include:
 
-- `SUPABASE_SERVICE_ROLE_KEY` — используется только server-only хранилищем заявок/очереди и не используется для чтения каталога/Auth;
-- `LEAD_IP_HASH_SECRET` — отдельный случайный секрет не короче 32 символов для HMAC IP/телефона и idempotency payload;
-- `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` — парная server-only конфигурация доставки; локально может отсутствовать, в production нужна для уведомлений.
+```env
+NEXT_PUBLIC_SITE_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
 
-`CATALOG_DATA_SOURCE` принимает только `demo` или `supabase`. В development/test отсутствие значения означает demo. Production принимает только явный `supabase`: и отсутствие значения, и `demo` завершаются ошибкой конфигурации. Ошибка Supabase никогда не переключает источник на demo.
+Server-only configuration includes the service-role key, lead hashing secret, Telegram credentials, AI rate-limit secret, and optional AI-provider credentials. Never expose server secrets through `NEXT_PUBLIC_*`.
 
-## Полезные команды
+## 🧪 Validation
 
 ```bash
 npm run typecheck
@@ -72,7 +143,11 @@ npm run format:check
 npm test
 npm run test:e2e
 npm run build
+```
 
+Database tooling:
+
+```bash
 npm run db:start
 npm run db:reset:local
 npm run db:lint:local
@@ -81,58 +156,43 @@ npm run test:integration:local
 npm run db:stop
 ```
 
-`db:reset:local` содержит явный `--local`; scripts для remote reset нет.
+## 🔒 Security model
 
-## Supabase source of truth
+The project includes RLS, explicit grants, server-only privileged operations, admin role re-checks, atomic RPCs, media validation, lead rate limiting/idempotency, privacy-preserving HMAC identifiers, assistant rate limiting, retention procedures, and a durable Telegram outbox.
 
-- `supabase/config.toml` — локальный CLI/Auth/Storage config;
-- `supabase/migrations/20260805111516_initial_schema.sql` — исходная production migration;
-- `supabase/migrations/20260805190000_stage_4_catalog_seo.sql` — server search RPC и slug route history;
-- `supabase/migrations/20260805213000_stage_5_leads_telegram.sql` — заявки, статусы, rate limit и Telegram outbox;
-- `supabase/migrations/20260805213001_stage_6_admin_crud.sql` — atomic admin RPC, дополнительные integrity guards, grants/indexes и компенсирующий Storage workflow;
-- `supabase/migrations/20260806053422_stage_6_7_completion_security.sql` — category media, audited Telegram requeue, assistant telemetry и RLS/rate-limit hardening;
-- `supabase/migrations/20260806120000_privacy_retention.sql` — удаление заявок старше 24 месяцев, AI-логов старше 90 дней и истёкших rate-limit записей;
-- `supabase/seed.sql` — детерминированные 3 категории, 12 товаров, RU/RO, характеристики и настройки;
-- `supabase/verification/rls.sql` — transactional/rollback assertions для RLS;
-- `supabase/schema.sql` — только сохранённый исторический draft Этапа 1.
+## 🔍 SEO
 
-## Документация
+The storefront implements localized metadata, canonical URLs, `hreflang`, JSON-LD, sitemap, robots, Open Graph images, and permanent redirects from historical product slugs.
 
-- [ADMIN_GUIDE.md](ADMIN_GUIDE.md) — подробное руководство по работе с административной панелью;
-- [docs/stage-3.md](docs/stage-3.md) — результат этапа и ограничения;
-- [docs/stage-3-runtime-validation.md](docs/stage-3-runtime-validation.md) — фактические local runtime-проверки Этапа 3.5;
-- [docs/stage-4.md](docs/stage-4.md) — URL-контракт каталога, SEO, slug redirects и cache invalidation;
-- [docs/stage-5.md](docs/stage-5.md) — контракт заявок, защита endpoint и модель Telegram delivery;
-- [docs/stage-6.md](docs/stage-6.md) — административные разделы, mutation/storage boundaries, cache invalidation и проверки;
-- [docs/supabase-setup.md](docs/supabase-setup.md) — локальная/remote настройка и первый admin;
-- [docs/rls-access-matrix.md](docs/rls-access-matrix.md) — матрица доступа и ручная проверка;
-- [docs/architecture.md](docs/architecture.md) — приложение и data layer;
-- [docs/security.md](docs/security.md) — границы доверия и threat decisions;
-- [docs/deployment.md](docs/deployment.md) — production/Preview deployment, переменные окружения и безопасный rollback;
-- [docs/roadmap.md](docs/roadmap.md) — последующие этапы.
+## 📁 Repository map
 
-Production build использует `--webpack`, потому что Turbopack в управляемой среде разработки не может открыть внутренний PostCSS-порт.
+```text
+tehnosklad/
+├── docs/                  # Architecture, security and deployment docs
+├── e2e/                   # Playwright tests
+├── scripts/               # Integration/build helpers
+├── src/                   # Next.js application
+├── supabase/
+│   ├── migrations/        # Versioned production schema
+│   ├── verification/      # RLS assertions
+│   └── seed.sql           # Deterministic data
+├── ADMIN_GUIDE.md
+├── .env.example
+└── package.json
+```
 
-# Grounded AI assistant
+## 📚 Documentation
 
-The optional RU/RO catalog helper is enabled by the public shell and uses `POST /api/assistant`. It never receives leads, uses published catalog records only, and falls back to deterministic catalog search when no provider is configured. Set `AI_RATE_LIMIT_SECRET` for every deployed environment. `AI_PROVIDER=fallback` is free and safe by default; `openai-compatible` additionally requires `AI_PROVIDER_BASE_URL`, `AI_PROVIDER_API_KEY` and `AI_MODEL`. The local integration harness forcibly uses `fallback`, so it never calls a paid provider. See [docs/stage-7.md](docs/stage-7.md).
+The repository includes dedicated documentation for Supabase setup, architecture, security, RLS, catalog/SEO, leads and Telegram, admin CRUD, AI assistant, deployment/rollback, and roadmap. `ADMIN_GUIDE.md` contains the detailed administrator workflow.
 
-## Обязательный pre-deploy checklist: оператор и приватность
+## ⚖️ Production privacy configuration
 
-До включения публичной формы заявок владелец обязан задать в Vercel Production и Preview (если Preview принимает реальные заявки):
+Before real customer leads are enabled, the deployment expects the operator's real legal details through the documented `LEGAL_*` environment variables. The code intentionally does not invent production legal identities.
 
-- `LEGAL_OPERATOR_NAME` — точное юридическое наименование оператора;
-- `LEGAL_OPERATOR_IDNO` — IDNO оператора;
-- `LEGAL_OPERATOR_ADDRESS` — юридический/почтовый адрес для запросов субъектов данных;
-- `LEGAL_PRIVACY_EMAIL` — рабочий email для таких запросов;
-- `LEGAL_RESPONSIBLE_PERSON` — только если ответственное лицо действительно назначено и его имя следует публиковать.
+---
 
-Дополнительно до production:
+<div align="center">
 
-- практикующий юрист Республики Молдова должен проверить RU/RO редакции политик, реквизиты и правовые основания с учётом перехода от Закона №133/2011 к Закону №195/2024 23 августа 2026 года;
-- проверить DPA, фактические регионы и субпроцессоров Supabase/Vercel/Telegram/настроенного AI-провайдера и допустимый механизм трансграничной передачи; внешний AI оставить в `fallback`, пока проверка не завершена;
-- настроить в Supabase Cron не реже одного раза в сутки `select * from private.enforce_privacy_retention();`, сначала проверив backup/restore и результат на staging;
-- подтвердить, что runtime/security logs Vercel ограничены целевым сроком 30 дней, а административные доступы отключаются сразу после прекращения полномочий;
-- выполнить `npm run test:e2e` в Chromium и WebKit и ручную проверку карты, формы и юридических страниц на реальном production-домене.
+**Tehnosklad — a catalog built as a real production system, not just a storefront mockup.**
 
-Если четыре обязательных `LEGAL_*` значения отсутствуют, юридические страницы честно показывают предупреждение, а production-запуск формы считается заблокированным процессом развёртывания. Код не подставляет фиктивные реквизиты.
+</div>
