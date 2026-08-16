@@ -1,8 +1,12 @@
-# 🏠 Tehnosklad
-
 <div align="center">
 
-### Production-ready bilingual appliance storefront for Moldova
+# 🏠 Tehnosklad
+
+### Bilingual appliance catalog + lead platform for Moldova
+
+A production-oriented full-stack storefront with a public RU/RO catalog, protected administration, Supabase data, Telegram lead delivery and a grounded catalog assistant.
+
+[**Live deployment**](https://tehnosklad123.vercel.app/)
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.3-000000?logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
@@ -12,61 +16,84 @@
 
 </div>
 
-A full-stack e-commerce lead-generation platform for **Comrat, Moldova**, with a public catalog, protected administration, Telegram delivery, Supabase backend, and a grounded RU/RO AI catalog assistant.
+---
 
-## ✨ Core capabilities
+## What Tehnosklad does
 
-### Public storefront
-- 🇷🇺 / 🇷🇴 Russian and Romanian catalog
+Tehnosklad is not only a product grid. It models the complete path from catalog discovery to an operator-managed customer lead.
+
+```text
+Discover → Search / filter → Inspect product → Contact → Store lead → Deliver to Telegram → Manage in admin
+```
+
+## Customer experience
+
+- 🇷🇺 / 🇷🇴 Russian and Romanian storefront
 - 🔎 URL-driven search, filters, sorting and pagination
-- 🧩 Categories, subcategories and configurable product attributes
-- 🔗 Stable localized product URLs with historical slug redirects
-- 📱 Responsive storefront
-- 🖼 Product and category media
-- 🔍 Canonical/hreflang, JSON-LD, sitemap, robots and Open Graph
-- 🤖 Grounded catalog AI assistant
+- 🧩 categories, subcategories and configurable attributes
+- 🔗 stable localized product URLs with historical-slug redirects
+- 🖼 product/category media
+- 📱 responsive UI
+- 🔍 canonical URLs, `hreflang`, JSON-LD, sitemap, robots and Open Graph
+- 🤖 grounded catalog assistant
 
-### Lead pipeline
-- localized contact forms;
+## Lead pipeline
+
+The lead flow includes:
+
+- localized forms;
 - product context;
-- server-side validation and honeypot;
-- rate limiting and idempotency;
-- durable lead storage;
-- Telegram delivery queue/history;
-- audited Telegram requeue.
+- server-side validation;
+- honeypot protection;
+- rate limiting;
+- idempotency;
+- durable storage;
+- Telegram outbox/history;
+- audited retry/requeue behavior.
 
-### Administration
+## Administration
 
-Protected `/admin` includes dashboard, category/subcategory management, attribute builder, product CRUD, images, leads, public settings, and storage/metadata reconciliation.
+Protected `/admin` tooling covers:
 
-## 🤖 Grounded AI assistant
+- dashboard;
+- categories and subcategories;
+- attribute builder;
+- product CRUD;
+- images/media;
+- customer leads;
+- public site settings;
+- storage / metadata reconciliation.
 
-The RU/RO assistant uses bounded **published catalog context**. A deterministic fallback works without a paid external AI provider:
+## Grounded AI assistant
+
+The assistant is designed around **published catalog context**, not free-form access to private application data.
+
+A deterministic fallback can run without a paid external AI provider:
 
 ```env
 AI_PROVIDER=fallback
 ```
 
-The assistant does not receive customer lead records.
+Customer lead records are not passed into assistant context.
 
-## 🏗 Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
-    U[Customer] --> N[Next.js storefront]
-    A[Admin] --> AD[/admin]
-    N --> S[Server data layer]
-    AD --> S
-    S --> DB[(Supabase PostgreSQL)]
-    S --> ST[Supabase Storage]
-    N --> L[Lead endpoint]
-    L --> DB
-    L --> T[Telegram outbox]
-    N --> AI[Grounded AI assistant]
-    AI --> C[Published catalog]
+    C[Customer] --> WEB[Next.js storefront]
+    A[Admin] --> ADM[/admin]
+    WEB --> DATA[Server data layer]
+    ADM --> DATA
+    DATA --> DB[(Supabase PostgreSQL)]
+    DATA --> ST[Supabase Storage]
+    WEB --> LEAD[Lead endpoint]
+    LEAD --> DB
+    LEAD --> TG[Telegram outbox]
+    WEB --> AI[Grounded assistant]
+    AI --> PUB[Published catalog]
 ```
 
-## 🛠 Tech stack
+## Tech stack
 
 | Area | Technology |
 |---|---|
@@ -78,9 +105,9 @@ flowchart LR
 | Authentication | Supabase SSR Auth |
 | Storage | Supabase Storage |
 | Tests | Vitest + Playwright |
-| Deployment target | Vercel |
+| Deployment | Vercel |
 
-## 🚀 Quick start
+## Quick start
 
 Requires Node.js 22.x and npm 10+.
 
@@ -91,13 +118,13 @@ npm ci
 cp .env.example .env.local
 ```
 
-For demo mode:
+Demo mode:
 
 ```env
 CATALOG_DATA_SOURCE=demo
 ```
 
-Then:
+Run:
 
 ```bash
 npm run dev
@@ -105,7 +132,7 @@ npm run dev
 
 The root redirects to `/ru`; Romanian is available at `/ro`.
 
-## 🗄 Local Supabase
+## Local Supabase
 
 A Docker-compatible runtime is required.
 
@@ -114,27 +141,15 @@ npm run db:start
 npm run db:reset:local
 ```
 
-Then configure `.env.local` with local Supabase values and set:
+Then configure `.env.local` and use:
 
 ```env
 CATALOG_DATA_SOURCE=supabase
 ```
 
-See `docs/supabase-setup.md` for the complete flow.
+See `docs/supabase-setup.md`.
 
-## 🔐 Environment model
-
-Browser-safe variables include:
-
-```env
-NEXT_PUBLIC_SITE_URL=
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-```
-
-Server-only configuration includes the service-role key, lead hashing secret, Telegram credentials, AI rate-limit secret, and optional AI-provider credentials. Never expose server secrets through `NEXT_PUBLIC_*`.
-
-## 🧪 Validation
+## Validation
 
 ```bash
 npm run typecheck
@@ -156,43 +171,47 @@ npm run test:integration:local
 npm run db:stop
 ```
 
-## 🔒 Security model
+## Security model
 
-The project includes RLS, explicit grants, server-only privileged operations, admin role re-checks, atomic RPCs, media validation, lead rate limiting/idempotency, privacy-preserving HMAC identifiers, assistant rate limiting, retention procedures, and a durable Telegram outbox.
+The project includes:
 
-## 🔍 SEO
+- Row Level Security;
+- explicit grants;
+- server-only privileged operations;
+- admin role re-checks;
+- atomic RPCs;
+- media validation;
+- lead rate limiting and idempotency;
+- privacy-preserving HMAC identifiers;
+- assistant rate limiting;
+- retention procedures;
+- durable Telegram delivery state.
 
-The storefront implements localized metadata, canonical URLs, `hreflang`, JSON-LD, sitemap, robots, Open Graph images, and permanent redirects from historical product slugs.
-
-## 📁 Repository map
+## Repository map
 
 ```text
 tehnosklad/
-├── docs/                  # Architecture, security and deployment docs
+├── docs/                  # Architecture, security and deployment documentation
 ├── e2e/                   # Playwright tests
-├── scripts/               # Integration/build helpers
+├── scripts/               # Integration / build helpers
 ├── src/                   # Next.js application
 ├── supabase/
 │   ├── migrations/        # Versioned production schema
 │   ├── verification/      # RLS assertions
-│   └── seed.sql           # Deterministic data
+│   └── seed.sql           # Deterministic seed data
 ├── ADMIN_GUIDE.md
 ├── .env.example
 └── package.json
 ```
 
-## 📚 Documentation
+## Production note
 
-The repository includes dedicated documentation for Supabase setup, architecture, security, RLS, catalog/SEO, leads and Telegram, admin CRUD, AI assistant, deployment/rollback, and roadmap. `ADMIN_GUIDE.md` contains the detailed administrator workflow.
-
-## ⚖️ Production privacy configuration
-
-Before real customer leads are enabled, the deployment expects the operator's real legal details through the documented `LEGAL_*` environment variables. The code intentionally does not invent production legal identities.
+Before enabling real customer leads, configure the operator's verified legal/company details through the documented `LEGAL_*` variables. The repository intentionally avoids inventing legal identities.
 
 ---
 
 <div align="center">
 
-**Tehnosklad — a catalog built as a real production system, not just a storefront mockup.**
+**Tehnosklad — catalog UX backed by a real data, admin and lead-delivery system.**
 
 </div>
