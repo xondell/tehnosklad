@@ -37,6 +37,7 @@ export const ro: Dictionary = {
     inStock: "În stoc",
     onOrder: "La comandă",
     outOfStock: "Nu este în stoc",
+    priceOnRequest: "Preț la cerere",
     demoNotice: "Date demonstrative pentru dezvoltare",
     mapPlaceholder: "Harta va fi adăugată înainte de lansare",
     breadcrumbsHome: "Acasă",

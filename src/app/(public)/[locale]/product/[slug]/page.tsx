@@ -124,7 +124,9 @@ export default async function ProductPage({
           <div className="mt-6 rounded-2xl bg-stone-50 p-5">
             <div className="flex flex-wrap items-end gap-3">
               <strong className="text-3xl font-black">
-                {formatPrice(product.priceMinor, locale)}
+                {product.priceMinor > 0
+                  ? formatPrice(product.priceMinor, locale)
+                  : d.common.priceOnRequest}
               </strong>
               {product.oldPriceMinor && discount ? (
                 <s className="text-stone-500">
