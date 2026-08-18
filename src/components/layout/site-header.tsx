@@ -25,19 +25,6 @@ export function SiteHeader({
         <div className="ml-auto flex items-center gap-2">
           <PrimaryNav locale={locale} dictionary={dictionary} />
           <a
-            className="button-secondary min-h-11 items-center max-lg:!hidden lg:inline-flex"
-            href={`/` + locale + "/catalog"}
-          >
-            {dictionary.navigation.catalogMenu}
-          </a>
-          <a
-            aria-label={dictionary.navigation.search}
-            className="icon-button max-lg:!hidden lg:inline-flex"
-            href={`/` + locale + "/catalog"}
-          >
-            ⌕
-          </a>
-          <a
             className="hidden text-sm font-bold xl:block"
             href={settings.phoneHref}
           >

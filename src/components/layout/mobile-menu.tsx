@@ -54,13 +54,6 @@ export function MobileMenu({
   return (
     <>
       <div className="flex items-center gap-1 lg:hidden">
-        <Link
-          aria-label={dictionary.navigation.search}
-          className="icon-button"
-          href={localizedPath(locale, "catalog")}
-        >
-          ⌕
-        </Link>
         <a
           aria-label={dictionary.actions.call}
           className="icon-button"
