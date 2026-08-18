@@ -26,7 +26,7 @@ export function SiteFooter({
     <footer className="mt-auto border-t border-stone-200 bg-stone-950 text-white">
       <PageContainer className="grid gap-8 py-10 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
-          <Logo locale={locale} />
+          <Logo locale={locale} inverted />
           <p className="text-sm text-stone-300">
             {dictionary.footer.description}
           </p>

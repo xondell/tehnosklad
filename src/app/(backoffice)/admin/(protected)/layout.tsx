@@ -18,7 +18,10 @@ export default async function ProtectedAdminLayout({
         К содержимому
       </a>
       <div className="hidden border-r border-stone-200 bg-stone-950 p-4 text-white lg:block">
-        <p className="px-3 py-4 text-xl font-black">ТЕХНОСКЛАД</p>
+        <p className="px-3 py-4 text-xl font-black">
+          <span className="text-white">ТЕХНО</span>
+          <span className="text-[var(--brand)]">СКЛАД</span>
+        </p>
         <AdminNavigation />
       </div>
       <div className="min-w-0">
