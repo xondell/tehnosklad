@@ -47,19 +47,18 @@ export async function GET(
           <span style={{ color: "#f4c400" }}>SKLAD</span>
         </div>
       </div>
-        <div
-          style={{
-            maxWidth: 900,
-            fontSize: 76,
-            lineHeight: 1.05,
-            fontWeight: 900,
-          }}
-        >
-          {subtitle}
-        </div>
-        <div style={{ fontSize: 30, color: "#57534e" }}>
-          Catalog în rusă și română · Comrat, Moldova
-        </div>
+      <div
+        style={{
+          maxWidth: 900,
+          fontSize: 76,
+          lineHeight: 1.05,
+          fontWeight: 900,
+        }}
+      >
+        {subtitle}
+      </div>
+      <div style={{ fontSize: 30, color: "#57534e" }}>
+        Catalog în rusă și română · Comrat, Moldova
       </div>
       <div
         style={{
