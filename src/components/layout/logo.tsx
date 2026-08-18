@@ -14,7 +14,7 @@ export function Logo({
 }) {
   return (
     <Link
-      className={`inline-flex min-h-11 shrink-0 items-center py-1 text-xl font-black tracking-[0.03em] transition-opacity hover:opacity-90 sm:text-2xl sm:tracking-[0.05em] ${className}`}
+      className={`inline-flex min-h-11 shrink-0 items-center py-1 text-2xl font-black tracking-tight transition-opacity hover:opacity-90 sm:tracking-[0.04em] ${className}`}
       href={localizedPath(locale)}
       aria-label={locale === "ru" ? "Техносклад" : "Tehnosklad"}
     >
