@@ -3,8 +3,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductGrid } from "@/components/catalog/product-grid";
 import { ProductIllustration } from "@/components/catalog/product-illustration";
-import { ContactButton } from "@/components/public/contact-button";
-import { CopyPhoneButton } from "@/components/public/copy-phone-button";
 import { PageContainer } from "@/components/layout/page-container";
 import {
   getPopularProducts,
@@ -81,16 +79,12 @@ export default async function HomePage({
               {d.home.contactNote}
             </p>
           </div>
-          <div className="relative overflow-hidden rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <ProductIllustration
-              category="fridge"
-              tone="yellow"
-              label={d.home.title}
-              className="h-72 sm:h-96"
+          <div className="flex items-center justify-center">
+            <img
+              src="/tech.svg"
+              alt={d.home.title}
+              className="h-auto w-full max-w-xl object-contain"
             />
-            <div className="absolute bottom-7 left-7 rounded-[100vmax] bg-stone-950 px-4 py-3 text-sm font-bold text-white">
-              {d.common.city}
-            </div>
           </div>
         </PageContainer>
       </section>
@@ -98,7 +92,9 @@ export default async function HomePage({
         <PageContainer>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="section-title text-3xl font-bold">{d.home.categoriesTitle}</h2>
+              <h2 className="section-title text-3xl font-bold">
+                {d.home.categoriesTitle}
+              </h2>
               <p className="mt-2 text-stone-600">
                 {d.home.categoriesDescription}
               </p>
@@ -134,7 +130,9 @@ export default async function HomePage({
       </section>
       <section className="bg-stone-50 py-14">
         <PageContainer>
-          <h2 className="section-title text-3xl font-bold">{d.home.popularTitle}</h2>
+          <h2 className="section-title text-3xl font-bold">
+            {d.home.popularTitle}
+          </h2>
           <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
           <div className="mt-7">
             <ProductGrid
@@ -149,7 +147,9 @@ export default async function HomePage({
       </section>
       <section className="py-14">
         <PageContainer>
-          <h2 className="section-title text-3xl font-bold">{d.home.benefitsTitle}</h2>
+          <h2 className="section-title text-3xl font-bold">
+            {d.home.benefitsTitle}
+          </h2>
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Object.values(d.home.benefits).map((benefit) => (
               <article
