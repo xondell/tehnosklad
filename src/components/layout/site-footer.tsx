@@ -26,13 +26,13 @@ export function SiteFooter({
     <footer className="mt-auto border-t border-stone-200 bg-stone-950 text-white">
       <PageContainer className="grid gap-8 py-10 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
-          <Logo locale={locale} />
+          <Logo locale={locale} variant="dark" />
           <p className="text-sm text-stone-300">
             {dictionary.footer.description}
           </p>
           <p className="text-sm text-stone-300">{settings.address}</p>
           <a
-            className="inline-flex min-h-11 items-center font-bold"
+            className="inline-flex min-h-[1.875rem] items-center font-bold"
             href={settings.phoneHref}
           >
             {settings.phoneDisplay}
@@ -100,7 +100,7 @@ export function SiteFooter({
             {dictionary.footer.developedBy}{" "}
             <a
               aria-label={dictionary.footer.osmiLinkLabel}
-              className="inline-flex min-h-11 items-center font-bold text-stone-200 underline decoration-stone-500 underline-offset-4 hover:text-white"
+              className="inline-flex min-h-[1.875rem] items-center font-bold text-stone-200 underline decoration-stone-500 underline-offset-4 hover:text-white"
               href="https://osmi-topaz.vercel.app"
               rel="noopener noreferrer"
               target="_blank"

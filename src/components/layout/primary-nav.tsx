@@ -17,14 +17,10 @@ export function PrimaryNav({
 }: PrimaryNavProps) {
   const links = [
     { href: localizedPath(locale), label: dictionary.navigation.home },
-    ...(mobile
-      ? [
-          {
-            href: localizedPath(locale, "catalog"),
-            label: dictionary.navigation.catalog,
-          },
-        ]
-      : []),
+    {
+      href: localizedPath(locale, "catalog"),
+      label: dictionary.navigation.catalogMenu,
+    },
     {
       href: localizedPath(locale, "contacts"),
       label: dictionary.navigation.contacts,
@@ -37,13 +33,13 @@ export function PrimaryNav({
         className={
           mobile
             ? "flex flex-col gap-1 py-3"
-            : "hidden items-center gap-1 lg:flex"
+            : "ml-4 mr-5 hidden items-center gap-5 lg:flex"
         }
       >
         {links.map((link) => (
           <li key={link.href}>
             <Link
-              className="flex min-h-11 items-center rounded-lg px-3 font-semibold text-stone-700 hover:bg-stone-100 hover:text-black"
+              className="nav-link"
               href={link.href}
             >
               {link.label}

@@ -11,7 +11,7 @@ export function LocalizedNotFound() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-20 text-center">
       <p className="text-sm font-bold text-stone-500">404</p>
-      <h1 className="mt-3 text-4xl font-black">{d.notFound.title}</h1>
+      <h1 className="mt-3 text-4xl font-bold">{d.notFound.title}</h1>
       <p className="mt-3 text-stone-600">{d.notFound.text}</p>
       <Link className="button-primary mt-8" href={localizedPath(locale)}>
         {d.notFound.back}

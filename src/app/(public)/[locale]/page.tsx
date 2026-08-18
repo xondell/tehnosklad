@@ -60,7 +60,7 @@ export default async function HomePage({
             <p className="mb-4 text-sm font-bold uppercase tracking-wide text-stone-600">
               {d.home.eyebrow}
             </p>
-            <h1 className="max-w-3xl text-4xl font-black tracking-tight sm:text-6xl">
+            <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
               {d.home.title}
             </h1>
             <p className="mt-5 max-w-xl text-lg text-stone-600">
@@ -74,7 +74,7 @@ export default async function HomePage({
                 {d.actions.openCatalog}
               </Link>
               <a className="button-secondary" href={settings.phoneHref}>
-                {d.actions.call}: {settings.phoneDisplay}
+                {d.actions.call}
               </a>
             </div>
             <p className="mt-6 text-sm font-semibold text-stone-600">
@@ -88,7 +88,7 @@ export default async function HomePage({
               label={d.home.title}
               className="h-72 sm:h-96"
             />
-            <div className="absolute bottom-7 left-7 rounded-xl bg-stone-950 px-4 py-3 text-sm font-bold text-white">
+            <div className="absolute bottom-7 left-7 rounded-[100vmax] bg-stone-950 px-4 py-3 text-sm font-bold text-white">
               {d.common.city}
             </div>
           </div>
@@ -98,7 +98,7 @@ export default async function HomePage({
         <PageContainer>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-3xl font-black">{d.home.categoriesTitle}</h2>
+              <h2 className="section-title text-3xl font-bold">{d.home.categoriesTitle}</h2>
               <p className="mt-2 text-stone-600">
                 {d.home.categoriesDescription}
               </p>
@@ -113,7 +113,7 @@ export default async function HomePage({
           <div className="mt-7 grid gap-4 md:grid-cols-3">
             {categories.map((category) => (
               <Link
-                className="group rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 key={category.id}
                 href={localizedPath(locale, `category/${category.slug}`)}
               >
@@ -123,7 +123,7 @@ export default async function HomePage({
                   label={category.name}
                   className="h-40"
                 />
-                <h3 className="mt-4 text-xl font-black">{category.name}</h3>
+                <h3 className="mt-4 text-xl font-bold">{category.name}</h3>
                 <p className="mt-1 text-sm text-stone-600">
                   {category.shortDescription}
                 </p>
@@ -134,7 +134,7 @@ export default async function HomePage({
       </section>
       <section className="bg-stone-50 py-14">
         <PageContainer>
-          <h2 className="text-3xl font-black">{d.home.popularTitle}</h2>
+          <h2 className="section-title text-3xl font-bold">{d.home.popularTitle}</h2>
           <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
           <div className="mt-7">
             <ProductGrid
@@ -149,20 +149,21 @@ export default async function HomePage({
       </section>
       <section className="py-14">
         <PageContainer>
-          <h2 className="text-3xl font-black">{d.home.benefitsTitle}</h2>
+          <h2 className="section-title text-3xl font-bold">{d.home.benefitsTitle}</h2>
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Object.values(d.home.benefits).map((benefit) => (
               <article
                 className="rounded-2xl border border-stone-200 p-5"
                 key={benefit.title}
               >
-                <h3 className="font-black">{benefit.title}</h3>
+                <h3 className="font-bold">{benefit.title}</h3>
                 <p className="mt-2 text-sm text-stone-600">{benefit.text}</p>
               </article>
             ))}
           </div>
         </PageContainer>
       </section>
+      {/* Контакты магазина — закомментировано по дизайну
       <section className="pb-14">
         <PageContainer>
           <div className="grid gap-6 rounded-3xl bg-stone-950 p-6 text-white sm:p-9 lg:grid-cols-[1fr_auto]">
@@ -203,6 +204,7 @@ export default async function HomePage({
           </div>
         </PageContainer>
       </section>
+      */}
     </>
   );
 }

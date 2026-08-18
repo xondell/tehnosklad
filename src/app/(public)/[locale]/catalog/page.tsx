@@ -88,7 +88,7 @@ export default async function CatalogPage({
         home={d.common.breadcrumbsHome}
         items={[d.catalog.title]}
       />
-      <h1 className="mt-5 text-4xl font-black">{d.catalog.title}</h1>
+      <h1 className="mt-5 text-4xl font-bold">{d.catalog.title}</h1>
       <p className="mt-3 max-w-3xl text-stone-600">{d.catalog.description}</p>
       {isDemoCatalog() ? (
         <p className="mt-4 text-xs font-bold uppercase tracking-wide text-stone-500">

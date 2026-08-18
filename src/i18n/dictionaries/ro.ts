@@ -8,7 +8,7 @@ export const ro: Dictionary = {
     home: "Acasă",
     catalog: "Catalog",
     contacts: "Contacte",
-    catalogMenu: "Catalog de produse",
+    catalogMenu: "Catalog",
     search: "Căutare",
   },
   actions: {
@@ -50,7 +50,7 @@ export const ro: Dictionary = {
     title: "Electrocasnice care fac viața de acasă mai ușoară",
     description:
       "Alegeți electrocasnice practice și aflați detalii de la echipa magazinului prin telefon.",
-    contactNote: "Vă așteptăm în Comrat — vă ajutăm să alegeți.",
+    contactNote: "Sunați sau veniți în magazin — alegem tehnica potrivită pentru dumneavoastră.",
     categoriesTitle: "Alegeți categoria",
     categoriesDescription:
       "Trei categorii principale pentru casa dumneavoastră.",
@@ -59,20 +59,20 @@ export const ro: Dictionary = {
     benefitsTitle: "Simplu și practic",
     benefits: {
       location: {
-        title: "În Comrat",
-        text: "Magazin accesibil în Comrat.",
+        title: "Magazin în Comrat",
+        text: "Ridicați electrocasnicele chiar în ziua achiziției — str. Victoriei, 97.",
       },
       choice: {
-        title: "Ajutor la alegere",
-        text: "Detaliile pot fi clarificate rapid la telefon.",
+        title: "Alegem pe bugetul dumneavoastră",
+        text: "Vă sfătuim la telefon și vă ajutăm să alegeți varianta potrivită pentru nevoile și bugetul dumneavoastră.",
       },
       prices: {
-        title: "Prețuri clare",
-        text: "Costul este vizibil direct în card.",
+        title: "Prețuri corecte",
+        text: "Prețul e vizibil direct în card — fără surprize la cumpărare.",
       },
       contact: {
-        title: "Suntem disponibili",
-        text: "Sunați-ne în programul magazinului.",
+        title: "Mereu la dispoziție",
+        text: "Răspundem rapid, în programul magazinului.",
       },
     },
     contactTitle: "Contactele magazinului",

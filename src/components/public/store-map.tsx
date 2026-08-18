@@ -18,7 +18,7 @@ export function StoreMap({ dictionary }: { dictionary: Dictionary }) {
       data-testid="store-map"
     >
       <div className="p-5 pb-4 sm:p-6 sm:pb-4">
-        <h2 className="text-xl font-black" id="store-map-title">
+        <h2 className="text-xl font-bold" id="store-map-title">
           {dictionary.contacts.mapTitle}
         </h2>
         <p className="mt-1 text-sm text-stone-600">
@@ -42,7 +42,7 @@ export function StoreMap({ dictionary }: { dictionary: Dictionary }) {
         </p>
         <a
           aria-label={dictionary.contacts.mapLinkAccessibleLabel}
-          className="mt-2 inline-flex min-h-11 items-center font-bold underline decoration-2 underline-offset-4"
+           className="mt-2 inline-flex min-h-[1.875rem] items-center font-bold underline decoration-2 underline-offset-4"
           href={storeMapUrl}
           rel="noopener noreferrer"
           target="_blank"

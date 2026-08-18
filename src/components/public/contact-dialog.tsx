@@ -240,7 +240,7 @@ export function ContactDialog({
               <button
                 aria-controls="contact-now-panel"
                 aria-selected={tab === "now"}
-                className={`min-h-11 rounded-lg font-bold ${tab === "now" ? "bg-white shadow-sm" : ""}`}
+                className={`min-h-[1.875rem] rounded-[100vmax] font-bold ${tab === "now" ? "bg-white shadow-sm" : ""}`}
                 disabled={submitting}
                 role="tab"
                 type="button"
@@ -251,7 +251,7 @@ export function ContactDialog({
               <button
                 aria-controls="contact-request-panel"
                 aria-selected={tab === "request"}
-                className={`min-h-11 rounded-lg font-bold ${tab === "request" ? "bg-white shadow-sm" : ""}`}
+                className={`min-h-[1.875rem] rounded-[100vmax] font-bold ${tab === "request" ? "bg-white shadow-sm" : ""}`}
                 disabled={submitting}
                 role="tab"
                 type="button"
@@ -398,7 +398,7 @@ export function ContactDialog({
                     />
                   </label>
                 </div>
-                <label className="flex min-h-11 cursor-pointer gap-3 rounded-lg p-1 text-sm focus-within:bg-amber-50">
+                <label className="flex min-h-[1.875rem] cursor-pointer gap-3 rounded-[100vmax] p-1 text-sm focus-within:bg-amber-50">
                   <input
                     aria-describedby={
                       errors.consent ? "lead-consent-error" : undefined

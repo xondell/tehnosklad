@@ -41,7 +41,7 @@ export default async function ContactsPage({
       <p className="text-sm font-bold uppercase tracking-wide text-stone-500">
         Tehnosklad
       </p>
-      <h1 className="mt-2 text-4xl font-black">{d.contacts.title}</h1>
+      <h1 className="mt-2 text-4xl font-bold">{d.contacts.title}</h1>
       <p className="mt-3 text-stone-600">{d.contacts.description}</p>
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-stone-200 p-6">
@@ -58,7 +58,7 @@ export default async function ContactsPage({
               </dt>
               <dd className="mt-1">
                 <a
-                  className="text-xl font-black hover:underline"
+                   className="text-xl font-bold hover:underline"
                   href={settings.phoneHref}
                 >
                   {settings.phoneDisplay}

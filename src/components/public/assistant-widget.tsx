@@ -169,7 +169,7 @@ export function AssistantWidget({
               <div className="flex flex-wrap gap-2">
                 {dictionary.assistant.quickQuestions.map((quick) => (
                   <button
-                    className="min-h-11 rounded-full border px-3 py-2 text-left text-xs font-medium"
+                    className="min-h-[1.875rem] rounded-full border px-3 py-2 text-left text-xs font-medium"
                     key={quick}
                     onClick={() => askQuickQuestion(quick)}
                     type="button"
@@ -215,7 +215,7 @@ export function AssistantWidget({
               </p>
             ) : null}
           </div>
-          <form className="mt-3 flex gap-2" onSubmit={submit}>
+          <form className="mt-3 flex items-start gap-2" onSubmit={submit}>
             <div className="min-w-0 flex-1">
               <textarea
                 aria-label={dictionary.assistant.placeholder}

@@ -157,7 +157,7 @@ export function CatalogClient({
         </nav>
       ) : null}
       <details className="mb-5 rounded-2xl border border-stone-200 p-4 lg:hidden">
-        <summary className="cursor-pointer font-black">
+        <summary className="cursor-pointer font-bold">
           {dictionary.actions.filters}
         </summary>
         <form action={actionPath} className="mt-5 space-y-4" method="get">
@@ -168,7 +168,7 @@ export function CatalogClient({
         </form>
       </details>
       <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
-        <aside className="hidden rounded-2xl border border-stone-200 bg-stone-50 p-4 lg:block">
+        <aside className="hidden self-start rounded-2xl border border-stone-200 bg-stone-50 p-4 lg:block">
           <form action={actionPath} className="space-y-4" method="get">
             {fields}
             <Link className="button-secondary w-full" href={actionPath}>
@@ -190,7 +190,7 @@ export function CatalogClient({
             />
           ) : (
             <div className="rounded-2xl border border-dashed border-stone-300 p-10 text-center">
-              <h2 className="text-xl font-black">
+              <h2 className="text-xl font-bold">
                 {dictionary.catalog.emptyTitle}
               </h2>
               <p className="mt-2 text-stone-600">

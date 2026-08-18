@@ -13,16 +13,16 @@ export function LanguageSwitcherFallback({
 }) {
   return (
     <nav aria-label={label}>
-      <ul className="flex w-[6.25rem] items-center rounded-xl border border-stone-400 bg-white p-1 shadow-sm">
+      <ul className="flex h-9 w-fit items-center rounded-[100vmax] border-2 border-stone-400 bg-white shadow-sm">
         {locales.map((locale) => (
           <li key={locale}>
             <Link
               aria-current={locale === currentLocale ? "page" : undefined}
               aria-label={`${label}: ${locale === "ru" ? "Русский" : "Română"}`}
-              className={`relative flex size-11 shrink-0 items-center justify-center rounded-lg border text-sm font-black ${
+              className={`relative flex size-8 items-center justify-center rounded-[100vmax] border text-sm font-black ${
                 locale === currentLocale
                   ? "border-stone-950 bg-stone-950 text-white shadow-sm"
-                  : "border-transparent bg-white text-stone-950 hover:border-stone-400 hover:bg-amber-100 active:bg-amber-200"
+                  : "border-transparent bg-white text-stone-950"
               }`}
               href={
                 locale !== currentLocale && alternateHref

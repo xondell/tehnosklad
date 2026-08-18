@@ -104,7 +104,7 @@ export default async function ProductPage({
           <p className="text-sm font-bold uppercase tracking-wide text-stone-500">
             {product.category.name} · {product.brand}
           </p>
-          <h1 className="mt-2 text-3xl font-black sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
             {product.name}
           </h1>
           <dl className="mt-5 grid grid-cols-2 gap-x-5 gap-y-3 text-sm">
@@ -123,7 +123,7 @@ export default async function ProductPage({
           </dl>
           <div className="mt-6 rounded-2xl bg-stone-50 p-5">
             <div className="flex flex-wrap items-end gap-3">
-              <strong className="text-3xl font-black">
+              <strong className="text-3xl font-bold">
                 {formatPrice(product.priceMinor, locale)}
               </strong>
               {product.oldPriceMinor && discount ? (
@@ -164,11 +164,11 @@ export default async function ProductPage({
       </div>
       <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_.8fr]">
         <section>
-          <h2 className="text-2xl font-black">{d.product.description}</h2>
+          <h2 className="text-2xl font-bold">{d.product.description}</h2>
           <p className="mt-3 max-w-3xl text-stone-700">{product.description}</p>
         </section>
         <section>
-          <h2 className="text-2xl font-black">{d.product.characteristics}</h2>
+          <h2 className="text-2xl font-bold">{d.product.characteristics}</h2>
           <dl className="mt-3 divide-y divide-stone-200 rounded-xl border border-stone-200 px-4">
             {product.specifications.map((spec) => (
               <div
@@ -183,7 +183,7 @@ export default async function ProductPage({
         </section>
       </div>
       <section className="mt-12">
-        <h2 className="text-2xl font-black">{d.product.similar}</h2>
+        <h2 className="text-2xl font-bold">{d.product.similar}</h2>
         <div className="mt-5">
           <ProductGrid
             products={similar}

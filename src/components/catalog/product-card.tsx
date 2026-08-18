@@ -36,73 +36,67 @@ export function ProductCard({
         ? dictionary.common.onOrder
         : dictionary.common.outOfStock;
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-      <div className="relative">
-        <ProductIllustration
-          category={product.category.presentationKey}
-          tone={product.imageTone}
-          label={primaryImage?.alt ?? product.name}
-          imageUrl={primaryImage?.url}
-          className="h-48"
-        />
-        {discount ? (
-          <span className="absolute left-3 top-3 rounded-full bg-red-600 px-2 py-1 text-xs font-bold text-white">
-            −{discount}%
-          </span>
-        ) : null}
-      </div>
-      <div className="flex flex-1 flex-col p-4">
-        <p className="text-xs font-bold uppercase tracking-wide text-stone-500">
-          {product.category.name} · {product.brand}
-        </p>
-        <h3 className="mt-2 line-clamp-2 min-h-12 text-base font-extrabold leading-6">
-          <Link
-            className="focus-visible:rounded"
-            href={localizedPath(locale, `product/${product.slug}`)}
-          >
-            {product.name}
-          </Link>
-        </h3>
-        <ul className="mt-3 min-h-12 space-y-1 text-sm text-stone-600">
-          {product.specifications.slice(0, 2).map((specification) => (
-            <li key={specification.code}>
-              {specification.label}: {specification.displayValue}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-auto pt-4">
-          <div className="flex items-end gap-2">
-            <strong className="text-xl font-black tracking-tight">
-              {formatPrice(product.priceMinor, locale)}
-            </strong>
-            {product.oldPriceMinor && discount ? (
-              <s className="mb-0.5 text-sm text-stone-500">
-                {formatPrice(product.oldPriceMinor, locale)}
-              </s>
-            ) : null}
-          </div>
-          <p
-            className={`mt-2 text-sm font-bold ${product.stockStatus === "in_stock" ? "text-emerald-700" : "text-stone-500"}`}
-          >
-            {availability}
+    <article className="relative flex h-full flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+      <Link
+        className="flex flex-1 flex-col focus-visible:rounded"
+        href={localizedPath(locale, `product/${product.slug}`)}
+      >
+        <div className="relative">
+          <ProductIllustration
+            category={product.category.presentationKey}
+            tone={product.imageTone}
+            label={primaryImage?.alt ?? product.name}
+            imageUrl={primaryImage?.url}
+            className="h-48"
+          />
+          {discount ? (
+            <span className="absolute left-3 top-3 rounded-full bg-red-600 px-2 py-1 text-xs font-bold text-white">
+              −{discount}%
+            </span>
+          ) : null}
+        </div>
+        <div className="flex flex-1 flex-col p-4">
+          <p className="text-xs font-bold uppercase tracking-wide text-stone-500">
+            {product.category.name} · {product.brand}
           </p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <Link
-              className="button-secondary"
-              href={localizedPath(locale, `product/${product.slug}`)}
+          <h3 className="mt-2 line-clamp-2 min-h-12 text-base font-bold leading-6">
+            {product.name}
+          </h3>
+          <ul className="mt-3 min-h-12 space-y-1 text-sm text-stone-600">
+            {product.specifications.slice(0, 2).map((specification) => (
+              <li key={specification.code}>
+                {specification.label}: {specification.displayValue}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-auto pt-4">
+            <div className="flex items-end gap-2">
+              <strong className="text-xl font-bold tracking-tight">
+                {formatPrice(product.priceMinor, locale)}
+              </strong>
+              {product.oldPriceMinor && discount ? (
+                <s className="mb-0.5 text-sm text-stone-500">
+                  {formatPrice(product.oldPriceMinor, locale)}
+                </s>
+              ) : null}
+            </div>
+            <p
+              className={`mt-2 text-sm font-bold ${product.stockStatus === "in_stock" ? "text-emerald-700" : "text-stone-500"}`}
             >
-              {dictionary.actions.view}
-            </Link>
-            <ContactButton
-              dictionary={dictionary}
-              locale={locale}
-              label={dictionary.actions.contact}
-              source={leadSource}
-              product={{ id: product.id, name: product.name }}
-              settings={settings}
-            />
+              {availability}
+            </p>
           </div>
         </div>
+      </Link>
+      <div className="flex shrink-0 justify-end px-4 pb-4 [&>button]:w-[45%]">
+        <ContactButton
+          dictionary={dictionary}
+          locale={locale}
+          label={dictionary.actions.contact}
+          source={leadSource}
+          product={{ id: product.id, name: product.name }}
+          settings={settings}
+        />
       </div>
     </article>
   );
