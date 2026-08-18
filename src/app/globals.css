@@ -25,11 +25,13 @@
 .button-danger,
 .icon-button {
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: 2rem;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-btn);
+  font-size: 0.875rem;
   font-weight: 700;
+  line-height: 1.25;
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease,
@@ -40,7 +42,7 @@
   border: 1px solid var(--brand);
   background: var(--brand);
   color: #171717;
-  padding: 0.5rem 1.35rem;
+  padding: 0.25rem 1rem;
 }
 .button-primary:hover {
   background: var(--brand-strong);
@@ -53,7 +55,7 @@
 .button-secondary {
   border: 1px solid var(--border);
   background: white;
-  padding: 0.5rem 1.35rem;
+  padding: 0.25rem 1rem;
   color: var(--ink);
 }
 .button-secondary:hover {
@@ -64,18 +66,18 @@
   border: 1px solid #dc2626;
   background: white;
   color: #b91c1c;
-  padding: 0.5rem 1.35rem;
+  padding: 0.25rem 1rem;
 }
 .button-danger:hover {
   background: #fef2f2;
 }
 .icon-button {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2rem;
+  height: 2rem;
   border: 1px solid var(--border);
   background: white;
   color: var(--ink);
-  font-size: 1.25rem;
+  font-size: 1rem;
   padding: 0;
 }
 .icon-button:hover {
@@ -94,9 +96,10 @@
 .nav-link {
   position: relative;
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: 2rem;
   align-items: center;
-  padding: 0.5rem 0.875rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--ink);
   background: transparent;
@@ -106,10 +109,10 @@
 .nav-link::after {
   content: "";
   position: absolute;
-  bottom: 0.35rem;
-  left: 0.875rem;
-  right: 0.875rem;
-  height: 2.5px;
+  bottom: 0.15rem;
+  left: 0.625rem;
+  right: 0.625rem;
+  height: 2px;
   background: var(--brand);
   border-radius: 9999px;
   transform: scaleX(0);
@@ -303,19 +306,20 @@
   font-weight: 700;
 }
 .field {
-  min-height: 2.75rem;
+  min-height: 2.125rem;
   width: 100%;
   border: 1px solid var(--border);
   border-radius: var(--radius-input);
   background: white;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.875rem;
   color: var(--ink);
   font: inherit;
+  font-size: 0.875rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 textarea.field {
   border-radius: var(--radius-input-box);
-  padding: 0.75rem 1rem;
+  padding: 0.625rem 0.875rem;
 }
 .field:hover {
   border-color: #a8a29e;

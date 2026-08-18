@@ -51,7 +51,7 @@ export function PrimaryNav({
         className={
           mobile
             ? "flex flex-col gap-1 py-3"
-            : "hidden items-center gap-1 lg:flex"
+            : "hidden items-center gap-0.5 lg:flex"
         }
       >
         {links.map((link) => (

@@ -147,7 +147,7 @@ export function CatalogClient({
         >
           {categories.map((category) => (
             <Link
-              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-bold text-stone-800 shadow-sm transition-colors hover:border-stone-400 hover:text-black"
+              className="rounded-full border border-stone-200 bg-white px-3.5 py-1 text-xs font-bold text-stone-800 shadow-sm transition-colors hover:border-stone-400 hover:text-black"
               href={localizedPath(locale, `category/${category.slug}`)}
               key={category.id}
             >

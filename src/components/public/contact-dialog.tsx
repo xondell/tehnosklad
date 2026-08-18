@@ -234,13 +234,13 @@ export function ContactDialog({
           <>
             <div
               aria-label={dictionary.contactModal.title}
-              className="mt-5 grid grid-cols-2 rounded-full bg-stone-100 p-1"
+              className="mt-4 grid grid-cols-2 rounded-full bg-stone-100 p-0.5"
               role="tablist"
             >
               <button
                 aria-controls="contact-now-panel"
                 aria-selected={tab === "now"}
-                className={`min-h-11 rounded-full font-bold transition-colors ${tab === "now" ? "bg-white text-stone-950 shadow-sm" : "text-stone-600 hover:text-stone-950"}`}
+                className={`min-h-8 rounded-full text-xs font-bold transition-colors ${tab === "now" ? "bg-white text-stone-950 shadow-sm" : "text-stone-600 hover:text-stone-950"}`}
                 disabled={submitting}
                 role="tab"
                 type="button"
@@ -251,7 +251,7 @@ export function ContactDialog({
               <button
                 aria-controls="contact-request-panel"
                 aria-selected={tab === "request"}
-                className={`min-h-11 rounded-full font-bold transition-colors ${tab === "request" ? "bg-white text-stone-950 shadow-sm" : "text-stone-600 hover:text-stone-950"}`}
+                className={`min-h-8 rounded-full text-xs font-bold transition-colors ${tab === "request" ? "bg-white text-stone-950 shadow-sm" : "text-stone-600 hover:text-stone-950"}`}
                 disabled={submitting}
                 role="tab"
                 type="button"

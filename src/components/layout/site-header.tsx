@@ -20,21 +20,27 @@ export function SiteHeader({
 }) {
   return (
     <header className="site-header" data-testid="site-header">
-      <PageContainer className="flex min-h-20 items-center gap-3 py-3">
+      <PageContainer className="flex min-h-16 items-center gap-3 py-2.5 sm:py-3">
         <Logo locale={locale} />
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-5 hidden lg:block xl:ml-8">
           <PrimaryNav locale={locale} dictionary={dictionary} />
+        </div>
+        <div className="ml-auto flex items-center gap-3.5 sm:gap-4">
           <a
-            className="hidden text-sm font-bold xl:block"
+            className="button-primary hidden items-center gap-1.5 whitespace-nowrap text-xs font-bold sm:inline-flex"
             href={settings.phoneHref}
           >
-            {settings.phoneDisplay}
-          </a>
-          <a
-            className="button-primary hidden sm:inline-flex"
-            href={settings.phoneHref}
-          >
-            {dictionary.actions.call}
+            <svg
+              className="size-3.5 shrink-0"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z" />
+            </svg>
+            <span>{dictionary.actions.call}</span>
+            <span className="opacity-40">·</span>
+            <span>{settings.phoneDisplay}</span>
           </a>
           <div className="hidden sm:block">
             <LanguageSwitcher
