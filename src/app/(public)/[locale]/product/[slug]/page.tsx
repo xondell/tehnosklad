@@ -121,7 +121,7 @@ export default async function ProductPage({
               <dd className="font-bold">{product.sku}</dd>
             </div>
           </dl>
-          <div className="mt-6 rounded-3xl border border-stone-200/80 bg-stone-50/60 p-6 shadow-sm">
+          <div className="mt-6 rounded-xl border border-stone-200/80 bg-stone-50/60 p-6 shadow-sm">
             <div className="flex flex-wrap items-end gap-3">
               <strong className="text-3xl font-black">
                 {formatPrice(product.priceMinor, locale)}
@@ -165,13 +165,13 @@ export default async function ProductPage({
       <div className="mt-14 grid gap-8 lg:grid-cols-[1fr_.8fr]">
         <section>
           <h2 className="section-title-line text-2xl font-black">{d.product.description}</h2>
-          <div className="mt-4 rounded-3xl border border-stone-200/80 bg-white p-6 shadow-sm">
+          <div className="mt-4 rounded-xl border border-stone-200/80 bg-white p-6 shadow-sm">
             <p className="max-w-3xl leading-relaxed text-stone-700">{product.description}</p>
           </div>
         </section>
         <section>
           <h2 className="section-title-line text-2xl font-black">{d.product.characteristics}</h2>
-          <dl className="mt-4 divide-y divide-stone-100 rounded-3xl border border-stone-200/80 bg-white px-6 py-2 shadow-sm">
+          <dl className="mt-4 divide-y divide-stone-100 rounded-xl border border-stone-200/80 bg-white px-6 py-2 shadow-sm">
             {product.specifications.map((spec) => (
               <div
                 className="flex justify-between gap-4 py-3.5 text-sm"

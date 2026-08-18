@@ -38,10 +38,10 @@ export function ProductCard({
   const productHref = localizedPath(locale, `product/${product.slug}`);
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-stone-200/80 bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md">
       <Link
         href={productHref}
-        className="relative block overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-950"
+        className="relative block overflow-hidden rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-950"
         aria-label={product.name}
       >
         <ProductIllustration

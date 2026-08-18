@@ -44,7 +44,7 @@ export default async function ContactsPage({
       <h1 className="mt-2 text-4xl font-black">{d.contacts.title}</h1>
       <p className="mt-3 text-stone-600">{d.contacts.description}</p>
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-3xl border border-stone-200/80 bg-white p-7 shadow-sm">
+        <section className="rounded-xl border border-stone-200/80 bg-white p-7 shadow-sm">
           <dl className="space-y-5">
             <div>
               <dt className="text-sm font-bold text-stone-500">

@@ -65,12 +65,6 @@ export function LanguageSwitcher({
                 lang={locale}
               >
                 {languageNames[locale]}
-                {isCurrent ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute bottom-0.5 size-1 rounded-full bg-[var(--brand)]"
-                  />
-                ) : null}
               </Link>
             </li>
           );

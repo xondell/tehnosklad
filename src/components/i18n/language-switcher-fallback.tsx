@@ -33,12 +33,6 @@ export function LanguageSwitcherFallback({
               lang={locale}
             >
               {locale.toUpperCase()}
-              {locale === currentLocale ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute bottom-0.5 size-1 rounded-full bg-[var(--brand)]"
-                />
-              ) : null}
             </Link>
           </li>
         ))}

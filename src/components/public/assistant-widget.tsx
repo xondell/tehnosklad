@@ -144,7 +144,7 @@ export function AssistantWidget({
           role="dialog"
           aria-modal="true"
           aria-label={dictionary.assistant.title}
-          className="flex max-h-[min(88dvh,640px)] w-full max-w-md flex-col overflow-hidden rounded-[2rem] bg-white p-5 shadow-2xl"
+          className="flex max-h-[min(88dvh,640px)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white p-5 shadow-2xl"
         >
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-lg font-black">{dictionary.assistant.title}</h2>

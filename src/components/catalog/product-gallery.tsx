@@ -23,7 +23,7 @@ export function ProductGallery({
     setCurrent((value) => (value + step + images.length) % images.length);
   return (
     <section aria-label={label}>
-      <div className="overflow-hidden rounded-[2rem] border border-stone-200/80 bg-white p-4 shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-stone-200/80 bg-white p-4 shadow-sm">
         <ProductIllustration
           category={product.category.presentationKey}
           tone={product.imageTone}
@@ -47,7 +47,7 @@ export function ProductGallery({
               <button
                 aria-label={`${label} ${index + 1}`}
                 aria-pressed={current === index}
-                className={`h-14 w-16 overflow-hidden rounded-2xl border-2 transition-colors ${current === index ? "border-[var(--brand)] shadow-sm" : "border-stone-200 opacity-70 hover:opacity-100"}`}
+                className={`h-14 w-16 overflow-hidden rounded-lg border-2 transition-colors ${current === index ? "border-[var(--brand)] shadow-sm" : "border-stone-200 opacity-70 hover:opacity-100"}`}
                 type="button"
                 onClick={() => setCurrent(index)}
                 key={image.id}

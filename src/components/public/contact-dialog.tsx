@@ -196,7 +196,7 @@ export function ContactDialog({
         aria-labelledby="contact-dialog-title"
         aria-modal="true"
         ref={dialogRef}
-        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-[2rem] bg-white p-6 shadow-2xl sm:p-8"
+        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-2xl bg-white p-6 shadow-2xl sm:p-8"
         role="dialog"
       >
         <div className="flex items-center justify-between gap-4">

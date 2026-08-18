@@ -58,8 +58,7 @@ export default async function HomePage({
         <PageContainer className="grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
             <div className="mb-4">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/80 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-950">
-                <span className="size-1.5 rounded-full bg-[var(--brand)]" />
+              <span className="inline-flex items-center rounded-full bg-amber-100/80 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-950">
                 {d.home.eyebrow}
               </span>
             </div>
@@ -84,7 +83,7 @@ export default async function HomePage({
               {d.home.contactNote}
             </p>
           </div>
-          <div className="relative overflow-hidden rounded-[2rem] border border-stone-200/80 bg-white p-5 shadow-sm">
+          <div className="relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm">
             <ProductIllustration
               category="fridge"
               tone="yellow"
@@ -116,7 +115,7 @@ export default async function HomePage({
           <div className="mt-7 grid gap-4 md:grid-cols-3">
             {categories.map((category) => (
               <Link
-                className="group rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                className="group rounded-xl border border-stone-200/80 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
                 key={category.id}
                 href={localizedPath(locale, `category/${category.slug}`)}
               >
