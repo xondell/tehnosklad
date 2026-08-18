@@ -121,7 +121,7 @@ export default async function ProductPage({
               <dd className="font-bold">{product.sku}</dd>
             </div>
           </dl>
-          <div className="mt-6 rounded-2xl bg-stone-50 p-5">
+          <div className="mt-6 rounded-3xl border border-stone-200/80 bg-stone-50/60 p-6 shadow-sm">
             <div className="flex flex-wrap items-end gap-3">
               <strong className="text-3xl font-black">
                 {formatPrice(product.priceMinor, locale)}
@@ -132,7 +132,7 @@ export default async function ProductPage({
                 </s>
               ) : null}
               {discount ? (
-                <span className="rounded-full bg-red-600 px-2 py-1 text-sm font-bold text-white">
+                <span className="rounded-full bg-red-600 px-3 py-1 text-sm font-bold text-white shadow-sm">
                   −{discount}%
                 </span>
               ) : null}
@@ -162,17 +162,19 @@ export default async function ProductPage({
           </div>
         </div>
       </div>
-      <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_.8fr]">
+      <div className="mt-14 grid gap-8 lg:grid-cols-[1fr_.8fr]">
         <section>
-          <h2 className="text-2xl font-black">{d.product.description}</h2>
-          <p className="mt-3 max-w-3xl text-stone-700">{product.description}</p>
+          <h2 className="section-title-line text-2xl font-black">{d.product.description}</h2>
+          <div className="mt-4 rounded-3xl border border-stone-200/80 bg-white p-6 shadow-sm">
+            <p className="max-w-3xl leading-relaxed text-stone-700">{product.description}</p>
+          </div>
         </section>
         <section>
-          <h2 className="text-2xl font-black">{d.product.characteristics}</h2>
-          <dl className="mt-3 divide-y divide-stone-200 rounded-xl border border-stone-200 px-4">
+          <h2 className="section-title-line text-2xl font-black">{d.product.characteristics}</h2>
+          <dl className="mt-4 divide-y divide-stone-100 rounded-3xl border border-stone-200/80 bg-white px-6 py-2 shadow-sm">
             {product.specifications.map((spec) => (
               <div
-                className="flex justify-between gap-4 py-3 text-sm"
+                className="flex justify-between gap-4 py-3.5 text-sm"
                 key={`${spec.code}-${spec.displayValue}`}
               >
                 <dt className="text-stone-600">{spec.label}</dt>
@@ -182,9 +184,9 @@ export default async function ProductPage({
           </dl>
         </section>
       </div>
-      <section className="mt-12">
-        <h2 className="text-2xl font-black">{d.product.similar}</h2>
-        <div className="mt-5">
+      <section className="mt-14">
+        <h2 className="section-title-line text-2xl font-black">{d.product.similar}</h2>
+        <div className="mt-6">
           <ProductGrid
             products={similar}
             locale={locale}

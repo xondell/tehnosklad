@@ -54,12 +54,15 @@ export default async function HomePage({
   return (
     <>
       <JsonLd value={buildHomeSchema(locale, settings)} />
-      <section className="border-b border-stone-200 bg-stone-50 py-10 sm:py-16">
+      <section className="border-b border-stone-200/70 bg-stone-50/60 py-10 sm:py-16">
         <PageContainer className="grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <p className="mb-4 text-sm font-bold uppercase tracking-wide text-stone-600">
-              {d.home.eyebrow}
-            </p>
+            <div className="mb-4">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/80 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-950">
+                <span className="size-1.5 rounded-full bg-[var(--brand)]" />
+                {d.home.eyebrow}
+              </span>
+            </div>
             <h1 className="max-w-3xl text-4xl font-black tracking-tight sm:text-6xl">
               {d.home.title}
             </h1>
@@ -81,14 +84,14 @@ export default async function HomePage({
               {d.home.contactNote}
             </p>
           </div>
-          <div className="relative overflow-hidden rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <div className="relative overflow-hidden rounded-[2rem] border border-stone-200/80 bg-white p-5 shadow-sm">
             <ProductIllustration
               category="fridge"
               tone="yellow"
               label={d.home.title}
               className="h-72 sm:h-96"
             />
-            <div className="absolute bottom-7 left-7 rounded-xl bg-stone-950 px-4 py-3 text-sm font-bold text-white">
+            <div className="absolute bottom-7 left-7 rounded-full bg-stone-950 px-4 py-2 text-xs font-bold text-white shadow-md">
               {d.common.city}
             </div>
           </div>
@@ -98,13 +101,13 @@ export default async function HomePage({
         <PageContainer>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-3xl font-black">{d.home.categoriesTitle}</h2>
+              <h2 className="section-title-line text-3xl font-black">{d.home.categoriesTitle}</h2>
               <p className="mt-2 text-stone-600">
                 {d.home.categoriesDescription}
               </p>
             </div>
             <Link
-              className="font-bold underline"
+              className="nav-link font-bold"
               href={localizedPath(locale, "catalog")}
             >
               {d.actions.openCatalog}
@@ -113,7 +116,7 @@ export default async function HomePage({
           <div className="mt-7 grid gap-4 md:grid-cols-3">
             {categories.map((category) => (
               <Link
-                className="group rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
                 key={category.id}
                 href={localizedPath(locale, `category/${category.slug}`)}
               >
@@ -121,7 +124,7 @@ export default async function HomePage({
                   category={category.presentationKey}
                   tone={getCategoryTone(category.presentationKey)}
                   label={category.name}
-                  className="h-40"
+                  className="h-44"
                 />
                 <h3 className="mt-4 text-xl font-black">{category.name}</h3>
                 <p className="mt-1 text-sm text-stone-600">
@@ -132,9 +135,9 @@ export default async function HomePage({
           </div>
         </PageContainer>
       </section>
-      <section className="bg-stone-50 py-14">
+      <section className="bg-stone-50/70 py-14">
         <PageContainer>
-          <h2 className="text-3xl font-black">{d.home.popularTitle}</h2>
+          <h2 className="section-title-line text-3xl font-black">{d.home.popularTitle}</h2>
           <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
           <div className="mt-7">
             <ProductGrid
@@ -149,11 +152,11 @@ export default async function HomePage({
       </section>
       <section className="py-14">
         <PageContainer>
-          <h2 className="text-3xl font-black">{d.home.benefitsTitle}</h2>
+          <h2 className="section-title-line text-3xl font-black">{d.home.benefitsTitle}</h2>
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Object.values(d.home.benefits).map((benefit) => (
               <article
-                className="rounded-2xl border border-stone-200 p-5"
+                className="rounded-3xl border border-stone-200/80 bg-white p-6 shadow-sm"
                 key={benefit.title}
               >
                 <h3 className="font-black">{benefit.title}</h3>
@@ -165,9 +168,9 @@ export default async function HomePage({
       </section>
       <section className="pb-14">
         <PageContainer>
-          <div className="grid gap-6 rounded-3xl bg-stone-950 p-6 text-white sm:p-9 lg:grid-cols-[1fr_auto]">
+          <div className="grid gap-6 rounded-[2rem] bg-stone-950 p-7 text-white sm:p-10 lg:grid-cols-[1fr_auto]">
             <div>
-              <h2 className="text-3xl font-black">{d.home.contactTitle}</h2>
+              <h2 className="section-title-line text-3xl font-black">{d.home.contactTitle}</h2>
               <p className="mt-2 max-w-xl text-stone-300">
                 {d.home.contactDescription}
               </p>

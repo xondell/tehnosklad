@@ -94,7 +94,7 @@ export default async function CategoryPage({
         home={d.common.breadcrumbsHome}
         items={[d.catalog.title, category.name]}
       />
-      <h1 className="mt-5 text-4xl font-black">{category.name}</h1>
+      <h1 className="section-title-line mt-5 text-4xl font-black">{category.name}</h1>
       <p className="mt-3 text-stone-600">{category.description}</p>
       <div className="mt-8">
         <JsonLd

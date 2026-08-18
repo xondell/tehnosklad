@@ -52,7 +52,7 @@ export default async function CategoryPage({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             alt=""
-            className="mt-4 h-32 w-48 rounded-lg object-cover"
+            className="mt-4 h-32 w-48 rounded-2xl object-cover"
             src={category.imagePublicUrl}
           />
         ) : null}

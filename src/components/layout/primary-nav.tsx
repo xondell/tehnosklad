@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import type { Locale } from "@/i18n/config";
 import { localizedPath } from "@/i18n/config";
@@ -15,15 +18,30 @@ export function PrimaryNav({
   dictionary,
   mobile = false,
 }: PrimaryNavProps) {
+  const pathname = usePathname() || "";
+
+  const homeHref = localizedPath(locale);
+  const catalogHref = localizedPath(locale, "catalog");
+  const contactsHref = localizedPath(locale, "contacts");
+
   const links = [
-    { href: localizedPath(locale), label: dictionary.navigation.home },
     {
-      href: localizedPath(locale, "catalog"),
-      label: dictionary.navigation.catalog,
+      href: homeHref,
+      label: dictionary.navigation.home,
+      isActive: pathname === homeHref || pathname === homeHref + "/",
     },
     {
-      href: localizedPath(locale, "contacts"),
+      href: catalogHref,
+      label: dictionary.navigation.catalog,
+      isActive:
+        pathname.startsWith(catalogHref) ||
+        pathname.startsWith(localizedPath(locale, "category")) ||
+        pathname.startsWith(localizedPath(locale, "product")),
+    },
+    {
+      href: contactsHref,
       label: dictionary.navigation.contacts,
+      isActive: pathname.startsWith(contactsHref),
     },
   ];
 
@@ -39,8 +57,9 @@ export function PrimaryNav({
         {links.map((link) => (
           <li key={link.href}>
             <Link
-              className="flex min-h-11 items-center rounded-lg px-3 font-semibold text-stone-700 hover:bg-stone-100 hover:text-black"
+              className={`nav-link ${link.isActive ? "nav-link--active" : ""}`}
               href={link.href}
+              aria-current={link.isActive ? "page" : undefined}
             >
               {link.label}
             </Link>
@@ -50,3 +69,4 @@ export function PrimaryNav({
     </nav>
   );
 }
+

@@ -14,7 +14,7 @@ export function StoreMap({ dictionary }: { dictionary: Dictionary }) {
   return (
     <section
       aria-labelledby="store-map-title"
-      className="min-w-0 overflow-hidden rounded-2xl border border-stone-200 bg-stone-50"
+      className="min-w-0 overflow-hidden rounded-3xl border border-stone-200/80 bg-stone-50/60 shadow-sm"
       data-testid="store-map"
     >
       <div className="p-5 pb-4 sm:p-6 sm:pb-4">

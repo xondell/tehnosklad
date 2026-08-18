@@ -31,7 +31,7 @@ export function SiteHeader({
             {settings.phoneDisplay}
           </a>
           <a
-            className="hidden min-h-11 items-center rounded-lg bg-[var(--brand)] px-4 font-bold text-black hover:bg-[var(--brand-strong)] sm:inline-flex"
+            className="button-primary hidden sm:inline-flex"
             href={settings.phoneHref}
           >
             {dictionary.actions.call}

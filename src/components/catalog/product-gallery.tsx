@@ -23,15 +23,17 @@ export function ProductGallery({
     setCurrent((value) => (value + step + images.length) % images.length);
   return (
     <section aria-label={label}>
-      <ProductIllustration
-        category={product.category.presentationKey}
-        tone={product.imageTone}
-        label={activeImage?.alt ?? product.name}
-        imageUrl={activeImage?.url}
-        className="h-80 sm:h-96"
-      />
+      <div className="overflow-hidden rounded-[2rem] border border-stone-200/80 bg-white p-4 shadow-sm">
+        <ProductIllustration
+          category={product.category.presentationKey}
+          tone={product.imageTone}
+          label={activeImage?.alt ?? product.name}
+          imageUrl={activeImage?.url}
+          className="h-80 sm:h-96"
+        />
+      </div>
       {images.length > 1 ? (
-        <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="mt-4 flex items-center justify-between gap-3">
           <button
             aria-label={previous}
             className="icon-button"
@@ -45,7 +47,7 @@ export function ProductGallery({
               <button
                 aria-label={`${label} ${index + 1}`}
                 aria-pressed={current === index}
-                className={`h-14 w-16 overflow-hidden rounded-lg border ${current === index ? "border-black bg-stone-100" : "border-stone-200"}`}
+                className={`h-14 w-16 overflow-hidden rounded-2xl border-2 transition-colors ${current === index ? "border-[var(--brand)] shadow-sm" : "border-stone-200 opacity-70 hover:opacity-100"}`}
                 type="button"
                 onClick={() => setCurrent(index)}
                 key={image.id}

@@ -147,7 +147,7 @@ export function CatalogClient({
         >
           {categories.map((category) => (
             <Link
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-bold hover:bg-stone-100"
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-bold text-stone-800 shadow-sm transition-colors hover:border-stone-400 hover:text-black"
               href={localizedPath(locale, `category/${category.slug}`)}
               key={category.id}
             >
@@ -156,7 +156,7 @@ export function CatalogClient({
           ))}
         </nav>
       ) : null}
-      <details className="mb-5 rounded-2xl border border-stone-200 p-4 lg:hidden">
+      <details className="mb-5 rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm lg:hidden">
         <summary className="cursor-pointer font-black">
           {dictionary.actions.filters}
         </summary>
@@ -168,7 +168,7 @@ export function CatalogClient({
         </form>
       </details>
       <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
-        <aside className="hidden rounded-2xl border border-stone-200 bg-stone-50 p-4 lg:block">
+        <aside className="hidden rounded-3xl border border-stone-200/80 bg-stone-50/60 p-5 lg:block">
           <form action={actionPath} className="space-y-4" method="get">
             {fields}
             <Link className="button-secondary w-full" href={actionPath}>
@@ -189,7 +189,7 @@ export function CatalogClient({
               leadSource={leadSource}
             />
           ) : (
-            <div className="rounded-2xl border border-dashed border-stone-300 p-10 text-center">
+            <div className="rounded-3xl border border-dashed border-stone-300 p-10 text-center">
               <h2 className="text-xl font-black">
                 {dictionary.catalog.emptyTitle}
               </h2>

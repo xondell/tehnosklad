@@ -196,7 +196,7 @@ export function ContactDialog({
         aria-labelledby="contact-dialog-title"
         aria-modal="true"
         ref={dialogRef}
-        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
+        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-[2rem] bg-white p-6 shadow-2xl sm:p-8"
         role="dialog"
       >
         <div className="flex items-center justify-between gap-4">
@@ -234,13 +234,13 @@ export function ContactDialog({
           <>
             <div
               aria-label={dictionary.contactModal.title}
-              className="mt-5 grid grid-cols-2 rounded-xl bg-stone-100 p-1"
+              className="mt-5 grid grid-cols-2 rounded-full bg-stone-100 p-1"
               role="tablist"
             >
               <button
                 aria-controls="contact-now-panel"
                 aria-selected={tab === "now"}
-                className={`min-h-11 rounded-lg font-bold ${tab === "now" ? "bg-white shadow-sm" : ""}`}
+                className={`min-h-11 rounded-full font-bold transition-colors ${tab === "now" ? "bg-white text-stone-950 shadow-sm" : "text-stone-600 hover:text-stone-950"}`}
                 disabled={submitting}
                 role="tab"
                 type="button"
@@ -251,7 +251,7 @@ export function ContactDialog({
               <button
                 aria-controls="contact-request-panel"
                 aria-selected={tab === "request"}
-                className={`min-h-11 rounded-lg font-bold ${tab === "request" ? "bg-white shadow-sm" : ""}`}
+                className={`min-h-11 rounded-full font-bold transition-colors ${tab === "request" ? "bg-white text-stone-950 shadow-sm" : "text-stone-600 hover:text-stone-950"}`}
                 disabled={submitting}
                 role="tab"
                 type="button"
@@ -287,7 +287,7 @@ export function ContactDialog({
                     phone={settings.phoneDisplay}
                   />
                 </div>
-                <div className="rounded-xl bg-stone-100 p-4">
+                <div className="rounded-2xl border border-stone-200/80 bg-stone-50/60 p-4">
                   <p className="font-bold">
                     {dictionary.contactModal.hoursTitle}
                   </p>
@@ -398,13 +398,14 @@ export function ContactDialog({
                     />
                   </label>
                 </div>
-                <label className="flex min-h-11 cursor-pointer gap-3 rounded-lg p-1 text-sm focus-within:bg-amber-50">
+                <label className="flex min-h-11 cursor-pointer gap-3 rounded-2xl p-2 text-sm focus-within:bg-stone-50">
                   <input
                     aria-describedby={
                       errors.consent ? "lead-consent-error" : undefined
                     }
                     aria-invalid={Boolean(errors.consent)}
-                    className="mt-0.5 size-5 shrink-0 accent-stone-950"
+                    className="mt-1"
+                    defaultChecked
                     disabled={submitting}
                     name="consent"
                     type="checkbox"
@@ -424,16 +425,16 @@ export function ContactDialog({
                     >
                       {dictionary.footer.privacy}
                     </Link>
-                    {errors.consent ? (
-                      <span
-                        className="field-error block"
-                        id="lead-consent-error"
-                      >
-                        {errors.consent}
-                      </span>
-                    ) : null}
                   </span>
                 </label>
+                {errors.consent ? (
+                  <span
+                    className="field-error block"
+                    id="lead-consent-error"
+                  >
+                    {errors.consent}
+                  </span>
+                ) : null}
                 <button
                   className="button-primary w-full"
                   disabled={submitting}
@@ -445,7 +446,7 @@ export function ContactDialog({
                 </button>
                 {requestError ? (
                   <p
-                    className="rounded-lg bg-red-50 p-3 text-sm text-red-800"
+                    className="rounded-2xl bg-red-50 p-3.5 text-sm font-semibold text-red-800"
                     role="alert"
                   >
                     {requestError}

@@ -144,10 +144,10 @@ export function AssistantWidget({
           role="dialog"
           aria-modal="true"
           aria-label={dictionary.assistant.title}
-          className="flex max-h-[min(88dvh,640px)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white p-4 shadow-2xl"
+          className="flex max-h-[min(88dvh,640px)] w-full max-w-md flex-col overflow-hidden rounded-[2rem] bg-white p-5 shadow-2xl"
         >
           <div className="flex items-center justify-between gap-2">
-            <h2 className="font-bold">{dictionary.assistant.title}</h2>
+            <h2 className="text-lg font-black">{dictionary.assistant.title}</h2>
             <button
               type="button"
               onClick={close}
@@ -157,19 +157,19 @@ export function AssistantWidget({
               ×
             </button>
           </div>
-          <p className="mt-2 text-xs text-stone-600">
+          <p className="mt-1 text-xs text-stone-500">
             {dictionary.assistant.disclaimer}
           </p>
           <div
-            className="mt-3 min-h-24 flex-1 space-y-3 overflow-y-auto"
+            className="mt-4 min-h-24 flex-1 space-y-3 overflow-y-auto"
             aria-live="polite"
           >
             {messages.length === 0 ||
             (messages.length === 1 && messages[0]?.role === "assistant") ? (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {dictionary.assistant.quickQuestions.map((quick) => (
                   <button
-                    className="min-h-11 rounded-full border px-3 py-2 text-left text-xs font-medium"
+                    className="rounded-full border border-stone-200 bg-stone-50/80 px-3.5 py-2 text-left text-xs font-semibold text-stone-800 transition-colors hover:border-stone-400"
                     key={quick}
                     onClick={() => askQuickQuestion(quick)}
                     type="button"
@@ -184,17 +184,17 @@ export function AssistantWidget({
                 key={index}
                 className={message.role === "user" ? "text-right" : "text-left"}
               >
-                <p className="inline-block rounded-xl bg-stone-100 px-3 py-2 text-sm">
+                <p className={`inline-block rounded-2xl px-4 py-2.5 text-sm ${message.role === "user" ? "bg-[var(--brand)] text-black" : "bg-stone-100 text-stone-900"}`}>
                   {message.content}
                 </p>
                 {message.references?.map((reference) => (
                   <Link
                     key={reference.id}
                     href={reference.url}
-                    className="mt-2 block rounded-lg border p-2 text-sm font-medium hover:bg-stone-50"
+                    className="mt-2 block rounded-2xl border border-stone-200 bg-white p-3 text-sm font-medium transition-shadow hover:shadow-sm"
                   >
                     {reference.name}
-                    <span className="ml-2 text-stone-600">
+                    <span className="ml-2 font-bold text-stone-900">
                       {(reference.priceMinor / 100).toLocaleString(
                         locale === "ru" ? "ru-RU" : "ro-RO",
                       )}{" "}
@@ -224,7 +224,7 @@ export function AssistantWidget({
                 maxLength={600}
                 rows={2}
                 placeholder={dictionary.assistant.placeholder}
-                className="min-h-[40px] max-h-[287px] w-full resize-y rounded border p-2 text-sm"
+                className="field min-h-12 w-full resize-none rounded-2xl p-2.5 text-sm"
               />
             </div>
             <button type="submit" disabled={pending} className="button-primary">

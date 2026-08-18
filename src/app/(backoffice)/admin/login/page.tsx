@@ -73,7 +73,7 @@ export default async function AdminLoginPage({
                 />
               </label>
               {query.error ? (
-                <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-800">
+                <p className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-800">
                   Вход не выполнен. Проверьте данные и наличие активной роли
                   администратора.
                 </p>

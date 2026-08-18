@@ -38,10 +38,10 @@ export function ProductCard({
   const productHref = localizedPath(locale, `product/${product.slug}`);
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md">
       <Link
         href={productHref}
-        className="relative block overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-950"
+        className="relative block overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-950"
         aria-label={product.name}
       >
         <ProductIllustration
@@ -49,10 +49,10 @@ export function ProductCard({
           tone={product.imageTone}
           label={primaryImage?.alt ?? product.name}
           imageUrl={primaryImage?.url}
-          className="h-48 transition-transform duration-200 group-hover:scale-105"
+          className="h-48"
         />
         {discount ? (
-          <span className="absolute left-3 top-3 rounded-full bg-red-600 px-2 py-1 text-xs font-bold text-white">
+          <span className="absolute left-3 top-3 rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
             −{discount}%
           </span>
         ) : null}
