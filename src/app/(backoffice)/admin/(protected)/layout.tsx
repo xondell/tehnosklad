@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AdminNavigation } from "@/components/admin/admin-navigation";
+import { Logo } from "@/components/layout/logo";
 import { signOutAdmin } from "@/features/admin/auth/actions";
 import { requireAdmin } from "@/features/admin/auth/guard";
 
@@ -18,10 +19,9 @@ export default async function ProtectedAdminLayout({
         К содержимому
       </a>
       <div className="hidden border-r border-stone-200 bg-stone-950 p-4 text-white lg:block">
-        <p className="px-3 py-4 text-xl font-black">
-          <span className="text-white">ТЕХНО</span>
-          <span className="text-[var(--brand)]">СКЛАД</span>
-        </p>
+        <div className="px-3 py-4">
+          <Logo locale="ru" inverted />
+        </div>
         <AdminNavigation />
       </div>
       <div className="min-w-0">

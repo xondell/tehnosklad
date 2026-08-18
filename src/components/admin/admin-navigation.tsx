@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { Logo } from "@/components/layout/logo";
+
 const items = [
   ["/admin", "Обзор", "⌂"],
   ["/admin/categories", "Категории", "▦"],
@@ -54,11 +56,11 @@ export function AdminNavigation() {
         />
       ) : null}
       <aside className={`admin-sidebar ${open ? "admin-sidebar--open" : ""}`}>
-        <div className="flex items-center justify-between gap-3 px-4 pb-4 lg:hidden">
-          <strong>Разделы</strong>
+        <div className="flex items-center justify-between gap-3 px-2 pb-4 lg:hidden">
+          <Logo locale="ru" inverted />
           <button
             aria-label="Закрыть навигацию"
-            className="icon-button"
+            className="icon-button border-stone-800 bg-stone-900 text-white hover:bg-stone-800"
             onClick={() => setOpen(false)}
             ref={closeButtonRef}
             type="button"

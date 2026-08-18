@@ -42,9 +42,11 @@ export async function GET(
         >
           T
         </div>
-        <div style={{ fontSize: 42, fontWeight: 900 }}>TEHNOSKLAD</div>
+        <div style={{ fontSize: 42, fontWeight: 900, display: "flex" }}>
+          <span style={{ color: "#1c1917" }}>TEHNO</span>
+          <span style={{ color: "#f4c400" }}>SKLAD</span>
+        </div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
         <div
           style={{
             maxWidth: 900,
