@@ -19,8 +19,7 @@ export function CountedInput({
   const [value, setValue] = useState(defaultValue ?? "");
   const len = value.length;
   const remaining = maxLength - len;
-  const isWarning = len >= warningThreshold && len < maxLength;
-  const isLimit = len >= maxLength;
+  const showWarning = len >= warningThreshold;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -31,35 +30,20 @@ export function CountedInput({
     <div className="space-y-1">
       <input
         {...rest}
-        className={`${className} ${isLimit ? "border-red-500 focus:border-red-600" : isWarning ? "border-amber-500 focus:border-amber-600" : ""}`}
+        className={`${className} ${showWarning ? "border-red-500 focus:border-red-600" : ""}`}
         defaultValue={undefined}
         maxLength={maxLength}
         name={name}
         onChange={handleChange}
         value={value}
       />
-      <div className="flex justify-between items-center text-xs">
-        <span
-          className={
-            isLimit
-              ? "font-bold text-red-600"
-              : isWarning
-                ? "font-semibold text-amber-600"
-                : "text-stone-400"
-          }
-        >
-          {isLimit
-            ? "Достигнут максимум символов!"
-            : isWarning
-              ? `Осталось мало символов: ${remaining}`
-              : `Осталось: ${remaining}`}
-        </span>
-        <span
-          className={`font-mono ${isLimit ? "font-bold text-red-600" : isWarning ? "font-semibold text-amber-600" : "text-stone-400"}`}
-        >
-          {len} / {maxLength}
-        </span>
-      </div>
+      {showWarning ? (
+        <div className="flex justify-end items-center text-xs">
+          <span className="font-mono font-bold text-red-600">
+            {len} / {remaining}
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -81,8 +65,7 @@ export function CountedTextarea({
   const [value, setValue] = useState(defaultValue ?? "");
   const len = value.length;
   const remaining = maxLength - len;
-  const isWarning = len >= warningThreshold && len < maxLength;
-  const isLimit = len >= maxLength;
+  const showWarning = len >= warningThreshold;
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
@@ -93,35 +76,20 @@ export function CountedTextarea({
     <div className="space-y-1">
       <textarea
         {...rest}
-        className={`${className} ${isLimit ? "border-red-500 focus:border-red-600" : isWarning ? "border-amber-500 focus:border-amber-600" : ""}`}
+        className={`${className} ${showWarning ? "border-red-500 focus:border-red-600" : ""}`}
         defaultValue={undefined}
         maxLength={maxLength}
         name={name}
         onChange={handleChange}
         value={value}
       />
-      <div className="flex justify-between items-center text-xs">
-        <span
-          className={
-            isLimit
-              ? "font-bold text-red-600"
-              : isWarning
-                ? "font-semibold text-amber-600"
-                : "text-stone-400"
-          }
-        >
-          {isLimit
-            ? "Достигнут максимум символов!"
-            : isWarning
-              ? `Осталось мало символов: ${remaining}`
-              : `Осталось: ${remaining}`}
-        </span>
-        <span
-          className={`font-mono ${isLimit ? "font-bold text-red-600" : isWarning ? "font-semibold text-amber-600" : "text-stone-400"}`}
-        >
-          {len} / {maxLength}
-        </span>
-      </div>
+      {showWarning ? (
+        <div className="flex justify-end items-center text-xs">
+          <span className="font-mono font-bold text-red-600">
+            {len} / {remaining}
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }
