@@ -3612,7 +3612,7 @@ export const demoProducts: DemoProduct[] = [
   },
   {
     "id": "20000000-0000-4000-8000-000000000060",
-    "slug": "kärcher-vc-3",
+    "slug": "karcher-vc-3",
     "categoryId": "10000000-0000-4000-8000-000000000009",
     "brand": "Kärcher",
     "model": "VC 3",

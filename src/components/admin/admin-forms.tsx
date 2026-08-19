@@ -38,7 +38,7 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        Slug
+        Slug (часть URL-адреса страницы латиницей, например samsung-rb34t602fsa)
         <input
           className="field"
           defaultValue={value?.slug}
@@ -69,7 +69,7 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        SEO title
+        SEO title (заголовок страницы для поисковиков Google и Яндекс, до 60–70 символов)
         <input
           className="field"
           defaultValue={value?.seoTitle}
@@ -78,7 +78,7 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        SEO description
+        SEO description (краткое описание для сниппета в поисковой выдаче Google, до 160 символов)
         <textarea
           className="field min-h-20"
           defaultValue={value?.seoDescription}
@@ -141,7 +141,7 @@ export function CategoryForm({
           </span>
         </label>
         <label className="field-label">
-          Порядок
+          Порядок (позиция для сортировки в каталоге: чем меньше число — тем выше категория)
           <input
             className="field"
             defaultValue={category?.sortOrder ?? 0}
@@ -432,7 +432,7 @@ export function ProductForm({
           </select>
         </label>
         <label className="field-label">
-          Бренд
+          Бренд (производитель техники, например Samsung, Bosch, LG)
           <input
             className="field"
             defaultValue={product?.brand}
@@ -442,7 +442,7 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Модель
+          Модель (название или номер модели, например RB34T602FSA)
           <input
             className="field"
             defaultValue={product?.model}
@@ -452,7 +452,7 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          SKU
+          SKU (уникальный артикул / код товара, например TS-REF-0001)
           <input
             className="field"
             defaultValue={product?.sku}
@@ -462,7 +462,7 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Цена, MDL
+          Новая цена, MDL (текущая актуальная цена продажи в леях)
           <input
             className="field"
             defaultValue={product ? minorToMoney(product.priceMinor) : ""}
@@ -473,7 +473,7 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Старая цена, MDL
+          Старая цена, MDL (цена до скидки в леях, заполняется только если есть акция)
           <input
             className="field"
             defaultValue={product ? minorToMoney(product.oldPriceMinor) : ""}
@@ -505,7 +505,7 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Порядок
+          Порядок (позиция для сортировки в каталоге: чем меньше число — тем выше товар)
           <input
             className="field"
             defaultValue={product?.sortOrder ?? 0}
@@ -516,14 +516,6 @@ export function ProductForm({
           />
         </label>
         <div className="grid gap-2">
-          <label className="flex min-h-11 items-center gap-3 font-bold">
-            <input
-              defaultChecked={product?.isPopular}
-              name="is_popular"
-              type="checkbox"
-            />{" "}
-            Популярный
-          </label>
           <label className="flex min-h-11 items-center gap-3 font-bold">
             <input
               defaultChecked={product?.isNew}
