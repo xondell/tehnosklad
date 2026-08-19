@@ -98,24 +98,25 @@ describe("repository contracts", () => {
     pageSize: 9,
   };
 
-  it("demo repository has deterministic categories, products and lookups", async () => {
+    it("demo repository has deterministic categories, products and lookups", async () => {
     const repository = new DemoCatalogRepository();
     await expect(repository.getPublishedCategories("ru")).resolves.toHaveLength(
       15,
     );
     await expect(repository.getPublishedProducts("ro")).resolves.toHaveLength(
-      0,
+      105,
     );
     await expect(
       repository.getProductBySlug("ru", "missing"),
     ).resolves.toBeNull();
+    const firstProduct = (await repository.getPublishedProducts("ru"))[0];
     const similar = await repository.getSimilarProducts(
       "ru",
-      "nord-cool-300",
-      "refrigerators",
+      firstProduct.id,
+      firstProduct.category.id,
       2,
     );
-    expect(similar).toHaveLength(0);
+    expect(similar).toHaveLength(2);
   });
 
   it("Supabase repository uses one product and one bulk specification query", async () => {
