@@ -81,7 +81,7 @@ export default async function HomePage({
           </div>
           <div className="flex items-center justify-center">
             <img
-              src="/tech.svg"
+              src="/tech.png"
               alt={d.home.title}
               className="h-auto w-full max-w-xl object-contain"
             />
