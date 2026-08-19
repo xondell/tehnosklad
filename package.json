@@ -20,7 +20,8 @@
     "db:stop": "supabase stop",
     "db:reset:local": "supabase db reset --local",
     "db:lint:local": "supabase db lint --local --schema public --level warning --fail-on error",
-    "db:types:local": "supabase gen types --local --schema public"
+    "db:types:local": "supabase gen types --local --schema public",
+    "upload:category-images": "node scripts/upload-category-images.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.4",
