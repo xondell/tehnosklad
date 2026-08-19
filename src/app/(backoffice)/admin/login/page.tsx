@@ -34,10 +34,15 @@ export default async function AdminLoginPage({
     <main className="grid min-h-screen place-items-center py-12">
       <PageContainer className="w-full max-w-lg">
         <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-9">
-          <p className="text-sm font-bold uppercase tracking-wider text-stone-500">
-            Tehnosklad
-          </p>
-          <h1 className="mt-3 text-3xl font-black">Вход для администратора</h1>
+          <div className="mb-5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt="Техносклад"
+              className="h-8 w-auto"
+              src="/tehnosklad-logo.svg"
+            />
+          </div>
+          <h1 className="text-2xl font-black">Вход для администратора</h1>
           <p className="mt-3 text-sm text-stone-600">
             Используйте учётную запись Supabase Auth с активной ролью admin.
           </p>

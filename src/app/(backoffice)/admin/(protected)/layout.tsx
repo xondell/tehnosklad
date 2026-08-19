@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { AdminNavigation } from "@/components/admin/admin-navigation";
@@ -17,8 +18,17 @@ export default async function ProtectedAdminLayout({
       <a className="skip-link" href="#admin-main">
         К содержимому
       </a>
-      <div className="hidden border-r border-stone-200 bg-stone-950 p-4 text-white lg:block">
-        <p className="px-3 py-4 text-xl font-black">ТЕХНОСКЛАД</p>
+      <div className="hidden border-r border-stone-800 bg-stone-950 p-4 text-white lg:block">
+        <div className="px-3 py-3 pb-5">
+          <Link aria-label="Техносклад Админ" className="inline-block" href="/admin">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt="Техносклад"
+              className="h-8 w-auto"
+              src="/tehnosklad-logo-white.svg"
+            />
+          </Link>
+        </div>
         <AdminNavigation />
       </div>
       <div className="min-w-0">

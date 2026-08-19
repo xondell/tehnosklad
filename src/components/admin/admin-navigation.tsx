@@ -54,8 +54,15 @@ export function AdminNavigation() {
         />
       ) : null}
       <aside className={`admin-sidebar ${open ? "admin-sidebar--open" : ""}`}>
-        <div className="flex items-center justify-between gap-3 px-4 pb-4 lg:hidden">
-          <strong>Разделы</strong>
+        <div className="flex items-center justify-between gap-3 px-3 pb-4 lg:hidden">
+          <Link aria-label="Техносклад Админ" href="/admin" onClick={() => setOpen(false)}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt="Техносклад"
+              className="h-7 w-auto"
+              src="/tehnosklad-logo-white.svg"
+            />
+          </Link>
           <button
             aria-label="Закрыть навигацию"
             className="icon-button"
