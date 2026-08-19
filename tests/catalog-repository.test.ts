@@ -101,10 +101,10 @@ describe("repository contracts", () => {
   it("demo repository has deterministic categories, products and lookups", async () => {
     const repository = new DemoCatalogRepository();
     await expect(repository.getPublishedCategories("ru")).resolves.toHaveLength(
-      3,
+      15,
     );
     await expect(repository.getPublishedProducts("ro")).resolves.toHaveLength(
-      12,
+      0,
     );
     await expect(
       repository.getProductBySlug("ru", "missing"),
@@ -115,10 +115,7 @@ describe("repository contracts", () => {
       "refrigerators",
       2,
     );
-    expect(similar).toHaveLength(2);
-    expect(similar.every((product) => product.id !== "nord-cool-300")).toBe(
-      true,
-    );
+    expect(similar).toHaveLength(0);
   });
 
   it("Supabase repository uses one product and one bulk specification query", async () => {

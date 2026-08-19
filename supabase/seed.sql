@@ -7,8 +7,20 @@ insert into public.categories (
   id, presentation_key, sort_order, is_published
 ) values
   ('10000000-0000-4000-8000-000000000001', 'fridge', 10, false),
-  ('10000000-0000-4000-8000-000000000002', 'stove', 20, false),
-  ('10000000-0000-4000-8000-000000000003', 'vacuum', 30, false);
+  ('10000000-0000-4000-8000-000000000002', 'generic', 20, false),
+  ('10000000-0000-4000-8000-000000000003', 'stove', 30, false),
+  ('10000000-0000-4000-8000-000000000004', 'generic', 40, false),
+  ('10000000-0000-4000-8000-000000000005', 'generic', 50, false),
+  ('10000000-0000-4000-8000-000000000006', 'stove', 60, false),
+  ('10000000-0000-4000-8000-000000000007', 'generic', 70, false),
+  ('10000000-0000-4000-8000-000000000008', 'generic', 80, false),
+  ('10000000-0000-4000-8000-000000000009', 'vacuum', 90, false),
+  ('10000000-0000-4000-8000-000000000010', 'vacuum', 100, false),
+  ('10000000-0000-4000-8000-000000000011', 'generic', 110, false),
+  ('10000000-0000-4000-8000-000000000012', 'generic', 120, false),
+  ('10000000-0000-4000-8000-000000000013', 'generic', 130, false),
+  ('10000000-0000-4000-8000-000000000014', 'generic', 140, false),
+  ('10000000-0000-4000-8000-000000000015', 'generic', 150, false);
 
 insert into public.category_translations (
   category_id, locale, name, slug, short_description, description,
@@ -16,58 +28,36 @@ insert into public.category_translations (
 ) values
   ('10000000-0000-4000-8000-000000000001', 'ru', 'Холодильники', 'refrigerators', 'Для свежих продуктов каждый день', 'Холодильники для дома и квартиры.', 'Холодильники в Комрате', 'Холодильники Tehnosklad в Комрате.'),
   ('10000000-0000-4000-8000-000000000001', 'ro', 'Frigidere', 'refrigerators', 'Pentru produse proaspete în fiecare zi', 'Frigidere pentru casă și apartament.', 'Frigidere în Comrat', 'Frigidere Tehnosklad în Comrat.'),
-  ('10000000-0000-4000-8000-000000000002', 'ru', 'Плиты', 'stoves', 'Удобство на вашей кухне', 'Практичные плиты для повседневной готовки.', 'Плиты в Комрате', 'Плиты Tehnosklad в Комрате.'),
-  ('10000000-0000-4000-8000-000000000002', 'ro', 'Aragazuri', 'stoves', 'Confort pentru bucătăria dumneavoastră', 'Aragazuri practice pentru gătitul zilnic.', 'Aragazuri în Comrat', 'Aragazuri Tehnosklad în Comrat.'),
-  ('10000000-0000-4000-8000-000000000003', 'ru', 'Пылесосы', 'vacuums', 'Чистота без лишних усилий', 'Пылесосы для регулярной домашней уборки.', 'Пылесосы в Комрате', 'Пылесосы Tehnosklad в Комрате.'),
-  ('10000000-0000-4000-8000-000000000003', 'ro', 'Aspiratoare', 'vacuums', 'Curățenie fără efort suplimentar', 'Aspiratoare pentru curățenia obișnuită a casei.', 'Aspiratoare în Comrat', 'Aspiratoare Tehnosklad în Comrat.');
+  ('10000000-0000-4000-8000-000000000002', 'ru', 'Стиральные машины', 'washing-machines', 'Надёжная забота о ваших вещах', 'Стиральные машины для дома.', 'Стиральные машины в Комрате', 'Стиральные машины Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000002', 'ro', 'Mașini de spălat rufe', 'washing-machines', 'Îngrijire de încredere pentru hainele tale', 'Mașini de spălat rufe pentru casă.', 'Mașini de spălat în Comrat', 'Mașini de spălat Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000003', 'ru', 'Плиты и варочные панели', 'stoves-and-cooktops', 'Удобство и комфорт на вашей кухне', 'Плиты и варочные панели для повседневной готовки.', 'Плиты и панели в Комрате', 'Плиты Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000003', 'ro', 'Plite și aragazuri', 'stoves-and-cooktops', 'Confort și eficiență în bucătăria ta', 'Plite și aragazuri practice pentru gătit.', 'Plite în Comrat', 'Plite Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000004', 'ru', 'Микроволновые печи', 'microwave-ovens', 'Быстрый разогрев и приготовление блюд', 'Микроволновые печи для кухни.', 'Микроволновые печи в Комрате', 'Микроволновые печи Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000004', 'ro', 'Cuptoare cu microunde', 'microwave-ovens', 'Încălzire rapidă și preparare ușoară', 'Cuptoare cu microunde pentru bucătărie.', 'Cuptoare cu microunde în Comrat', 'Cuptoare cu microunde Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000005', 'ru', 'Посудомоечные машины', 'dishwashers', 'Идеальная чистота посуды без хлопот', 'Посудомоечные машины для дома.', 'Посудомоечные машины в Комрате', 'Посудомоечные машины Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000005', 'ro', 'Mașini de spălat vase', 'dishwashers', 'Curățenie impecabilă a vaselor fără efort', 'Mașini de spălat vase pentru casă.', 'Mașini de spălat vase în Comrat', 'Mașini de spălat vase Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000006', 'ru', 'Духовые шкафы', 'ovens', 'Для кулинарных шедевров и выпечки', 'Встраиваемые духовые шкафы.', 'Духовые шкафы в Комрате', 'Духовые шкафы Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000006', 'ro', 'Cuptoare încorporabile', 'ovens', 'Pentru capodopere culinare și copt', 'Cuptoare încorporabile pentru bucătărie.', 'Cuptoare în Comrat', 'Cuptoare Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000007', 'ru', 'Сушильные машины', 'dryers', 'Быстрая и бережная сушка белья', 'Сушильные машины для дома.', 'Сушильные машины в Комрате', 'Сушильные машины Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000007', 'ro', 'Uscătoare de rufe', 'dryers', 'Uscare rapidă și delicată a hainelor', 'Uscătoare de rufe pentru casă.', 'Uscătoare de rufe în Comrat', 'Uscătoare de rufe Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000008', 'ru', 'Кофемашины', 'coffee-machines', 'Ароматный кофе каждый день', 'Кофемашины и кофеварки.', 'Кофемашины в Комрате', 'Кофемашины Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000008', 'ro', 'Espresoare de cafea', 'coffee-machines', 'Cafea aromată în fiecare zi', 'Espresoare și aparate de cafea.', 'Espresoare în Comrat', 'Espresoare Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000009', 'ru', 'Пылесосы', 'vacuums', 'Чистота без лишних усилий', 'Пылесосы для регулярной домашней уборки.', 'Пылесосы в Комрате', 'Пылесосы Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000009', 'ro', 'Aspiratoare', 'vacuums', 'Curățenie fără efort suplimentar', 'Aspiratoare pentru curățenia obișnuită a casei.', 'Aspiratoare în Comrat', 'Aspiratoare Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000010', 'ru', 'Роботы-пылесосы', 'robot-vacuums', 'Автоматическая уборка для вашего дома', 'Роботы-пылесосы для автономной уборки.', 'Роботы-пылесосы в Комрате', 'Роботы-пылесосы Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000010', 'ro', 'Aspiratoare robot', 'robot-vacuums', 'Curățare automată pentru casa ta', 'Aspiratoare robot pentru curățare automată.', 'Aspiratoare robot în Comrat', 'Aspiratoare robot Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000011', 'ru', 'Электрочайники', 'electric-kettles', 'Быстрое кипячение воды', 'Электрические чайники.', 'Электрочайники в Комрате', 'Электрочайники Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000011', 'ro', 'Fierbătoare electrice', 'electric-kettles', 'Fierbere rapidă a apei', 'Fierbătoare electrice pentru bucătărie.', 'Fierbătoare în Comrat', 'Fierbătoare Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000012', 'ru', 'Блендеры', 'blenders', 'Для смузи, коктейлей и соусов', 'Погружные и стационарные блендеры.', 'Блендеры в Комрате', 'Блендеры Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000012', 'ro', 'Blendere', 'blenders', 'Pentru smoothie-uri, cocktailuri și sosuri', 'Blendere de mână și staționare.', 'Blendere în Comrat', 'Blendere Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000013', 'ru', 'Кухонные комбайны', 'food-processors', 'Многофункциональные помощники на кухне', 'Кухонные комбайны и измельчители.', 'Кухонные комбайны в Комрате', 'Кухонные комбайны Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000013', 'ro', 'Roboți de bucătărie', 'food-processors', 'Ajutoare multifuncționale în bucătărie', 'Roboți de bucătărie și tocătoare.', 'Roboți de bucătărie în Comrat', 'Roboți de bucătărie Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000014', 'ru', 'Тостеры и ростеры', 'toasters', 'Хрустящие тосты к завтраку', 'Тостеры и ростеры.', 'Тостеры в Комрате', 'Тостеры Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000014', 'ro', 'Prăjitoare de pâine și roastere', 'toasters', 'Pâine prăjită crocantă pentru micul dejun', 'Prăjitoare de pâine.', 'Prăjitoare de pâine în Comrat', 'Prăjitoare de pâine Tehnosklad în Comrat.'),
+  ('10000000-0000-4000-8000-000000000015', 'ru', 'Кондиционеры', 'air-conditioners', 'Комфортный климат в любое время года', 'Сплит-системы и кондиционеры.', 'Кондиционеры в Комрате', 'Кондиционеры Tehnosklad в Комрате.'),
+  ('10000000-0000-4000-8000-000000000015', 'ro', 'Aparate de aer condiționat', 'air-conditioners', 'Climat confortabil în orice anotimp', 'Aparate de aer condiționat și sisteme split.', 'Aer condiționat în Comrat', 'Aer condiționat Tehnosklad în Comrat.');
 
 update public.categories set is_published = true;
-
-insert into public.products (
-  id, category_id, brand, model, sku, price_minor, old_price_minor,
-  availability, is_popular, is_new, sort_order, is_published
-) values
-  ('20000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000001', 'Nord', 'Cool 300', 'DEMO-NORD-COOL-300', 789000, 849000, 'in_stock', true, false, 10, false),
-  ('20000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000001', 'Vesta', 'Fresh 280', 'DEMO-VESTA-FRESH-280', 699000, null, 'in_stock', false, true, 20, false),
-  ('20000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000001', 'Orion', 'Frost 360', 'DEMO-ORION-FROST-360', 929000, 999000, 'out_of_stock', true, false, 30, false),
-  ('20000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000001', 'Doma', 'Line 240', 'DEMO-DOMA-LINE-240', 619000, null, 'in_stock', false, false, 40, false),
-  ('20000000-0000-4000-8000-000000000005', '10000000-0000-4000-8000-000000000002', 'Vesta', 'Chef 50', 'DEMO-VESTA-CHEF-50', 529000, 579000, 'in_stock', true, false, 10, false),
-  ('20000000-0000-4000-8000-000000000006', '10000000-0000-4000-8000-000000000002', 'Nord', 'Heat 60', 'DEMO-NORD-HEAT-60', 689000, null, 'in_stock', false, true, 20, false),
-  ('20000000-0000-4000-8000-000000000007', '10000000-0000-4000-8000-000000000002', 'Orion', 'Flame 50', 'DEMO-ORION-FLAME-50', 459000, null, 'out_of_stock', false, false, 30, false),
-  ('20000000-0000-4000-8000-000000000008', '10000000-0000-4000-8000-000000000002', 'Doma', 'Kitchen 55', 'DEMO-DOMA-KITCHEN-55', 599000, 649000, 'in_stock', true, true, 40, false),
-  ('20000000-0000-4000-8000-000000000009', '10000000-0000-4000-8000-000000000003', 'Nord', 'Air 700', 'DEMO-NORD-AIR-700', 219000, null, 'in_stock', true, false, 10, false),
-  ('20000000-0000-4000-8000-000000000010', '10000000-0000-4000-8000-000000000003', 'Vesta', 'Clean 900', 'DEMO-VESTA-CLEAN-900', 289000, 319000, 'in_stock', false, true, 20, false),
-  ('20000000-0000-4000-8000-000000000011', '10000000-0000-4000-8000-000000000003', 'Orion', 'Sweep 500', 'DEMO-ORION-SWEEP-500', 179000, null, 'out_of_stock', false, false, 30, false),
-  ('20000000-0000-4000-8000-000000000012', '10000000-0000-4000-8000-000000000003', 'Doma', 'Dust 800', 'DEMO-DOMA-DUST-800', 249000, null, 'in_stock', true, true, 40, false);
-
-insert into public.product_translations (
-  product_id, locale, name, slug, short_description, description,
-  seo_title, seo_description
-) values
-  ('20000000-0000-4000-8000-000000000001', 'ru', 'Холодильник Nord Cool 300', 'nord-cool-300', 'Практичная двухкамерная модель для дома.', 'Модель с продуманным внутренним пространством.', null, null),
-  ('20000000-0000-4000-8000-000000000001', 'ro', 'Frigider Nord Cool 300', 'nord-cool-300', 'Model practic cu două compartimente pentru casă.', 'Model cu spațiu interior bine organizat.', null, null),
-  ('20000000-0000-4000-8000-000000000002', 'ru', 'Холодильник Vesta Fresh 280', 'vesta-fresh-280', 'Компактный формат для небольшой кухни.', 'Вариант для повседневного хранения продуктов.', null, null),
-  ('20000000-0000-4000-8000-000000000002', 'ro', 'Frigider Vesta Fresh 280', 'vesta-fresh-280', 'Format compact pentru o bucătărie mică.', 'Variantă pentru păstrarea zilnică a produselor.', null, null),
-  ('20000000-0000-4000-8000-000000000003', 'ru', 'Холодильник Orion Frost 360', 'orion-frost-360', 'Вместительная модель для семьи.', 'Вместительный холодильник для семейного использования.', null, null),
-  ('20000000-0000-4000-8000-000000000003', 'ro', 'Frigider Orion Frost 360', 'orion-frost-360', 'Model încăpător pentru familie.', 'Frigider încăpător pentru utilizarea familiei.', null, null),
-  ('20000000-0000-4000-8000-000000000004', 'ru', 'Холодильник Doma Line 240', 'doma-line-240', 'Лаконичное решение для квартиры.', 'Модель с базовым набором возможностей.', null, null),
-  ('20000000-0000-4000-8000-000000000004', 'ro', 'Frigider Doma Line 240', 'doma-line-240', 'Soluție simplă pentru apartament.', 'Model cu funcțiile esențiale.', null, null),
-  ('20000000-0000-4000-8000-000000000005', 'ru', 'Плита Vesta Chef 50', 'vesta-chef-50', 'Надёжный формат для ежедневной готовки.', 'Плита с понятным управлением.', null, null),
-  ('20000000-0000-4000-8000-000000000005', 'ro', 'Aragaz Vesta Chef 50', 'vesta-chef-50', 'Format fiabil pentru gătitul zilnic.', 'Aragaz cu control intuitiv.', null, null),
-  ('20000000-0000-4000-8000-000000000006', 'ru', 'Плита Nord Heat 60', 'nord-heat-60', 'Широкая рабочая поверхность.', 'Модель для просторной кухни.', null, null),
-  ('20000000-0000-4000-8000-000000000006', 'ro', 'Aragaz Nord Heat 60', 'nord-heat-60', 'Suprafață de lucru mai lată.', 'Model pentru o bucătărie spațioasă.', null, null),
-  ('20000000-0000-4000-8000-000000000007', 'ru', 'Плита Orion Flame 50', 'orion-flame-50', 'Компактная техника для кухни.', 'Компактная плита для повседневной готовки.', null, null),
-  ('20000000-0000-4000-8000-000000000007', 'ro', 'Aragaz Orion Flame 50', 'orion-flame-50', 'Tehnică compactă pentru bucătărie.', 'Aragaz compact pentru gătitul zilnic.', null, null),
-  ('20000000-0000-4000-8000-000000000008', 'ru', 'Плита Doma Kitchen 55', 'doma-kitchen-55', 'Продуманная модель для дома.', 'Вариант с удобной зоной приготовления.', null, null),
-  ('20000000-0000-4000-8000-000000000008', 'ro', 'Aragaz Doma Kitchen 55', 'doma-kitchen-55', 'Model bine gândit pentru casă.', 'Variantă cu zonă de gătit comodă.', null, null),
-  ('20000000-0000-4000-8000-000000000009', 'ru', 'Пылесос Nord Air 700', 'nord-air-700', 'Лёгкий помощник для ежедневной уборки.', 'Модель для сухой уборки дома.', null, null),
-  ('20000000-0000-4000-8000-000000000009', 'ro', 'Aspirator Nord Air 700', 'nord-air-700', 'Ajutor ușor pentru curățenia zilnică.', 'Model pentru curățarea uscată a casei.', null, null),
-  ('20000000-0000-4000-8000-000000000010', 'ru', 'Пылесос Vesta Clean 900', 'vesta-clean-900', 'Удобная уборка разных поверхностей.', 'Пылесос с набором базовых насадок.', null, null),
-  ('20000000-0000-4000-8000-000000000010', 'ro', 'Aspirator Vesta Clean 900', 'vesta-clean-900', 'Curățenie comodă pentru suprafețe diferite.', 'Aspirator cu accesorii de bază.', null, null),
-  ('20000000-0000-4000-8000-000000000011', 'ru', 'Пылесос Orion Sweep 500', 'orion-sweep-500', 'Компактная модель для квартиры.', 'Вариант для регулярной уборки.', null, null),
-  ('20000000-0000-4000-8000-000000000011', 'ro', 'Aspirator Orion Sweep 500', 'orion-sweep-500', 'Model compact pentru apartament.', 'Variantă pentru curățenie regulată.', null, null),
-  ('20000000-0000-4000-8000-000000000012', 'ru', 'Пылесос Doma Dust 800', 'doma-dust-800', 'Для аккуратной уборки без лишнего шума.', 'Модель для комфортного домашнего использования.', null, null),
-  ('20000000-0000-4000-8000-000000000012', 'ro', 'Aspirator Doma Dust 800', 'doma-dust-800', 'Pentru curățenie atentă fără zgomot excesiv.', 'Model pentru utilizare confortabilă acasă.', null, null);
 
 insert into public.attribute_groups (id, code, sort_order) values
   ('30000000-0000-4000-8000-000000000001', 'general', 10);
@@ -109,70 +99,6 @@ insert into public.category_attributes (
 select category.id, attribute.id, true, attribute.is_filterable, attribute.sort_order
 from public.categories as category
 cross join public.attributes as attribute;
-
-with seed_values (
-  product_id, capacity_ru, capacity_ro, feature_ru, feature_ro, class_code
-) as (values
-  ('20000000-0000-4000-8000-000000000001'::uuid, '300 л', '300 l', 'две камеры', 'două compartimente', 'a'),
-  ('20000000-0000-4000-8000-000000000002'::uuid, '280 л', '280 l', 'нижняя морозильная камера', 'congelator inferior', 'a'),
-  ('20000000-0000-4000-8000-000000000003'::uuid, '360 л', '360 l', 'система охлаждения', 'sistem de răcire', 'a_plus'),
-  ('20000000-0000-4000-8000-000000000004'::uuid, '240 л', '240 l', 'перенавешиваемая дверь', 'ușă reversibilă', 'a'),
-  ('20000000-0000-4000-8000-000000000005'::uuid, '50 см', '50 cm', 'духовой шкаф', 'cuptor', 'a'),
-  ('20000000-0000-4000-8000-000000000006'::uuid, '60 см', '60 cm', 'четыре зоны', 'patru zone', 'a'),
-  ('20000000-0000-4000-8000-000000000007'::uuid, '50 см', '50 cm', 'эмалированная поверхность', 'suprafață emailată', 'a'),
-  ('20000000-0000-4000-8000-000000000008'::uuid, '55 см', '55 cm', 'подсветка духовки', 'iluminarea cuptorului', 'a'),
-  ('20000000-0000-4000-8000-000000000009'::uuid, '1,8 л', '1,8 l', 'контейнер', 'recipient', 'a'),
-  ('20000000-0000-4000-8000-000000000010'::uuid, '2 л', '2 l', 'регулировка мощности', 'reglarea puterii', 'a'),
-  ('20000000-0000-4000-8000-000000000011'::uuid, '1,5 л', '1,5 l', 'компактный корпус', 'carcasă compactă', 'a'),
-  ('20000000-0000-4000-8000-000000000012'::uuid, '2,2 л', '2,2 l', 'телескопическая трубка', 'tub telescopic', 'a')
-)
-insert into public.product_attribute_values (
-  id, product_id, attribute_id, ordinal, text_value_key, option_id
-)
-select md5(product_id::text || ':capacity')::uuid, product_id,
-  '31000000-0000-4000-8000-000000000001'::uuid, 0, 'capacity', null
-from seed_values
-union all
-select md5(product_id::text || ':class')::uuid, product_id,
-  '31000000-0000-4000-8000-000000000002'::uuid, 0, null,
-  case class_code
-    when 'a_plus' then '32000000-0000-4000-8000-000000000002'::uuid
-    else '32000000-0000-4000-8000-000000000001'::uuid
-  end
-from seed_values
-union all
-select md5(product_id::text || ':feature')::uuid, product_id,
-  '31000000-0000-4000-8000-000000000003'::uuid, 0, 'feature', null
-from seed_values;
-
-with seed_values (
-  product_id, capacity_ru, capacity_ro, feature_ru, feature_ro
-) as (values
-  ('20000000-0000-4000-8000-000000000001'::uuid, '300 л', '300 l', 'две камеры', 'două compartimente'),
-  ('20000000-0000-4000-8000-000000000002'::uuid, '280 л', '280 l', 'нижняя морозильная камера', 'congelator inferior'),
-  ('20000000-0000-4000-8000-000000000003'::uuid, '360 л', '360 l', 'система охлаждения', 'sistem de răcire'),
-  ('20000000-0000-4000-8000-000000000004'::uuid, '240 л', '240 l', 'перенавешиваемая дверь', 'ușă reversibilă'),
-  ('20000000-0000-4000-8000-000000000005'::uuid, '50 см', '50 cm', 'духовой шкаф', 'cuptor'),
-  ('20000000-0000-4000-8000-000000000006'::uuid, '60 см', '60 cm', 'четыре зоны', 'patru zone'),
-  ('20000000-0000-4000-8000-000000000007'::uuid, '50 см', '50 cm', 'эмалированная поверхность', 'suprafață emailată'),
-  ('20000000-0000-4000-8000-000000000008'::uuid, '55 см', '55 cm', 'подсветка духовки', 'iluminarea cuptorului'),
-  ('20000000-0000-4000-8000-000000000009'::uuid, '1,8 л', '1,8 l', 'контейнер', 'recipient'),
-  ('20000000-0000-4000-8000-000000000010'::uuid, '2 л', '2 l', 'регулировка мощности', 'reglarea puterii'),
-  ('20000000-0000-4000-8000-000000000011'::uuid, '1,5 л', '1,5 l', 'компактный корпус', 'carcasă compactă'),
-  ('20000000-0000-4000-8000-000000000012'::uuid, '2,2 л', '2,2 l', 'телескопическая трубка', 'tub telescopic')
-)
-insert into public.product_attribute_value_translations (
-  value_id, locale, text_value
-)
-select md5(product_id::text || ':capacity')::uuid, 'ru'::public.app_locale, capacity_ru from seed_values
-union all
-select md5(product_id::text || ':capacity')::uuid, 'ro'::public.app_locale, capacity_ro from seed_values
-union all
-select md5(product_id::text || ':feature')::uuid, 'ru'::public.app_locale, feature_ru from seed_values
-union all
-select md5(product_id::text || ':feature')::uuid, 'ro'::public.app_locale, feature_ro from seed_values;
-
-update public.products set is_published = true;
 
 -- Contact defaults are owned by the stage 8 migration. Keeping them out of the
 -- seed makes `supabase db reset --local` deterministic and avoids duplicate keys.

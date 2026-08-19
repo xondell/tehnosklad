@@ -125,7 +125,7 @@ export type CatalogSearchResult = {
 export type DemoCategory = {
   id: string;
   slug: string;
-  icon: Exclude<PresentationKey, "generic">;
+  icon: PresentationKey;
   name: LocalizedText;
   description: LocalizedText;
 };

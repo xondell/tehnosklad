@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ProductGrid } from "@/components/catalog/product-grid";
+import { CarouselRow } from "@/components/catalog/carousel-row";
+import { ProductCard } from "@/components/catalog/product-card";
 import { ProductIllustration } from "@/components/catalog/product-illustration";
 import { PageContainer } from "@/components/layout/page-container";
 import {
@@ -46,7 +47,7 @@ export default async function HomePage({
   const d = getDictionary(locale);
   const [categories, popular, settings] = await Promise.all([
     getPublishedCategories(locale),
-    getPopularProducts(locale, 3),
+    getPopularProducts(locale, 12),
     getPublicSiteSettings(locale),
   ]);
   return (
@@ -106,10 +107,10 @@ export default async function HomePage({
               {d.actions.openCatalog}
             </Link>
           </div>
-          <div className="mt-7 grid gap-4 md:grid-cols-3">
+          <CarouselRow>
             {categories.map((category) => (
               <Link
-                className="group rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group flex w-64 sm:w-72 shrink-0 snap-start flex-col rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 key={category.id}
                 href={localizedPath(locale, `category/${category.slug}`)}
               >
@@ -120,12 +121,12 @@ export default async function HomePage({
                   className="h-40"
                 />
                 <h3 className="mt-4 text-xl font-bold">{category.name}</h3>
-                <p className="mt-1 text-sm text-stone-600">
+                <p className="mt-1 text-sm text-stone-600 line-clamp-2">
                   {category.shortDescription}
                 </p>
               </Link>
             ))}
-          </div>
+          </CarouselRow>
         </PageContainer>
       </section>
       <section className="bg-stone-50 py-14">
@@ -134,15 +135,26 @@ export default async function HomePage({
             {d.home.popularTitle}
           </h2>
           <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
-          <div className="mt-7">
-            <ProductGrid
-              products={popular}
-              locale={locale}
-              dictionary={d}
-              settings={settings}
-              leadSource="home_product_card"
-            />
-          </div>
+          {popular.length > 0 ? (
+            <CarouselRow>
+              {popular.map((product) => (
+                <div
+                  key={product.id}
+                  className="w-72 sm:w-80 shrink-0 snap-start"
+                >
+                  <ProductCard
+                    product={product}
+                    locale={locale}
+                    dictionary={d}
+                    settings={settings}
+                    leadSource="home_product_card"
+                  />
+                </div>
+              ))}
+            </CarouselRow>
+          ) : (
+            <p className="mt-6 text-stone-500">{d.common.noResults}</p>
+          )}
         </PageContainer>
       </section>
       <section className="py-14">
