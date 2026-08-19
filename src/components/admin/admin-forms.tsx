@@ -1,3 +1,7 @@
+import {
+  CountedInput,
+  CountedTextarea,
+} from "@/components/admin/counted-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
 import {
   saveAttributeAction,
@@ -69,21 +73,21 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        SEO title (заголовок страницы для поисковиков Google и Яндекс, до 60–70 символов)
-        <input
-          className="field"
+        SEO title (заголовок страницы для поисковиков Google и Яндекс)
+        <CountedInput
           defaultValue={value?.seoTitle}
-          maxLength={180}
+          maxLength={70}
           name={`${locale}_seo_title`}
+          warningThreshold={55}
         />
       </label>
       <label className="field-label">
-        SEO description (краткое описание для сниппета в поисковой выдаче Google, до 160 символов)
-        <textarea
-          className="field min-h-20"
+        SEO description (краткое описание для сниппета в поисковой выдаче Google)
+        <CountedTextarea
           defaultValue={value?.seoDescription}
-          maxLength={320}
+          maxLength={160}
           name={`${locale}_seo_description`}
+          warningThreshold={135}
         />
       </label>
     </fieldset>
