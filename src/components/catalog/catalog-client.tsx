@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CategoryPillsCarousel } from "@/components/catalog/category-pills-carousel";
 import { ProductGrid } from "@/components/catalog/product-grid";
 import { PriceFilterInput } from "@/components/catalog/price-filter-input";
 import {
@@ -141,20 +142,11 @@ export function CatalogClient({
   return (
     <>
       {showCategories ? (
-        <nav
-          aria-label={dictionary.catalog.category}
-          className="mb-6 flex flex-wrap gap-2"
-        >
-          {categories.map((category) => (
-            <Link
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-bold hover:bg-stone-100"
-              href={localizedPath(locale, `category/${category.slug}`)}
-              key={category.id}
-            >
-              {category.name}
-            </Link>
-          ))}
-        </nav>
+        <CategoryPillsCarousel
+          ariaLabel={dictionary.catalog.category}
+          categories={categories}
+          locale={locale}
+        />
       ) : null}
       <details className="mb-5 rounded-2xl border border-stone-200 p-4 lg:hidden">
         <summary className="cursor-pointer font-bold">
