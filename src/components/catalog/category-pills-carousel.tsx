@@ -23,8 +23,8 @@ export function CategoryPillsCarousel({
   const checkScroll = () => {
     const el = scrollerRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    setCanScrollLeft(el.scrollLeft > 2);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
   };
 
   useEffect(() => {
@@ -45,29 +45,47 @@ export function CategoryPillsCarousel({
     const children = Array.from(el.children) as HTMLElement[];
     if (children.length === 0) return;
 
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 0) return;
+
     const currentScroll = el.scrollLeft;
-    let targetScroll = currentScroll;
 
     if (direction === "right") {
-      const nextIndex = children.findIndex(
-        (child) => child.offsetLeft > currentScroll + 10,
+      const firstVisibleIndex = children.findIndex(
+        (child) => child.offsetLeft >= currentScroll - 8,
       );
-      const targetIndex =
-        nextIndex !== -1
-          ? Math.min(nextIndex + 3, children.length - 1)
-          : children.length - 1;
-      targetScroll = children[targetIndex]?.offsetLeft ?? 0;
-    } else {
-      const prevChildren = children.filter(
-        (child) => child.offsetLeft < currentScroll - 10,
-      );
-      const targetIndex = Math.max(0, prevChildren.length - 4);
-      targetScroll = children[targetIndex]
-        ? children[targetIndex].offsetLeft
-        : 0;
-    }
+      const baseIndex = firstVisibleIndex !== -1 ? firstVisibleIndex : 0;
+      const targetIndex = baseIndex + 4;
 
-    el.scrollTo({ left: targetScroll, behavior: "smooth" });
+      if (targetIndex >= children.length - 1) {
+        el.scrollTo({ left: maxScroll, behavior: "smooth" });
+      } else {
+        const targetOffset = children[targetIndex].offsetLeft;
+        el.scrollTo({
+          left: Math.min(maxScroll, targetOffset),
+          behavior: "smooth",
+        });
+      }
+    } else {
+      const firstVisibleIndex = children.findIndex(
+        (child) => child.offsetLeft >= currentScroll - 8,
+      );
+
+      if (firstVisibleIndex <= 4 || firstVisibleIndex === -1) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        const targetIndex = Math.max(0, firstVisibleIndex - 4);
+        if (targetIndex === 0) {
+          el.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          const targetOffset = children[targetIndex].offsetLeft;
+          el.scrollTo({
+            left: Math.max(0, targetOffset),
+            behavior: "smooth",
+          });
+        }
+      }
+    }
   };
 
   return (
@@ -100,7 +118,7 @@ export function CategoryPillsCarousel({
 
       <div
         ref={scrollerRef}
-        className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto scroll-smooth py-1"
+        className="no-scrollbar relative flex flex-1 items-center gap-2 overflow-x-auto scroll-smooth py-1"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {categories.map((category) => {
