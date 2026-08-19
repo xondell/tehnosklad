@@ -13,15 +13,22 @@ export function ProductGrid({
   dictionary,
   settings,
   leadSource,
+  columns = 3,
 }: {
   products: CatalogProduct[];
   locale: Locale;
   dictionary: Dictionary;
   settings: PublicSiteSettings;
   leadSource: LeadSource;
+  columns?: 3 | 4;
 }) {
+  const gridClasses =
+    columns === 4
+      ? "grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      : "grid gap-4 sm:grid-cols-2 xl:grid-cols-3";
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className={gridClasses}>
       {products.map((product) => (
         <ProductCard
           key={product.id}

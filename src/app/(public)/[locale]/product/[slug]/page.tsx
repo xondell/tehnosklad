@@ -60,7 +60,7 @@ export default async function ProductPage({
   }
   const d = getDictionary(locale);
   const [similar, settings] = await Promise.all([
-    getSimilarProducts(locale, product.id, product.category.id, 3),
+    getSimilarProducts(locale, product.id, product.category.id, 4),
     getPublicSiteSettings(locale),
   ]);
   const discount = getDiscountPercent(
@@ -186,6 +186,7 @@ export default async function ProductPage({
         <h2 className="text-2xl font-bold">{d.product.similar}</h2>
         <div className="mt-5">
           <ProductGrid
+            columns={4}
             products={similar}
             locale={locale}
             dictionary={d}
