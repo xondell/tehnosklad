@@ -17,6 +17,7 @@ export type CatalogCategory = {
   description: string;
   seoTitle: string | null;
   seoDescription: string | null;
+  imageUrl?: string | null;
 };
 
 export type ProductImage = {
@@ -128,6 +129,7 @@ export type DemoCategory = {
   icon: PresentationKey;
   name: LocalizedText;
   description: LocalizedText;
+  imageUrl?: string;
 };
 export type DemoProductSpecification = {
   label: LocalizedText;

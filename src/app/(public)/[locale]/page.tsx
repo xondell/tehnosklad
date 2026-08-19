@@ -121,6 +121,7 @@ export default async function HomePage({
                   category={category.presentationKey}
                   tone={getCategoryTone(category.presentationKey)}
                   label={category.name}
+                  imageUrl={category.imageUrl ?? undefined}
                   className="h-36"
                 />
                 <h3 className="mt-4 text-xl font-bold">{category.name}</h3>

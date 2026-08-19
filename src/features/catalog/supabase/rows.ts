@@ -19,6 +19,8 @@ export type DbCategoryRow = {
   id: string;
   presentation_key: PresentationKey;
   sort_order: number;
+  image_storage_path?: string | null;
+  image_public_url?: string | null;
   category_translations: DbCategoryTranslation[];
 };
 

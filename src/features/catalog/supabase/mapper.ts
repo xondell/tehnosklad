@@ -75,6 +75,9 @@ export function mapCategoryRow(
     description: translation.description,
     seoTitle: translation.seo_title,
     seoDescription: translation.seo_description,
+    imageUrl:
+      row.image_public_url ??
+      (row.image_storage_path?.startsWith("/") ? row.image_storage_path : null),
   };
 }
 

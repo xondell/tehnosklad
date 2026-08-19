@@ -12,7 +12,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Для свежих продуктов каждый день",
       "ro": "Pentru produse proaspete în fiecare zi"
-    }
+    },
+    "imageUrl": "/images/categories/refrigerators.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000002",
@@ -25,7 +26,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Надёжная забота о ваших вещах",
       "ro": "Îngrijire de încredere pentru hainele tale"
-    }
+    },
+    "imageUrl": "/images/categories/washing-machines.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000003",
@@ -38,7 +40,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Удобство и комфорт на вашей кухне",
       "ro": "Confort și eficiență în bucătăria ta"
-    }
+    },
+    "imageUrl": "/images/categories/stoves-and-cooktops.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000004",
@@ -51,7 +54,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Быстрый разогрев и приготовление блюд",
       "ro": "Încălzire rapidă și preparare ușoară"
-    }
+    },
+    "imageUrl": "/images/categories/microwave-ovens.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000005",
@@ -64,7 +68,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Идеальная чистота посуды без хлопот",
       "ro": "Curățenie impecabilă a vaselor fără efort"
-    }
+    },
+    "imageUrl": "/images/categories/dishwashers.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000006",
@@ -77,7 +82,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Для кулинарных шедевров и выпечки",
       "ro": "Pentru capodopere culinare și copt"
-    }
+    },
+    "imageUrl": "/images/categories/ovens.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000007",
@@ -90,7 +96,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Быстрая и бережная сушка белья",
       "ro": "Uscare rapidă și delicată a hainelor"
-    }
+    },
+    "imageUrl": "/images/categories/dryers.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000008",
@@ -103,7 +110,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Ароматный кофе каждый день",
       "ro": "Cafea aromată în fiecare zi"
-    }
+    },
+    "imageUrl": "/images/categories/coffee-machines.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000009",
@@ -116,7 +124,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Чистота без лишних усилий",
       "ro": "Curățenie fără efort suplimentar"
-    }
+    },
+    "imageUrl": "/images/categories/vacuums.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000010",
@@ -129,7 +138,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Автоматическая уборка для вашего дома",
       "ro": "Curățare automată pentru casa ta"
-    }
+    },
+    "imageUrl": "/images/categories/robot-vacuums.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000011",
@@ -142,7 +152,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Быстрое кипячение воды",
       "ro": "Fierbere rapidă a apei"
-    }
+    },
+    "imageUrl": "/images/categories/electric-kettles.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000012",
@@ -155,7 +166,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Для смузи, коктейлей и соусов",
       "ro": "Pentru smoothie-uri, cocktailuri și sosuri"
-    }
+    },
+    "imageUrl": "/images/categories/blenders.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000013",
@@ -168,7 +180,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Многофункциональные помощники на кухне",
       "ro": "Ajutoare multifuncționale în bucătărie"
-    }
+    },
+    "imageUrl": "/images/categories/food-processors.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000014",
@@ -181,7 +194,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Хрустящие тосты к завтраку",
       "ro": "Pâine prăjită crocantă pentru micul dejun"
-    }
+    },
+    "imageUrl": "/images/categories/toasters.jpg"
   },
   {
     "id": "10000000-0000-4000-8000-000000000015",
@@ -194,7 +208,8 @@ export const demoCategories: DemoCategory[] = [
     "description": {
       "ru": "Комфортный климат в любое время года",
       "ro": "Climat confortabil în orice anotimp"
-    }
+    },
+    "imageUrl": "/images/categories/air-conditioners.jpg"
   }
 ];
 

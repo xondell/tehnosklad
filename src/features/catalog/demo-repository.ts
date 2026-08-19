@@ -29,6 +29,7 @@ function localizeCategory(
     description: category.description[locale],
     seoTitle: null,
     seoDescription: null,
+    imageUrl: category.imageUrl ?? null,
   };
 }
 

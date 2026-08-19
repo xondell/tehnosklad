@@ -47,9 +47,9 @@ export interface CatalogTransport {
 }
 
 const categorySelect =
-  "id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)";
+  "id,presentation_key,sort_order,image_storage_path,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)";
 const productSelect =
-  "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description,seo_title,seo_description),categories!inner(id,presentation_key,sort_order,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))";
+  "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description,seo_title,seo_description),categories!inner(id,presentation_key,sort_order,image_storage_path,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))";
 
 function queryFailure(resource: string): CatalogDataError {
   return new CatalogDataError(
@@ -61,6 +61,26 @@ function queryFailure(resource: string): CatalogDataError {
 export class SupabaseCatalogTransport implements CatalogTransport {
   constructor(private readonly client: SupabaseClient) {}
 
+  private hydrateCategory(row: DbCategoryRow): DbCategoryRow {
+    let imagePublicUrl: string | null = null;
+    if (row.image_storage_path) {
+      if (
+        row.image_storage_path.startsWith("/") ||
+        row.image_storage_path.startsWith("http")
+      ) {
+        imagePublicUrl = row.image_storage_path;
+      } else {
+        imagePublicUrl = this.client.storage
+          .from("category-images")
+          .getPublicUrl(row.image_storage_path).data.publicUrl;
+      }
+    }
+    return {
+      ...row,
+      image_public_url: imagePublicUrl,
+    };
+  }
+
   async listCategories(): Promise<DbCategoryRow[]> {
     const { data, error } = await this.client
       .from("categories")
@@ -69,7 +89,9 @@ export class SupabaseCatalogTransport implements CatalogTransport {
       .is("archived_at", null)
       .order("sort_order");
     if (error) throw queryFailure("categories");
-    return data as unknown as DbCategoryRow[];
+    return (data as unknown as DbCategoryRow[]).map((cat) =>
+      this.hydrateCategory(cat),
+    );
   }
 
   async findCategoryBySlug(
@@ -108,7 +130,7 @@ export class SupabaseCatalogTransport implements CatalogTransport {
       .is("archived_at", null)
       .maybeSingle();
     if (error) throw queryFailure("category");
-    return data as unknown as DbCategoryRow | null;
+    return data ? this.hydrateCategory(data as unknown as DbCategoryRow) : null;
   }
 
   async listProducts(
