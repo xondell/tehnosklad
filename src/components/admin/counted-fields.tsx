@@ -52,7 +52,7 @@ export function CountedTextarea({
   defaultValue,
   maxLength,
   name,
-  className = "field min-h-20",
+  className = "field",
   warningThreshold = Math.floor(maxLength * 0.8),
   ...rest
 }: {

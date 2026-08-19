@@ -59,7 +59,7 @@ function TranslationFields({
       <label className="field-label">
         Краткое описание
         <textarea
-          className="field min-h-24"
+          className="field"
           defaultValue={value?.shortDescription}
           maxLength={500}
           name={`${locale}_short_description`}
@@ -69,7 +69,7 @@ function TranslationFields({
       <label className="field-label">
         Полное описание
         <textarea
-          className="field min-h-36"
+          className="field"
           defaultValue={value?.description}
           maxLength={product ? 10000 : 5000}
           name={`${locale}_description`}
@@ -361,7 +361,7 @@ export function AttributeForm({
             <label className="field-label">
               Подсказка
               <textarea
-                className="field min-h-20"
+                className="field"
                 defaultValue={
                   locale === "ru"
                     ? (attribute?.helpRu ?? "")
