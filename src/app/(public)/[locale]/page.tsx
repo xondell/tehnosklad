@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CarouselRow } from "@/components/catalog/carousel-row";
+import { CarouselSection } from "@/components/catalog/carousel-row";
 import { ProductCard } from "@/components/catalog/product-card";
 import { ProductIllustration } from "@/components/catalog/product-illustration";
 import { PageContainer } from "@/components/layout/page-container";
@@ -91,23 +91,26 @@ export default async function HomePage({
       </section>
       <section className="py-14">
         <PageContainer>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="section-title text-3xl font-bold">
-                {d.home.categoriesTitle}
-              </h2>
-              <p className="mt-2 text-stone-600">
-                {d.home.categoriesDescription}
-              </p>
-            </div>
-            <Link
-              className="font-bold underline"
-              href={localizedPath(locale, "catalog")}
-            >
-              {d.actions.openCatalog}
-            </Link>
-          </div>
-          <CarouselRow>
+          <CarouselSection
+            header={
+              <div>
+                <h2 className="section-title text-3xl font-bold">
+                  {d.home.categoriesTitle}
+                </h2>
+                <p className="mt-2 text-stone-600">
+                  {d.home.categoriesDescription}
+                </p>
+              </div>
+            }
+            action={
+              <Link
+                className="font-bold underline"
+                href={localizedPath(locale, "catalog")}
+              >
+                {d.actions.openCatalog}
+              </Link>
+            }
+          >
             {categories.map((category) => (
               <Link
                 className="group flex w-64 sm:w-72 shrink-0 snap-start flex-col rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
@@ -126,18 +129,23 @@ export default async function HomePage({
                 </p>
               </Link>
             ))}
-          </CarouselRow>
+          </CarouselSection>
         </PageContainer>
       </section>
       <section className="bg-stone-50 py-14">
         <PageContainer>
-          <h2 className="section-title text-3xl font-bold">
-            {d.home.popularTitle}
-          </h2>
-          <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
-          {popular.length > 0 ? (
-            <CarouselRow>
-              {popular.map((product) => (
+          <CarouselSection
+            header={
+              <div>
+                <h2 className="section-title text-3xl font-bold">
+                  {d.home.popularTitle}
+                </h2>
+                <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
+              </div>
+            }
+          >
+            {popular.length > 0 ? (
+              popular.map((product) => (
                 <div
                   key={product.id}
                   className="w-72 sm:w-80 shrink-0 snap-start"
@@ -150,11 +158,11 @@ export default async function HomePage({
                     leadSource="home_product_card"
                   />
                 </div>
-              ))}
-            </CarouselRow>
-          ) : (
-            <p className="mt-6 text-stone-500">{d.common.noResults}</p>
-          )}
+              ))
+            ) : (
+              <p className="py-4 text-stone-500">{d.common.noResults}</p>
+            )}
+          </CarouselSection>
         </PageContainer>
       </section>
       <section className="py-14">
