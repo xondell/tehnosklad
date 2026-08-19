@@ -36,9 +36,9 @@ export function ProductCard({
         ? dictionary.common.onOrder
         : dictionary.common.outOfStock;
   return (
-    <article className="relative flex h-full flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <article className="group relative flex h-full flex-col rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:border-stone-400 hover:shadow-md">
       <Link
-        className="flex flex-1 flex-col focus-visible:rounded"
+        className="flex flex-1 flex-col focus-visible:rounded-xl"
         href={localizedPath(locale, `product/${product.slug}`)}
       >
         <div className="relative">
@@ -47,48 +47,55 @@ export function ProductCard({
             tone={product.imageTone}
             label={primaryImage?.alt ?? product.name}
             imageUrl={primaryImage?.url}
-            className="h-48"
+            className="h-44 w-full"
           />
           {discount ? (
-            <span className="absolute left-3 top-3 rounded-full bg-red-600 px-2 py-1 text-xs font-bold text-white">
+            <span className="absolute left-0 top-0 rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-white shadow-xs">
               −{discount}%
             </span>
           ) : null}
         </div>
-        <div className="flex flex-1 flex-col p-4">
+        <div className="mt-4 flex flex-1 flex-col">
           <p className="text-xs font-bold uppercase tracking-wide text-stone-500">
             {product.category.name} · {product.brand}
           </p>
-          <h3 className="mt-2 line-clamp-2 min-h-12 text-base font-bold leading-6">
+          <h3 className="mt-1 line-clamp-2 min-h-12 text-base font-bold leading-6 text-stone-900 group-hover:text-black">
             {product.name}
           </h3>
-          <ul className="mt-3 min-h-12 space-y-1 text-sm text-stone-600">
+          <ul className="mt-2 min-h-10 space-y-0.5 text-xs text-stone-600">
             {product.specifications.slice(0, 2).map((specification) => (
-              <li key={specification.code}>
-                {specification.label}: {specification.displayValue}
+              <li key={specification.code} className="line-clamp-1">
+                {specification.label}:{" "}
+                <span className="font-semibold text-stone-800">
+                  {specification.displayValue}
+                </span>
               </li>
             ))}
           </ul>
           <div className="mt-auto pt-4">
-            <div className="flex items-end gap-2">
-              <strong className="text-xl font-bold tracking-tight">
+            <div className="flex items-baseline gap-2">
+              <strong className="text-xl font-black tracking-tight text-stone-950">
                 {formatPrice(product.priceMinor, locale)}
               </strong>
               {product.oldPriceMinor && discount ? (
-                <s className="mb-0.5 text-sm text-stone-500">
+                <s className="text-sm font-semibold text-stone-400">
                   {formatPrice(product.oldPriceMinor, locale)}
                 </s>
               ) : null}
             </div>
             <p
-              className={`mt-2 text-sm font-bold ${product.stockStatus === "in_stock" ? "text-emerald-700" : "text-stone-500"}`}
+              className={`mt-1 text-xs font-bold ${
+                product.stockStatus === "in_stock"
+                  ? "text-emerald-700"
+                  : "text-stone-500"
+              }`}
             >
               {availability}
             </p>
           </div>
         </div>
       </Link>
-      <div className="flex shrink-0 justify-end px-4 pb-4 [&>button]:w-[45%]">
+      <div className="mt-4 flex shrink-0 justify-end [&>button]:w-[45%]">
         <ContactButton
           dictionary={dictionary}
           locale={locale}
