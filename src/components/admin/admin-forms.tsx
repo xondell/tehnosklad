@@ -2,6 +2,10 @@ import {
   CountedInput,
   CountedTextarea,
 } from "@/components/admin/counted-fields";
+import {
+  IntegerInput,
+  MoneyInput,
+} from "@/components/admin/numeric-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
 import {
   saveAttributeAction,
@@ -146,13 +150,10 @@ export function CategoryForm({
         </label>
         <label className="field-label">
           Порядок (позиция для сортировки в каталоге: чем меньше число — тем выше категория)
-          <input
-            className="field"
+          <IntegerInput
             defaultValue={category?.sortOrder ?? 0}
-            min={0}
             name="sort_order"
             required
-            type="number"
           />
         </label>
         <label className="flex min-h-11 items-center gap-3 font-bold">
@@ -201,13 +202,10 @@ export function AttributeGroupForm({ group }: { group?: AdminAttributeGroup }) {
       </label>
       <label className="field-label">
         Порядок
-        <input
-          className="field"
+        <IntegerInput
           defaultValue={group?.sortOrder ?? 0}
-          min={0}
           name="sort_order"
           required
-          type="number"
         />
       </label>
       <label className="field-label">
@@ -315,13 +313,10 @@ export function AttributeForm({
         </label>
         <label className="field-label">
           Порядок
-          <input
-            className="field"
+          <IntegerInput
             defaultValue={attribute?.sortOrder ?? 0}
-            min={0}
             name="sort_order"
             required
-            type="number"
           />
         </label>
         <div className="grid gap-2">
@@ -467,23 +462,17 @@ export function ProductForm({
         </label>
         <label className="field-label">
           Новая цена, MDL (текущая актуальная цена продажи в леях)
-          <input
-            className="field"
+          <MoneyInput
             defaultValue={product ? minorToMoney(product.priceMinor) : ""}
-            inputMode="decimal"
             name="price"
-            pattern="\d+(?:[.,]\d{1,2})?"
             required
           />
         </label>
         <label className="field-label">
           Старая цена, MDL (цена до скидки в леях, заполняется только если есть акция)
-          <input
-            className="field"
+          <MoneyInput
             defaultValue={product ? minorToMoney(product.oldPriceMinor) : ""}
-            inputMode="decimal"
             name="old_price"
-            pattern="\d+(?:[.,]\d{1,2})?"
           />
         </label>
         <label className="field-label">
@@ -500,23 +489,17 @@ export function ProductForm({
         </label>
         <label className="field-label">
           Количество
-          <input
-            className="field"
+          <IntegerInput
             defaultValue={product?.quantity ?? ""}
-            min={0}
             name="quantity"
-            type="number"
           />
         </label>
         <label className="field-label">
           Порядок (позиция для сортировки в каталоге: чем меньше число — тем выше товар)
-          <input
-            className="field"
+          <IntegerInput
             defaultValue={product?.sortOrder ?? 0}
-            min={0}
             name="sort_order"
             required
-            type="number"
           />
         </label>
         <div className="grid gap-2">
