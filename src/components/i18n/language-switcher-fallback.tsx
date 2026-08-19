@@ -13,7 +13,7 @@ export function LanguageSwitcherFallback({
 }) {
   return (
     <nav aria-label={label}>
-      <ul className="flex h-[1.875rem] lg:h-9 w-fit items-center rounded-[100vmax] border-2 border-stone-400 bg-white shadow-sm">
+      <ul className="flex h-[1.875rem] lg:h-9 w-fit items-center rounded-[100vmax] border-2 border-black bg-white shadow-sm">
         {locales.map((locale) => (
           <li key={locale}>
             <Link
