@@ -113,7 +113,7 @@ export default async function HomePage({
           >
             {categories.map((category) => (
               <Link
-                className="group flex w-64 sm:w-72 shrink-0 snap-start flex-col rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group flex w-[260px] sm:w-[calc((100%-1rem)/2)] md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] shrink-0 snap-start flex-col rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 key={category.id}
                 href={localizedPath(locale, `category/${category.slug}`)}
               >
@@ -121,7 +121,7 @@ export default async function HomePage({
                   category={category.presentationKey}
                   tone={getCategoryTone(category.presentationKey)}
                   label={category.name}
-                  className="h-40"
+                  className="h-36"
                 />
                 <h3 className="mt-4 text-xl font-bold">{category.name}</h3>
                 <p className="mt-1 text-sm text-stone-600 line-clamp-2">
@@ -148,7 +148,7 @@ export default async function HomePage({
               popular.map((product) => (
                 <div
                   key={product.id}
-                  className="w-72 sm:w-80 shrink-0 snap-start"
+                  className="w-[260px] sm:w-[calc((100%-1rem)/2)] md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] shrink-0 snap-start"
                 >
                   <ProductCard
                     product={product}
