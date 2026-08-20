@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { PrimaryNav } from "@/components/layout/primary-nav";
 import type { PublicSiteSettings } from "@/features/catalog/types";
@@ -20,12 +21,13 @@ export function MobileMenu({
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(false);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const touchStartX = useRef(0);
-  const touchStartY = useRef(0);
+  const [mounted, setMounted] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const openMenu = () => {
     setOpen(true);
@@ -38,7 +40,6 @@ export function MobileMenu({
 
   const close = () => {
     setActive(false);
-    setDragOffset(0);
     setTimeout(() => {
       setOpen(false);
       trigger.current?.focus();
@@ -80,41 +81,66 @@ export function MobileMenu({
     };
   }, [open]);
 
-  // Touch swipe handling
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-    setIsDragging(true);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    const deltaX = currentX - touchStartX.current;
-    const deltaY = currentY - touchStartY.current;
-
-    // If mainly horizontal drag
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX > 0) {
-        setDragOffset(deltaX);
-      }
-    }
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    setIsDragging(false);
-    const endX = e.changedTouches[0].clientX;
-    const deltaX = endX - touchStartX.current;
-    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
-
-    // Dragged right or swiped decisively
-    if ((deltaX > 60 || deltaX < -70) && Math.abs(deltaX) > Math.abs(deltaY)) {
-      close();
-    } else {
-      setDragOffset(0);
-    }
-  };
+  const drawerModal =
+    open && mounted
+      ? createPortal(
+          <div className="fixed inset-0 z-[100] flex justify-end lg:hidden overflow-hidden">
+            {/* Backdrop: visual darkening over full screen, does NOT close on tap */}
+            <div
+              className={`fixed inset-0 bg-black/40 transition-opacity duration-300 ${
+                active ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              aria-hidden="true"
+            />
+            <aside
+              ref={dialog}
+              role="dialog"
+              aria-modal="true"
+              aria-label={dictionary.navigationLabel}
+              style={{
+                transform: active ? "translateX(0)" : "translateX(100%)",
+                transition: "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+              className="safe-bottom relative z-10 flex h-dvh w-[min(22rem,92vw)] flex-col overflow-y-auto bg-white p-5 pt-[max(1.25rem,env(safe-area-inset-top))] shadow-2xl will-change-transform"
+            >
+              <div className="flex items-center justify-between">
+                <strong>{dictionary.navigationLabel}</strong>
+                <button
+                  aria-label={dictionary.actions.close}
+                  className="icon-button"
+                  type="button"
+                  onClick={close}
+                >
+                  ×
+                </button>
+              </div>
+              <div onClick={close}>
+                <PrimaryNav locale={locale} dictionary={dictionary} mobile />
+              </div>
+              <a
+                className="button-primary mt-5 gap-1.5"
+                href={settings.phoneHref}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                {dictionary.actions.call}: {settings.phoneDisplay}
+              </a>
+            </aside>
+          </div>,
+          document.body,
+        )
+      : null;
 
   return (
     <>
@@ -142,73 +168,7 @@ export function MobileMenu({
           ☰
         </button>
       </div>
-      {open ? (
-        <div className="fixed inset-0 z-60 flex justify-end lg:hidden overflow-hidden">
-          <button
-            aria-label={dictionary.actions.close}
-            className={`fixed inset-0 bg-black/40 transition-opacity duration-300 ${
-              active ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-            type="button"
-            onClick={close}
-            tabIndex={-1}
-          />
-          <aside
-            ref={dialog}
-            role="dialog"
-            aria-modal="true"
-            aria-label={dictionary.navigationLabel}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            style={{
-              transform: !active
-                ? "translateX(100%)"
-                : dragOffset > 0
-                  ? `translateX(${dragOffset}px)`
-                  : "translateX(0)",
-              transition: isDragging
-                ? "none"
-                : "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-            className="safe-bottom relative z-10 flex h-dvh w-[min(22rem,92vw)] flex-col overflow-y-auto bg-white p-5 pt-[max(1.25rem,env(safe-area-inset-top))] shadow-2xl touch-pan-y will-change-transform"
-          >
-            <div className="flex items-center justify-between">
-              <strong>{dictionary.navigationLabel}</strong>
-              <button
-                aria-label={dictionary.actions.close}
-                className="icon-button"
-                type="button"
-                onClick={close}
-              >
-                ×
-              </button>
-            </div>
-            <div onClick={close}>
-              <PrimaryNav locale={locale} dictionary={dictionary} mobile />
-            </div>
-            <a
-              className="button-primary mt-5 gap-1.5"
-              href={settings.phoneHref}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              {dictionary.actions.call}: {settings.phoneDisplay}
-            </a>
-          </aside>
-        </div>
-      ) : null}
+      {drawerModal}
     </>
   );
 }
