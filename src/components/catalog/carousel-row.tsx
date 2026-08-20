@@ -49,9 +49,9 @@ export function CarouselSection({
     <div className={className}>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>{header}</div>
-        <div className="flex items-center gap-4">
+        <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-4">
           {action}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             <button
               type="button"
               onClick={() => scrollByCard("left")}
