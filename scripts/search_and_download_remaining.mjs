@@ -35,7 +35,9 @@ async function fetchUrl(url, headers = {}, timeoutMs = 12000) {
               const u = new URL(url);
               nextUrl = `${u.protocol}//${u.host}${nextUrl}`;
             }
-            return fetchUrl(nextUrl, headers, timeoutMs).then(resolve).catch(reject);
+            return fetchUrl(nextUrl, headers, timeoutMs)
+              .then(resolve)
+              .catch(reject);
           }
           if (res.statusCode !== 200) {
             return reject(new Error(`HTTP status ${res.statusCode}`));
@@ -62,17 +64,23 @@ async function searchDuckDuckGoImage(query) {
     const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query + " product white background")}&t=h_&iar=images&iax=images&ia=images`;
     const htmlBuf = await fetchUrl(searchUrl);
     const html = htmlBuf.toString("utf8");
-    const vqdMatch = html.match(/vqd=["']([^"']+)["']/i) || html.match(/vqd=([^&"']+)/i);
+    const vqdMatch =
+      html.match(/vqd=["']([^"']+)["']/i) || html.match(/vqd=([^&"']+)/i);
     if (!vqdMatch) return null;
     const vqd = vqdMatch[1];
 
     const apiUrl = `https://duckduckgo.com/i.js?l=us-en&o=json&q=${encodeURIComponent(query)}&vqd=${vqd}&f=,,,type:photo,&p=1`;
-    const jsonBuf = await fetchUrl(apiUrl, { Referer: "https://duckduckgo.com/" });
+    const jsonBuf = await fetchUrl(apiUrl, {
+      Referer: "https://duckduckgo.com/",
+    });
     const data = JSON.parse(jsonBuf.toString("utf8"));
     if (data.results && data.results.length > 0) {
       // Find highest resolution image
       for (const res of data.results) {
-        if (res.image && (res.image.startsWith("http://") || res.image.startsWith("https://"))) {
+        if (
+          res.image &&
+          (res.image.startsWith("http://") || res.image.startsWith("https://"))
+        ) {
           return res.image;
         }
       }
@@ -84,10 +92,19 @@ async function searchDuckDuckGoImage(query) {
 }
 
 // Extract demoProducts to ensure all 105 products are covered
-const demoFile = path.join(process.cwd(), "src", "features", "catalog", "demo-data.ts");
+const demoFile = path.join(
+  process.cwd(),
+  "src",
+  "features",
+  "catalog",
+  "demo-data.ts",
+);
 const demoContent = fs.readFileSync(demoFile, "utf8");
 const marker = "export const demoProducts: DemoProduct[] = ";
-const jsonStr = demoContent.substring(demoContent.indexOf(marker) + marker.length).trim().replace(/;$/, "");
+const jsonStr = demoContent
+  .substring(demoContent.indexOf(marker) + marker.length)
+  .trim()
+  .replace(/;$/, "");
 const demoProducts = JSON.parse(jsonStr);
 
 async function run() {
@@ -135,7 +152,9 @@ async function run() {
   console.log(`Already existed: ${alreadyPresent}`);
   console.log(`Downloaded now: ${downloadedNow}`);
   console.log(`Remaining missing: ${failed.length} / ${demoProducts.length}`);
-  console.log(`Total ready in folder: ${alreadyPresent + downloadedNow} / ${demoProducts.length}`);
+  console.log(
+    `Total ready in folder: ${alreadyPresent + downloadedNow} / ${demoProducts.length}`,
+  );
 }
 
 run().catch(console.error);

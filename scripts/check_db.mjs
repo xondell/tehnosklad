@@ -40,7 +40,9 @@ async function check() {
     data: trans,
     count: tCount,
     error: tErr,
-  } = await supabase.from("product_translations").select("*", { count: "exact" });
+  } = await supabase
+    .from("product_translations")
+    .select("*", { count: "exact" });
   const {
     data: cats,
     count: cCount,

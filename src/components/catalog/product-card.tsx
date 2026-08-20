@@ -95,7 +95,7 @@ export function ProductCard({
           </div>
         </div>
       </Link>
-      <div className="mt-4 flex shrink-0 justify-end [&>button]:w-[45%]">
+      <div className="mt-4 flex shrink-0 justify-end">
         <ContactButton
           dictionary={dictionary}
           locale={locale}

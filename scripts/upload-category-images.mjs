@@ -37,7 +37,9 @@ const supabaseKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error("❌ Ошибка: Отсутствует SUPABASE_URL или SUPABASE_SERVICE_ROLE_KEY.");
+  console.error(
+    "❌ Ошибка: Отсутствует SUPABASE_URL или SUPABASE_SERVICE_ROLE_KEY.",
+  );
   console.error(
     "Убедитесь, что заполнен файл .env.local или передайте переменные окружения:",
   );
@@ -52,20 +54,20 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 const slugToId = {
-  "refrigerators": "10000000-0000-4000-8000-000000000001",
+  refrigerators: "10000000-0000-4000-8000-000000000001",
   "washing-machines": "10000000-0000-4000-8000-000000000002",
   "stoves-and-cooktops": "10000000-0000-4000-8000-000000000003",
   "microwave-ovens": "10000000-0000-4000-8000-000000000004",
-  "dishwashers": "10000000-0000-4000-8000-000000000005",
-  "ovens": "10000000-0000-4000-8000-000000000006",
-  "dryers": "10000000-0000-4000-8000-000000000007",
+  dishwashers: "10000000-0000-4000-8000-000000000005",
+  ovens: "10000000-0000-4000-8000-000000000006",
+  dryers: "10000000-0000-4000-8000-000000000007",
   "coffee-machines": "10000000-0000-4000-8000-000000000008",
-  "vacuums": "10000000-0000-4000-8000-000000000009",
+  vacuums: "10000000-0000-4000-8000-000000000009",
   "robot-vacuums": "10000000-0000-4000-8000-000000000010",
   "electric-kettles": "10000000-0000-4000-8000-000000000011",
-  "blenders": "10000000-0000-4000-8000-000000000012",
+  blenders: "10000000-0000-4000-8000-000000000012",
   "food-processors": "10000000-0000-4000-8000-000000000013",
-  "toasters": "10000000-0000-4000-8000-000000000014",
+  toasters: "10000000-0000-4000-8000-000000000014",
   "air-conditioners": "10000000-0000-4000-8000-000000000015",
 };
 
@@ -88,7 +90,9 @@ async function run() {
   console.log(`🚀 Подключение к Supabase: ${supabaseUrl}`);
   console.log(`📁 Загрузка изображений из папки: ${sourceDir}\n`);
 
-  const files = fs.readdirSync(sourceDir).filter((f) => /\.(jpg|jpeg|png|webp|avif)$/i.test(f));
+  const files = fs
+    .readdirSync(sourceDir)
+    .filter((f) => /\.(jpg|jpeg|png|webp|avif)$/i.test(f));
 
   let successCount = 0;
 
@@ -100,14 +104,23 @@ async function run() {
     // Определяем ID категории (по UUID либо по слагу)
     const categoryId = slugToId[baseName] || baseName;
 
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(categoryId)) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        categoryId,
+      )
+    ) {
       console.log(`⚠️ Пропущен неизвестный файл: ${file}`);
       continue;
     }
 
     const fileBuffer = fs.readFileSync(filePath);
     const storagePath = `categories/${categoryId}${ext === ".jpeg" ? ".jpg" : ext}`;
-    const contentType = ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg";
+    const contentType =
+      ext === ".png"
+        ? "image/png"
+        : ext === ".webp"
+          ? "image/webp"
+          : "image/jpeg";
 
     process.stdout.write(`Загрузка ${file} -> ${storagePath}... `);
 
@@ -130,7 +143,9 @@ async function run() {
       .eq("id", categoryId);
 
     if (dbError) {
-      console.log(`⚠️ Файл загружен в Storage, но ошибка обновления БД: ${dbError.message}`);
+      console.log(
+        `⚠️ Файл загружен в Storage, но ошибка обновления БД: ${dbError.message}`,
+      );
     } else {
       console.log(`✅ Успешно привязано к категории ${categoryId}`);
       successCount++;

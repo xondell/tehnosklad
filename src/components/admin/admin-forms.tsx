@@ -2,10 +2,7 @@ import {
   CountedInput,
   CountedTextarea,
 } from "@/components/admin/counted-fields";
-import {
-  IntegerInput,
-  MoneyInput,
-} from "@/components/admin/numeric-fields";
+import { IntegerInput, MoneyInput } from "@/components/admin/numeric-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
 import {
   saveAttributeAction,
@@ -86,7 +83,8 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        SEO description (краткое описание для сниппета в поисковой выдаче Google)
+        SEO description (краткое описание для сниппета в поисковой выдаче
+        Google)
         <CountedTextarea
           defaultValue={value?.seoDescription}
           maxLength={160}
@@ -149,7 +147,8 @@ export function CategoryForm({
           </span>
         </label>
         <label className="field-label">
-          Порядок (позиция для сортировки в каталоге: чем меньше число — тем выше категория)
+          Порядок (позиция для сортировки в каталоге: чем меньше число — тем
+          выше категория)
           <IntegerInput
             defaultValue={category?.sortOrder ?? 0}
             name="sort_order"
@@ -469,7 +468,8 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Старая цена, MDL (цена до скидки в леях, заполняется только если есть акция)
+          Старая цена, MDL (цена до скидки в леях, заполняется только если есть
+          акция)
           <MoneyInput
             defaultValue={product ? minorToMoney(product.oldPriceMinor) : ""}
             name="old_price"
@@ -495,7 +495,8 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Порядок (позиция для сортировки в каталоге: чем меньше число — тем выше товар)
+          Порядок (позиция для сортировки в каталоге: чем меньше число — тем
+          выше товар)
           <IntegerInput
             defaultValue={product?.sortOrder ?? 0}
             name="sort_order"

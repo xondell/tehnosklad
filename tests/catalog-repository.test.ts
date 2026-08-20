@@ -98,7 +98,7 @@ describe("repository contracts", () => {
     pageSize: 9,
   };
 
-    it("demo repository has deterministic categories, products and lookups", async () => {
+  it("demo repository has deterministic categories, products and lookups", async () => {
     const repository = new DemoCatalogRepository();
     await expect(repository.getPublishedCategories("ru")).resolves.toHaveLength(
       15,

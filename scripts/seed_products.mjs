@@ -66,7 +66,8 @@ async function seed() {
     .from("category_attributes")
     .update({ is_required: false })
     .neq("category_id", "00000000-0000-0000-0000-000000000000");
-  if (catAttrErr) console.log("Category attributes update note:", catAttrErr.message);
+  if (catAttrErr)
+    console.log("Category attributes update note:", catAttrErr.message);
 
   // 2. Insert products in draft mode (is_published = false)
   const productRows = demoProducts.map((p, idx) => ({
@@ -87,9 +88,7 @@ async function seed() {
   }));
 
   console.log(`Inserting ${productRows.length} draft products...`);
-  const { error: pErr } = await supabase
-    .from("products")
-    .upsert(productRows);
+  const { error: pErr } = await supabase.from("products").upsert(productRows);
   if (pErr) {
     console.error("❌ Products insertion error:", pErr);
     return;
@@ -154,7 +153,9 @@ async function seed() {
   const { count: tCount } = await supabase
     .from("product_translations")
     .select("*", { count: "exact", head: true });
-  console.log(`\n🎉 Successfully verified in DB: ${pCount} products and ${tCount} translations! All 105 products are active and live.`);
+  console.log(
+    `\n🎉 Successfully verified in DB: ${pCount} products and ${tCount} translations! All 105 products are active and live.`,
+  );
 }
 
 seed().catch(console.error);

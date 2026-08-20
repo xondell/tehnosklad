@@ -50,7 +50,8 @@ export const ro: Dictionary = {
     title: "Electrocasnice care fac viața de acasă mai ușoară",
     description:
       "Alegeți electrocasnice practice și aflați detalii de la echipa magazinului prin telefon.",
-    contactNote: "Sunați sau veniți în magazin — alegem tehnica potrivită pentru dumneavoastră.",
+    contactNote:
+      "Sunați sau veniți în magazin — alegem tehnica potrivită pentru dumneavoastră.",
     categoriesTitle: "Alegeți categoria",
     categoriesDescription:
       "Trei categorii principale pentru casa dumneavoastră.",

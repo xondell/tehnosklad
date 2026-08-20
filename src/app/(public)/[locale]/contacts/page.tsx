@@ -58,7 +58,7 @@ export default async function ContactsPage({
               </dt>
               <dd className="mt-1">
                 <a
-                   className="text-xl font-bold hover:underline"
+                  className="text-xl font-bold hover:underline"
                   href={settings.phoneHref}
                 >
                   {settings.phoneDisplay}

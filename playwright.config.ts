@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = "http://localhost:3000";
+const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -18,17 +18,40 @@ export default defineConfig({
   webServer: {
     command: "npm run dev",
     url: `${baseURL}/ru`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120_000,
-    env: {
-      ...process.env,
-      NEXT_PUBLIC_SITE_URL: baseURL,
-      CATALOG_DATA_SOURCE: "demo",
-    },
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile-chromium", use: { ...devices["Pixel 5"] } },
-    { name: "mobile-webkit", use: { ...devices["iPhone 13"] } },
+    // 1. Global Auth Setup project: authenticates test admin via UI and stores session
+    {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+    },
+    // 2. Admin E2E project: runs all admin specs using authenticated storageState
+    {
+      name: "admin",
+      testMatch: /admin-.*\.spec\.ts/,
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "playwright/.auth/admin.json",
+      },
+    },
+    // 3. Public Storefront projects: ignore admin specs and setup
+    {
+      name: "chromium",
+      testIgnore: [/admin-.*\.spec\.ts/, /.*\.setup\.ts/],
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "mobile-chromium",
+      testIgnore: [/admin-.*\.spec\.ts/, /.*\.setup\.ts/],
+      use: { ...devices["Pixel 5"] },
+    },
+    {
+      name: "mobile-webkit",
+      testIgnore: [/admin-.*\.spec\.ts/, /.*\.setup\.ts/],
+      use: { ...devices["iPhone 13"] },
+    },
   ],
 });

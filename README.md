@@ -95,17 +95,17 @@ flowchart LR
 
 ## Tech stack
 
-| Area | Technology |
-|---|---|
-| Framework | Next.js 16.3 / App Router |
-| UI | React 19 |
-| Language | TypeScript 5.9 |
-| Styling | Tailwind CSS 4 |
-| Database | Supabase PostgreSQL |
-| Authentication | Supabase SSR Auth |
-| Storage | Supabase Storage |
-| Tests | Vitest + Playwright |
-| Deployment | Vercel |
+| Area           | Technology                |
+| -------------- | ------------------------- |
+| Framework      | Next.js 16.3 / App Router |
+| UI             | React 19                  |
+| Language       | TypeScript 5.9            |
+| Styling        | Tailwind CSS 4            |
+| Database       | Supabase PostgreSQL       |
+| Authentication | Supabase SSR Auth         |
+| Storage        | Supabase Storage          |
+| Tests          | Vitest + Playwright       |
+| Deployment     | Vercel                    |
 
 ## Quick start
 

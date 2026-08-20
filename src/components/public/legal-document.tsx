@@ -144,7 +144,7 @@ export function LegalDocument({
           {legal.sources.map((source) => (
             <li key={source.url}>
               <a
-                 className="inline-flex min-h-[1.875rem] items-center break-words font-semibold underline underline-offset-4"
+                className="inline-flex min-h-[1.875rem] items-center break-words font-semibold underline underline-offset-4"
                 href={source.url}
                 rel="noopener noreferrer"
                 target="_blank"

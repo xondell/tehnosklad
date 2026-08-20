@@ -42,7 +42,7 @@ export function StoreMap({ dictionary }: { dictionary: Dictionary }) {
         </p>
         <a
           aria-label={dictionary.contacts.mapLinkAccessibleLabel}
-           className="mt-2 inline-flex min-h-[1.875rem] items-center font-bold underline decoration-2 underline-offset-4"
+          className="mt-2 inline-flex min-h-[1.875rem] items-center font-bold underline decoration-2 underline-offset-4"
           href={storeMapUrl}
           rel="noopener noreferrer"
           target="_blank"

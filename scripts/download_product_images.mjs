@@ -19,7 +19,8 @@ const outDir = path.join(process.cwd(), "public", "images", "products");
 const downloadsDir = path.join(process.cwd(), "downloads", "products");
 
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-if (!fs.existsSync(downloadsDir)) fs.mkdirSync(downloadsDir, { recursive: true });
+if (!fs.existsSync(downloadsDir))
+  fs.mkdirSync(downloadsDir, { recursive: true });
 
 function sanitizeFileName(name) {
   return name.replace(/[<>:"/\\|?*]/g, "-").trim();
@@ -107,11 +108,11 @@ function parseCSV(content) {
 
 function extractImageFromHtml(html, pageUrl) {
   // 1. og:image
-  const ogMatch = html.match(
-    /<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i,
-  ) || html.match(
-    /<meta\s+content=["']([^"']+)["']\s+property=["']og:image["']/i,
-  );
+  const ogMatch =
+    html.match(
+      /<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i,
+    ) ||
+    html.match(/<meta\s+content=["']([^"']+)["']\s+property=["']og:image["']/i);
   if (ogMatch && ogMatch[1]) {
     let imgUrl = ogMatch[1].replace(/&amp;/g, "&");
     if (!imgUrl.startsWith("http")) {
@@ -154,7 +155,11 @@ async function run() {
 
     process.stdout.write(`Processing: ${row.brand} - ${row.model}... `);
 
-    if (!targetImgUrl && row.source_url && !row.source_url.includes("google.com/search")) {
+    if (
+      !targetImgUrl &&
+      row.source_url &&
+      !row.source_url.includes("google.com/search")
+    ) {
       try {
         const htmlBuffer = await fetchUrl(row.source_url, 8000);
         const html = htmlBuffer.toString("utf8");
@@ -174,7 +179,9 @@ async function run() {
           fs.writeFileSync(outPath1, imgBuffer);
           fs.writeFileSync(outPath2, imgBuffer);
           downloadedCount++;
-          console.log(`✅ Downloaded (${(imgBuffer.length / 1024).toFixed(1)} KB)`);
+          console.log(
+            `✅ Downloaded (${(imgBuffer.length / 1024).toFixed(1)} KB)`,
+          );
           continue;
         }
       } catch (err) {
@@ -186,9 +193,11 @@ async function run() {
     missing.push(row);
   }
 
-  console.log(`\n🎉 Finished step 1! Downloaded: ${downloadedCount} / ${rows.length}`);
+  console.log(
+    `\n🎉 Finished step 1! Downloaded: ${downloadedCount} / ${rows.length}`,
+  );
   console.log(`Remaining without direct link: ${missing.length}`);
-  
+
   if (missing.length > 0) {
     fs.writeFileSync(
       path.join(process.cwd(), "missing_products.json"),

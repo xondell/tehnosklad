@@ -20,7 +20,11 @@ export default async function ProtectedAdminLayout({
       </a>
       <div className="hidden border-r border-stone-800 bg-stone-950 p-4 text-white lg:block">
         <div className="px-3 py-3 pb-5">
-          <Link aria-label="Техносклад Админ" className="inline-block" href="/admin">
+          <Link
+            aria-label="Техносклад Админ"
+            className="inline-block"
+            href="/admin"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               alt="Техносклад"

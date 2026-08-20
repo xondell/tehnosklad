@@ -38,10 +38,7 @@ export function PrimaryNav({
       >
         {links.map((link) => (
           <li key={link.href}>
-            <Link
-              className="nav-link"
-              href={link.href}
-            >
+            <Link className="nav-link" href={link.href}>
               {link.label}
             </Link>
           </li>

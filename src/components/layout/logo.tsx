@@ -11,9 +11,7 @@ export function Logo({
   variant?: "light" | "dark";
 }) {
   const source =
-    variant === "light"
-      ? "/tehnosklad-logo.svg"
-      : "/tehnosklad-logo-white.svg";
+    variant === "light" ? "/tehnosklad-logo.svg" : "/tehnosklad-logo-white.svg";
 
   return (
     <Link

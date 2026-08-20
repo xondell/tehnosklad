@@ -89,10 +89,7 @@ export function CategoryPillsCarousel({
   };
 
   return (
-    <nav
-      aria-label={ariaLabel}
-      className="mb-6 flex items-center gap-2"
-    >
+    <nav aria-label={ariaLabel} className="mb-6 flex items-center gap-2">
       <button
         type="button"
         onClick={() => scrollBy4("left")}

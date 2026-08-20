@@ -141,7 +141,9 @@ export default async function HomePage({
                 <h2 className="section-title text-3xl font-bold">
                   {d.home.popularTitle}
                 </h2>
-                <p className="mt-2 text-stone-600">{d.home.popularDescription}</p>
+                <p className="mt-2 text-stone-600">
+                  {d.home.popularDescription}
+                </p>
               </div>
             }
           >
