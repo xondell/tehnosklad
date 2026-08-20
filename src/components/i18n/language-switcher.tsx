@@ -42,7 +42,7 @@ export function LanguageSwitcher({
 
   return (
     <nav aria-label={label}>
-      <ul className="flex h-[1.875rem] lg:h-9 w-fit items-center rounded-[100vmax] border border-stone-300 bg-white shadow-2xs">
+      <ul className="flex h-[1.875rem] lg:h-9 w-fit items-center rounded-full border border-stone-300 bg-white p-0.5 shadow-2xs">
         {locales.map((locale) => {
           const isCurrent = locale === currentLocale;
 
@@ -51,10 +51,10 @@ export function LanguageSwitcher({
               <Link
                 aria-current={isCurrent ? "page" : undefined}
                 aria-label={`${label}: ${languageFullNames[locale]}`}
-                className={`relative flex size-[1.625rem] lg:size-8 items-center justify-center rounded-[100vmax] text-xs lg:text-sm font-black transition-colors focus-visible:z-10 ${
+                className={`relative flex h-[1.625rem] lg:h-8 w-[1.625rem] lg:w-9 items-center justify-center rounded-full text-xs font-black transition-colors focus-visible:z-10 ${
                   isCurrent
-                    ? "bg-stone-950 text-white shadow-sm"
-                    : "bg-transparent text-stone-950 hover:bg-stone-100"
+                    ? "bg-stone-950 text-white shadow-xs"
+                    : "bg-transparent text-stone-700 hover:bg-stone-100 hover:text-stone-950"
                 }`}
                 href={`${
                   !isCurrent && alternateHref
