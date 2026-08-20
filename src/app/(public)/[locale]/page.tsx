@@ -94,7 +94,7 @@ export default async function HomePage({
           <CarouselSection
             header={
               <div>
-                <h2 className="section-title text-3xl font-bold">
+                <h2 className="section-title text-lg sm:text-3xl font-bold">
                   {d.home.categoriesTitle}
                 </h2>
                 <p className="mt-2 text-stone-600">
@@ -138,7 +138,7 @@ export default async function HomePage({
           <CarouselSection
             header={
               <div>
-                <h2 className="section-title text-3xl font-bold">
+                <h2 className="section-title text-lg sm:text-3xl font-bold">
                   {d.home.popularTitle}
                 </h2>
                 <p className="mt-2 text-stone-600">
@@ -170,7 +170,7 @@ export default async function HomePage({
       </section>
       <section className="py-14">
         <PageContainer>
-          <h2 className="section-title text-3xl font-bold">
+          <h2 className="section-title text-lg sm:text-3xl font-bold">
             {d.home.benefitsTitle}
           </h2>
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
