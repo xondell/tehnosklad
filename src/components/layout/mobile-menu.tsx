@@ -22,6 +22,8 @@ export function MobileMenu({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const trigger = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLElement>(null);
 
@@ -31,25 +33,31 @@ export function MobileMenu({
 
   const openMenu = () => {
     setOpen(true);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setActive(true);
-      });
-    });
+    // Short timeout to guarantee CSS transition plays smoothly without frame drops
+    setTimeout(() => {
+      setActive(true);
+    }, 20);
   };
 
   const close = () => {
     setActive(false);
     setTimeout(() => {
       setOpen(false);
-      trigger.current?.focus();
-    }, 280);
+      trigger.current?.focus({ preventScroll: true });
+    }, 300);
   };
 
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    // Focus close button smoothly without auto-scroll jumps
+    const focusTimer = setTimeout(() => {
+      dialog.current
+        ?.querySelector<HTMLElement>("button")
+        ?.focus({ preventScroll: true });
+    }, 320);
 
     const esc = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
@@ -73,19 +81,37 @@ export function MobileMenu({
     };
 
     document.addEventListener("keydown", esc);
-    dialog.current?.querySelector<HTMLElement>("button")?.focus();
 
     return () => {
+      clearTimeout(focusTimer);
       document.body.style.overflow = prevOverflow;
       document.removeEventListener("keydown", esc);
     };
   }, [open]);
 
+  // Touch swipe handling to close on swipe left or right
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const deltaX = endX - touchStartX.current;
+    const deltaY = endY - touchStartY.current;
+
+    // Detect horizontal swipe (left or right)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+      close();
+    }
+  };
+
   const drawerModal =
     open && mounted
       ? createPortal(
           <div className="fixed inset-0 z-[100] flex justify-end lg:hidden overflow-hidden">
-            {/* Backdrop: visual darkening over full screen, does NOT close on tap */}
+            {/* Backdrop */}
             <div
               className={`fixed inset-0 bg-black/40 transition-opacity duration-300 ${
                 active ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -97,9 +123,11 @@ export function MobileMenu({
               role="dialog"
               aria-modal="true"
               aria-label={dictionary.navigationLabel}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
               style={{
-                transform: active ? "translateX(0)" : "translateX(100%)",
-                transition: "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
+                transform: active ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)",
+                transition: "transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1)",
               }}
               className="safe-bottom relative z-10 flex h-dvh w-[min(22rem,92vw)] flex-col overflow-y-auto bg-white p-5 pt-[max(1.25rem,env(safe-area-inset-top))] shadow-2xl will-change-transform"
             >
