@@ -1,10 +1,12 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { PrimaryNav } from "@/components/layout/primary-nav";
 import type { PublicSiteSettings } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
+
 export function MobileMenu({
   locale,
   dictionary,
@@ -17,10 +19,37 @@ export function MobileMenu({
   alternateHref?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const trigger = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLElement>(null);
+
+  const openMenu = () => {
+    setOpen(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setActive(true);
+      });
+    });
+  };
+
+  const close = () => {
+    setActive(false);
+    setDragOffset(0);
+    setTimeout(() => {
+      setOpen(false);
+      trigger.current?.focus();
+    }, 280);
+  };
+
   useEffect(() => {
     if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const esc = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
       if (event.key === "Tab" && dialog.current) {
@@ -41,14 +70,52 @@ export function MobileMenu({
         }
       }
     };
+
     document.addEventListener("keydown", esc);
     dialog.current?.querySelector<HTMLElement>("button")?.focus();
-    return () => document.removeEventListener("keydown", esc);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", esc);
+    };
   }, [open]);
-  function close() {
-    setOpen(false);
-    trigger.current?.focus();
-  }
+
+  // Touch swipe handling
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const deltaX = currentX - touchStartX.current;
+    const deltaY = currentY - touchStartY.current;
+
+    // If mainly horizontal drag
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0) {
+        setDragOffset(deltaX);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    setIsDragging(false);
+    const endX = e.changedTouches[0].clientX;
+    const deltaX = endX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Dragged right or swiped decisively
+    if ((deltaX > 60 || deltaX < -70) && Math.abs(deltaX) > Math.abs(deltaY)) {
+      close();
+    } else {
+      setDragOffset(0);
+    }
+  };
+
   return (
     <>
       <div className="flex items-center gap-1.5 lg:hidden">
@@ -70,16 +137,18 @@ export function MobileMenu({
           aria-label={dictionary.actions.menu}
           className="icon-button"
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openMenu}
         >
           ☰
         </button>
       </div>
       {open ? (
-        <div className="fixed inset-0 z-60 flex justify-end lg:hidden">
+        <div className="fixed inset-0 z-60 flex justify-end lg:hidden overflow-hidden">
           <button
             aria-label={dictionary.actions.close}
-            className="fixed inset-0 bg-black/40 cursor-default"
+            className={`fixed inset-0 bg-black/40 transition-opacity duration-300 ${
+              active ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
             type="button"
             onClick={close}
             tabIndex={-1}
@@ -89,7 +158,20 @@ export function MobileMenu({
             role="dialog"
             aria-modal="true"
             aria-label={dictionary.navigationLabel}
-            className="safe-bottom relative z-10 flex h-dvh w-[min(22rem,92vw)] flex-col overflow-y-auto bg-white p-5 pt-[max(1.25rem,env(safe-area-inset-top))] shadow-xl"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{
+              transform: !active
+                ? "translateX(100%)"
+                : dragOffset > 0
+                  ? `translateX(${dragOffset}px)`
+                  : "translateX(0)",
+              transition: isDragging
+                ? "none"
+                : "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+            className="safe-bottom relative z-10 flex h-dvh w-[min(22rem,92vw)] flex-col overflow-y-auto bg-white p-5 pt-[max(1.25rem,env(safe-area-inset-top))] shadow-2xl touch-pan-y will-change-transform"
           >
             <div className="flex items-center justify-between">
               <strong>{dictionary.navigationLabel}</strong>
