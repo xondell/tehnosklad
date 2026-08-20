@@ -77,9 +77,6 @@ export default async function ContactsPage({
             </div>
           </dl>
           <div className="mt-7 flex flex-wrap gap-2">
-            <a className="button-primary" href={settings.phoneHref}>
-              {d.actions.call}
-            </a>
             <CopyPhoneButton
               copy={d.actions.copy}
               copied={d.actions.copied}
