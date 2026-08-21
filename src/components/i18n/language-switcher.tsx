@@ -32,6 +32,12 @@ function pathForLocale(pathname: string, locale: Locale): string {
   return `/${locale}`;
 }
 
+function setLocaleCookie(locale: Locale) {
+  if (typeof document !== "undefined") {
+    document.cookie = `ts_locale=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+}
+
 export function LanguageSwitcher({
   currentLocale,
   label,
@@ -63,6 +69,7 @@ export function LanguageSwitcher({
                 }${searchParams.size ? `?${searchParams.toString()}` : ""}`}
                 hrefLang={locale}
                 lang={locale}
+                onClick={() => setLocaleCookie(locale)}
                 replace
               >
                 {languageNames[locale]}

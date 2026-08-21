@@ -2,6 +2,12 @@ import Link from "next/link";
 
 import { locales, type Locale, localizedPath } from "@/i18n/config";
 
+function setLocaleCookie(locale: Locale) {
+  if (typeof document !== "undefined") {
+    document.cookie = `ts_locale=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+}
+
 export function LanguageSwitcherFallback({
   currentLocale,
   label,
@@ -31,6 +37,7 @@ export function LanguageSwitcherFallback({
               }
               hrefLang={locale}
               lang={locale}
+              onClick={() => setLocaleCookie(locale)}
               replace
             >
               {locale.toUpperCase()}
