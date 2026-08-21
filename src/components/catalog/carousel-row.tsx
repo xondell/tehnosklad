@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, type ReactNode } from "react";
+import React, { useRef, useState, useEffect, type ReactNode } from "react";
 
 export function CarouselSection({
   header,
@@ -15,21 +15,53 @@ export function CarouselSection({
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [hasOverflow, setHasOverflow] = useState(true);
+  const isAdjustingRef = useRef(false);
 
   const checkScroll = () => {
     const el = scrollerRef.current;
     if (!el) return;
-    setHasOverflow(el.scrollWidth > el.clientWidth + 4);
+    const singleSetWidth = el.scrollWidth / 3;
+    setHasOverflow(singleSetWidth > el.clientWidth + 4);
   };
 
   useEffect(() => {
-    checkScroll();
     const el = scrollerRef.current;
     if (!el) return;
-    el.addEventListener("scroll", checkScroll, { passive: true });
+
+    const singleSetWidth = el.scrollWidth / 3;
+    if (
+      singleSetWidth > 0 &&
+      (el.scrollLeft < singleSetWidth / 2 || el.scrollLeft === 0)
+    ) {
+      el.scrollLeft = singleSetWidth;
+    }
+
+    checkScroll();
+
+    const handleScroll = () => {
+      if (isAdjustingRef.current) return;
+      const W = el.scrollWidth / 3;
+      if (W <= 0) return;
+
+      if (el.scrollLeft >= 2 * W - 10) {
+        isAdjustingRef.current = true;
+        el.scrollLeft = el.scrollLeft - W;
+        requestAnimationFrame(() => {
+          isAdjustingRef.current = false;
+        });
+      } else if (el.scrollLeft <= W - 10) {
+        isAdjustingRef.current = true;
+        el.scrollLeft = el.scrollLeft + W;
+        requestAnimationFrame(() => {
+          isAdjustingRef.current = false;
+        });
+      }
+    };
+
+    el.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", checkScroll);
     return () => {
-      el.removeEventListener("scroll", checkScroll);
+      el.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", checkScroll);
     };
   }, [children]);
@@ -37,26 +69,13 @@ export function CarouselSection({
   const scrollByCard = (direction: "left" | "right") => {
     const el = scrollerRef.current;
     if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    if (maxScroll <= 0) return;
-
     const firstChild = el.firstElementChild as HTMLElement | null;
     const cardWidth = firstChild ? firstChild.offsetWidth + 16 : 336;
-
-    if (direction === "right") {
-      if (el.scrollLeft >= maxScroll - 10) {
-        el.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        el.scrollBy({ left: cardWidth, behavior: "smooth" });
-      }
-    } else {
-      if (el.scrollLeft <= 10) {
-        el.scrollTo({ left: maxScroll, behavior: "smooth" });
-      } else {
-        el.scrollBy({ left: -cardWidth, behavior: "smooth" });
-      }
-    }
+    const offset = direction === "left" ? -cardWidth : cardWidth;
+    el.scrollBy({ left: offset, behavior: "smooth" });
   };
+
+  const childArray = React.Children.toArray(children);
 
   return (
     <div className={className}>
@@ -115,10 +134,19 @@ export function CarouselSection({
 
       <div
         ref={scrollerRef}
-        className="no-scrollbar mt-7 flex gap-4 overflow-x-auto scroll-smooth pb-2 pt-1 snap-x snap-mandatory"
+        className="no-scrollbar mt-7 flex gap-4 overflow-x-auto pb-2 pt-1"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {children}
+        {[0, 1, 2].map((setIndex) =>
+          childArray.map((child, i) => {
+            if (React.isValidElement(child)) {
+              return React.cloneElement(child, {
+                key: `set-${setIndex}-${child.key ?? i}`,
+              });
+            }
+            return child;
+          }),
+        )}
       </div>
     </div>
   );
