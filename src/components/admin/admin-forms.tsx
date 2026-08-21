@@ -551,8 +551,8 @@ export function ProductForm({
             required
           />
         </label>
-        <div className="grid gap-2">
-          <label className="flex min-h-11 items-center gap-3 font-bold">
+        <div className="col-span-full flex flex-wrap items-center gap-6 pt-2">
+          <label className="flex items-center gap-2 font-bold cursor-pointer select-none">
             <input
               defaultChecked={product?.isPopular}
               name="is_popular"
@@ -560,7 +560,7 @@ export function ProductForm({
             />{" "}
             Популярный
           </label>
-          <label className="flex min-h-11 items-center gap-3 font-bold">
+          <label className="flex items-center gap-2 font-bold cursor-pointer select-none">
             <input
               defaultChecked={product?.isNew}
               name="is_new"
@@ -568,7 +568,7 @@ export function ProductForm({
             />{" "}
             Новинка
           </label>
-          <label className="flex min-h-11 items-center gap-3 font-bold">
+          <label className="flex items-center gap-2 font-bold cursor-pointer select-none">
             <input
               defaultChecked={product?.isPublished}
               name="is_published"
