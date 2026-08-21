@@ -95,7 +95,7 @@ export function ProductCard({
           </div>
         </div>
       </Link>
-      <div className="mt-4 flex shrink-0 items-center justify-between gap-2">
+      <div className="mt-4 flex shrink-0 items-center justify-end gap-2">
         <Link
           className="button-secondary text-sm"
           href={localizedPath(locale, `product/${product.slug}`)}
