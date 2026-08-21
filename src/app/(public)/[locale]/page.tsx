@@ -53,14 +53,13 @@ export default async function HomePage({
   return (
     <>
       <JsonLd value={buildHomeSchema(locale, settings)} />
-      <section className="relative overflow-hidden border-b border-stone-200 bg-[#f7f7f6] py-12 sm:py-20 lg:py-28">
-        <div className="absolute inset-0 pointer-events-none">
+      <section className="relative overflow-hidden border-b border-stone-200 bg-[#FAFAF9] py-10 sm:py-20 lg:py-28">
+        <div className="absolute inset-0 pointer-events-none hidden sm:block">
           <img
             src="/hero-banner.svg"
             alt=""
-            className="h-full w-full object-cover object-[75%_center] sm:object-right lg:object-center"
+            className="h-full w-full object-cover object-right lg:object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent sm:from-white/80 sm:via-white/40 sm:to-transparent lg:hidden" />
         </div>
         <PageContainer className="relative z-10">
           <div className="max-w-xl lg:max-w-2xl">
