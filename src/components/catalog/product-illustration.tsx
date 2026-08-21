@@ -15,6 +15,7 @@ export function ProductIllustration({
   imageUrl,
   className = "",
 }: Props) {
+  if (imageUrl) {
     return (
       <div
         aria-label={label}
@@ -23,6 +24,7 @@ export function ProductIllustration({
         style={{ backgroundImage: `url(${JSON.stringify(imageUrl)})` }}
       />
     );
+  }
   return (
     <div
       aria-label={label}
