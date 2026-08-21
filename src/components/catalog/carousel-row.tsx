@@ -70,9 +70,17 @@ export function CarouselSection({
     const el = scrollerRef.current;
     if (!el) return;
     const firstChild = el.firstElementChild as HTMLElement | null;
-    const cardWidth = firstChild ? firstChild.offsetWidth + 16 : 336;
-    const offset = direction === "left" ? -cardWidth : cardWidth;
-    el.scrollBy({ left: offset, behavior: "smooth" });
+    if (!firstChild) return;
+
+    const cardWidth = firstChild.offsetWidth + 16;
+    if (cardWidth <= 0) return;
+
+    const currentIndex = Math.round(el.scrollLeft / cardWidth);
+    const targetIndex =
+      direction === "right" ? currentIndex + 1 : currentIndex - 1;
+    const targetLeft = targetIndex * cardWidth;
+
+    el.scrollTo({ left: targetLeft, behavior: "smooth" });
   };
 
   const childArray = React.Children.toArray(children);
@@ -134,7 +142,7 @@ export function CarouselSection({
 
       <div
         ref={scrollerRef}
-        className="no-scrollbar mt-7 flex gap-4 overflow-x-auto pb-2 pt-1"
+        className="no-scrollbar mt-7 flex gap-4 overflow-x-auto pb-2 pt-1 snap-x snap-mandatory"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {[0, 1, 2].map((setIndex) =>
