@@ -25,10 +25,11 @@ export function formatPrice(valueMinor: number, locale: Locale): string {
   if (!Number.isSafeInteger(valueMinor) || valueMinor < 0) {
     throw new RangeError("Price must be a non-negative safe integer");
   }
-  return `${new Intl.NumberFormat(locale === "ru" ? "ru-MD" : "ro-MD", {
+  const formatted = new Intl.NumberFormat(locale === "ru" ? "ru-MD" : "ro-MD", {
     minimumFractionDigits: valueMinor % 100 === 0 ? 0 : 2,
     maximumFractionDigits: 2,
-  }).format(valueMinor / 100)} MDL`;
+  }).format(valueMinor / 100);
+  return `${formatted.replace(/\./g, "\u00A0")} MDL`;
 }
 
 export function filterProducts(
