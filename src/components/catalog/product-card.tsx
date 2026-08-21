@@ -95,7 +95,13 @@ export function ProductCard({
           </div>
         </div>
       </Link>
-      <div className="mt-4 flex shrink-0 justify-end">
+      <div className="mt-4 flex shrink-0 items-center justify-between gap-2">
+        <Link
+          className="button-secondary text-sm"
+          href={localizedPath(locale, `product/${product.slug}`)}
+        >
+          {dictionary.actions.view}
+        </Link>
         <ContactButton
           dictionary={dictionary}
           locale={locale}
