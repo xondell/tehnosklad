@@ -15,16 +15,14 @@ export function ProductIllustration({
   imageUrl,
   className = "",
 }: Props) {
-  if (imageUrl) {
     return (
       <div
         aria-label={label}
         role="img"
-        className={`bg-contain bg-center bg-no-repeat ${className}`}
+        className={`bg-cover bg-center bg-no-repeat ${className}`}
         style={{ backgroundImage: `url(${JSON.stringify(imageUrl)})` }}
       />
     );
-  }
   return (
     <div
       aria-label={label}

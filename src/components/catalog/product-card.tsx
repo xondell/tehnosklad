@@ -47,7 +47,7 @@ export function ProductCard({
             tone={product.imageTone}
             label={primaryImage?.alt ?? product.name}
             imageUrl={primaryImage?.url}
-            className="h-44 w-full"
+            className="h-66 w-full rounded-xl overflow-hidden"
           />
           {discount ? (
             <span className="absolute left-0 top-0 rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-white shadow-xs">
