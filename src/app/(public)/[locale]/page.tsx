@@ -53,16 +53,24 @@ export default async function HomePage({
   return (
     <>
       <JsonLd value={buildHomeSchema(locale, settings)} />
-      <section className="border-b border-stone-200 bg-stone-50 py-10 sm:py-16">
-        <PageContainer className="grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
-          <div>
+      <section className="relative overflow-hidden border-b border-stone-200 bg-[#f7f7f6] py-12 sm:py-20 lg:py-28">
+        <div className="absolute inset-0 pointer-events-none">
+          <img
+            src="/hero-banner.svg"
+            alt=""
+            className="h-full w-full object-cover object-[75%_center] sm:object-right lg:object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent sm:from-white/80 sm:via-white/40 sm:to-transparent lg:hidden" />
+        </div>
+        <PageContainer className="relative z-10">
+          <div className="max-w-xl lg:max-w-2xl">
             <p className="mb-4 text-sm font-bold uppercase tracking-wide text-stone-600">
               {d.home.eyebrow}
             </p>
-            <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
+            <h1 className="text-3xl font-black tracking-tight text-stone-950 sm:text-5xl lg:text-6xl">
               {d.home.title}
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-stone-600">
+            <p className="mt-5 max-w-lg text-base sm:text-lg text-stone-600">
               {d.home.description}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -72,20 +80,16 @@ export default async function HomePage({
               >
                 {d.actions.openCatalog}
               </Link>
-              <a className="button-secondary" href={settings.phoneHref}>
+              <a
+                className="button-secondary bg-white/90 backdrop-blur-xs"
+                href={settings.phoneHref}
+              >
                 {d.actions.call}
               </a>
             </div>
             <p className="mt-6 text-sm font-semibold text-stone-600">
               {d.home.contactNote}
             </p>
-          </div>
-          <div className="flex items-center justify-center">
-            <img
-              src="/tech.png"
-              alt={d.home.title}
-              className="h-auto w-full max-w-xl object-contain"
-            />
           </div>
         </PageContainer>
       </section>
