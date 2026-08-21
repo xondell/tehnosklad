@@ -14,14 +14,12 @@ export function CarouselSection({
   className?: string;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [hasOverflow, setHasOverflow] = useState(true);
 
   const checkScroll = () => {
     const el = scrollerRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    setHasOverflow(el.scrollWidth > el.clientWidth + 4);
   };
 
   useEffect(() => {
@@ -39,10 +37,25 @@ export function CarouselSection({
   const scrollByCard = (direction: "left" | "right") => {
     const el = scrollerRef.current;
     if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 0) return;
+
     const firstChild = el.firstElementChild as HTMLElement | null;
     const cardWidth = firstChild ? firstChild.offsetWidth + 16 : 336;
-    const offset = direction === "left" ? -cardWidth : cardWidth;
-    el.scrollBy({ left: offset, behavior: "smooth" });
+
+    if (direction === "right") {
+      if (el.scrollLeft >= maxScroll - 10) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        el.scrollBy({ left: cardWidth, behavior: "smooth" });
+      }
+    } else {
+      if (el.scrollLeft <= 10) {
+        el.scrollTo({ left: maxScroll, behavior: "smooth" });
+      } else {
+        el.scrollBy({ left: -cardWidth, behavior: "smooth" });
+      }
+    }
   };
 
   return (
@@ -55,7 +68,7 @@ export function CarouselSection({
             <button
               type="button"
               onClick={() => scrollByCard("left")}
-              disabled={!canScrollLeft}
+              disabled={!hasOverflow}
               aria-label="Назад"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-stone-700 shadow-sm transition hover:bg-stone-100 hover:text-stone-950 disabled:pointer-events-none disabled:opacity-30 active:scale-95 cursor-pointer"
             >
@@ -77,7 +90,7 @@ export function CarouselSection({
             <button
               type="button"
               onClick={() => scrollByCard("right")}
-              disabled={!canScrollRight}
+              disabled={!hasOverflow}
               aria-label="Вперед"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-stone-700 shadow-sm transition hover:bg-stone-100 hover:text-stone-950 disabled:pointer-events-none disabled:opacity-30 active:scale-95 cursor-pointer"
             >
