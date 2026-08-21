@@ -63,6 +63,7 @@ export function LanguageSwitcher({
                 }${searchParams.size ? `?${searchParams.toString()}` : ""}`}
                 hrefLang={locale}
                 lang={locale}
+                replace
               >
                 {languageNames[locale]}
               </Link>

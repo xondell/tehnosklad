@@ -31,6 +31,7 @@ export function LanguageSwitcherFallback({
               }
               hrefLang={locale}
               lang={locale}
+              replace
             >
               {locale.toUpperCase()}
               {locale === currentLocale ? (
