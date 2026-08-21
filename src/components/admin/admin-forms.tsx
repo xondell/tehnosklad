@@ -554,6 +554,14 @@ export function ProductForm({
         <div className="grid gap-2">
           <label className="flex min-h-11 items-center gap-3 font-bold">
             <input
+              defaultChecked={product?.isPopular}
+              name="is_popular"
+              type="checkbox"
+            />{" "}
+            Популярный
+          </label>
+          <label className="flex min-h-11 items-center gap-3 font-bold">
+            <input
               defaultChecked={product?.isNew}
               name="is_new"
               type="checkbox"
