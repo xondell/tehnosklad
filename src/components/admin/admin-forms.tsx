@@ -43,7 +43,12 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        Slug (часть URL-адреса страницы латиницей, например samsung-rb34t602fsa)
+        <span>
+          Slug{" "}
+          <span className="text-xs font-normal text-stone-500">
+            (часть URL-адреса страницы латиницей, например samsung-rb34t602fsa)
+          </span>
+        </span>
         <input
           className="field"
           defaultValue={value?.slug}
@@ -74,7 +79,12 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        SEO title (заголовок страницы для поисковиков Google и Яндекс)
+        <span>
+          SEO title{" "}
+          <span className="text-xs font-normal text-stone-500">
+            (заголовок страницы для поисковиков Google и Яндекс)
+          </span>
+        </span>
         <CountedInput
           defaultValue={value?.seoTitle}
           maxLength={70}
@@ -83,8 +93,12 @@ function TranslationFields({
         />
       </label>
       <label className="field-label">
-        SEO description (краткое описание для сниппета в поисковой выдаче
-        Google)
+        <span>
+          SEO description{" "}
+          <span className="text-xs font-normal text-stone-500">
+            (краткое описание для сниппета в поисковой выдаче Google)
+          </span>
+        </span>
         <CountedTextarea
           defaultValue={value?.seoDescription}
           maxLength={160}
@@ -147,8 +161,13 @@ export function CategoryForm({
           </span>
         </label>
         <label className="field-label">
-          Порядок (позиция для сортировки в каталоге: чем меньше число — тем
-          выше категория)
+          <span>
+            Порядок{" "}
+            <span className="text-xs font-normal text-stone-500">
+              (позиция для сортировки в каталоге: чем меньше число — тем выше
+              категория)
+            </span>
+          </span>
           <IntegerInput
             defaultValue={category?.sortOrder ?? 0}
             name="sort_order"
@@ -430,7 +449,12 @@ export function ProductForm({
           </select>
         </label>
         <label className="field-label">
-          Бренд (производитель техники, например Samsung, Bosch, LG)
+          <span>
+            Бренд{" "}
+            <span className="text-xs font-normal text-stone-500">
+              (производитель техники, например Samsung, Bosch, LG)
+            </span>
+          </span>
           <input
             className="field"
             defaultValue={product?.brand}
@@ -440,7 +464,12 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Модель (название или номер модели, например RB34T602FSA)
+          <span>
+            Модель{" "}
+            <span className="text-xs font-normal text-stone-500">
+              (название или номер модели, например RB34T602FSA)
+            </span>
+          </span>
           <input
             className="field"
             defaultValue={product?.model}
@@ -450,7 +479,12 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          SKU (уникальный артикул / код товара, например TS-REF-0001)
+          <span>
+            SKU{" "}
+            <span className="text-xs font-normal text-stone-500">
+              (уникальный артикул / код товара, например TS-REF-0001)
+            </span>
+          </span>
           <input
             className="field"
             defaultValue={product?.sku}
@@ -460,7 +494,12 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Новая цена, MDL (текущая актуальная цена продажи в леях)
+          <span>
+            Новая цена, MDL{" "}
+            <span className="text-xs font-normal text-stone-500">
+              (текущая актуальная цена продажи в леях)
+            </span>
+          </span>
           <MoneyInput
             defaultValue={product ? minorToMoney(product.priceMinor) : ""}
             name="price"
@@ -468,8 +507,12 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Старая цена, MDL (цена до скидки в леях, заполняется только если есть
-          акция)
+          <span>
+            Старая цена, MDL{" "}
+            <span className="text-xs font-normal text-stone-500">
+              (цена до скидки в леях, заполняется только если есть акция)
+            </span>
+          </span>
           <MoneyInput
             defaultValue={product ? minorToMoney(product.oldPriceMinor) : ""}
             name="old_price"
@@ -495,8 +538,13 @@ export function ProductForm({
           />
         </label>
         <label className="field-label">
-          Порядок (позиция для сортировки в каталоге: чем меньше число — тем
-          выше товар)
+          <span>
+            Порядок{" "}
+            <span className="text-xs font-normal text-stone-500">
+              (позиция для сортировки в каталоге: чем меньше число — тем выше
+              товар)
+            </span>
+          </span>
           <IntegerInput
             defaultValue={product?.sortOrder ?? 0}
             name="sort_order"
