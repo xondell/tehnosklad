@@ -551,7 +551,7 @@ export function ProductForm({
             required
           />
         </label>
-        <div className="col-span-full flex flex-wrap items-center gap-6 pt-2">
+        <div className="flex flex-wrap items-center gap-5 self-end pb-1.5">
           <label className="flex items-center gap-2 font-bold cursor-pointer select-none">
             <input
               defaultChecked={product?.isPopular}
