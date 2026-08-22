@@ -64,10 +64,15 @@
 }
 .icon-button {
   width: 1.875rem;
+  height: 1.875rem;
+  min-height: 1.875rem;
+  flex-shrink: 0;
+  padding: 0;
   border: 1px solid var(--border);
   background: white;
   color: var(--ink);
   font-size: 1.25rem;
+  line-height: 1;
 }
 .icon-button:hover {
   background: var(--surface-muted);
