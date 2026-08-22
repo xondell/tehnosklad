@@ -20,7 +20,7 @@ import {
   type RawCatalogSearchParams,
 } from "@/features/catalog/query";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { isLocale } from "@/i18n/config";
+import { isLocale, localizedPath } from "@/i18n/config";
 import { JsonLd } from "@/features/seo/json-ld";
 import { buildLocalizedMetadata } from "@/features/seo/metadata";
 import { buildCollectionSchema } from "@/features/seo/schema";
@@ -92,7 +92,10 @@ export default async function CategoryPage({
       <Breadcrumbs
         locale={locale}
         home={d.common.breadcrumbsHome}
-        items={[d.catalog.title, category.name]}
+        items={[
+          { label: d.catalog.title, href: localizedPath(locale, "catalog") },
+          { label: category.name },
+        ]}
       />
       <h1 className="mt-5 text-4xl font-bold">{category.name}</h1>
       <p className="mt-3 text-stone-600">{category.description}</p>

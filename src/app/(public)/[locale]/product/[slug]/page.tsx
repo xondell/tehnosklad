@@ -91,7 +91,14 @@ export default async function ProductPage({
       <Breadcrumbs
         locale={locale}
         home={d.common.breadcrumbsHome}
-        items={[d.catalog.title, product.category.name, product.name]}
+        items={[
+          { label: d.catalog.title, href: localizedPath(locale, "catalog") },
+          {
+            label: product.category.name,
+            href: localizedPath(locale, `category/${product.category.slug}`),
+          },
+          { label: product.name },
+        ]}
       />
       <div className="mt-6 grid gap-8 lg:grid-cols-2">
         <ProductGallery
