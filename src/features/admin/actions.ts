@@ -365,7 +365,6 @@ export async function saveProductAction(formData: FormData): Promise<never> {
       p_quantity: String(formData.get("quantity") ?? "").trim()
         ? integerValue(formData.get("quantity"), "quantity")
         : null,
-      p_is_popular: checkboxValue(formData, "is_popular"),
       p_is_new: checkboxValue(formData, "is_new"),
       p_is_published: checkboxValue(formData, "is_published"),
       p_sort_order: integerValue(formData.get("sort_order"), "sort_order"),

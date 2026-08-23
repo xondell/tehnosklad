@@ -63,12 +63,9 @@ export const getPublishedProducts = unstable_cache(
 );
 
 export const getPopularProducts = unstable_cache(
-  async (locale: Locale, limit: number) =>
+  async (locale: Locale, limit = 7) =>
     runCatalogQuery("popular-products", () =>
-      createCatalogRepository().getPublishedProducts(locale, {
-        popularOnly: true,
-        limit,
-      }),
+      createCatalogRepository().getPopularProducts(locale, limit),
     ),
   ["catalog-popular-v1"],
   {
@@ -76,6 +73,20 @@ export const getPopularProducts = unstable_cache(
     tags: [catalogCacheTags.catalog, catalogCacheTags.products],
   },
 );
+
+export async function recordProductView(productId: string): Promise<void> {
+  return runCatalogQuery("record-product-view", () =>
+    createCatalogRepository().recordProductView(productId),
+  );
+}
+
+export async function cleanupOldProductViews(
+  retentionDays = 31,
+): Promise<number> {
+  return runCatalogQuery("cleanup-product-views", () =>
+    createCatalogRepository().cleanupOldProductViews(retentionDays),
+  );
+}
 
 export const getCategoryBySlug = unstable_cache(
   async (locale: Locale, slug: string) =>

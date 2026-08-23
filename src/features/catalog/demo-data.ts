@@ -236,7 +236,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 949900,
     oldPriceMinor: 1049900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -293,7 +292,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 1099900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: true,
     specifications: [
       {
@@ -351,7 +349,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1249900,
     oldPriceMinor: 1399900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -409,7 +406,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 629900,
     oldPriceMinor: 699900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -466,7 +462,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 789900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -524,7 +519,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 599900,
     oldPriceMinor: 649900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -581,7 +575,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 1119900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -639,7 +632,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 879900,
     oldPriceMinor: 959900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -696,7 +688,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 749900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -754,7 +745,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1129900,
     oldPriceMinor: 1249900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -811,7 +801,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 519900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -869,7 +858,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 649900,
     oldPriceMinor: 719900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -926,7 +914,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 489900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -984,7 +971,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 919900,
     oldPriceMinor: 999900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -1042,7 +1028,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 439900,
     oldPriceMinor: 489900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -1099,7 +1084,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 629900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -1156,7 +1140,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 389900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1214,7 +1197,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 549900,
     oldPriceMinor: 599900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -1271,7 +1253,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 369900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1329,7 +1310,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 599900,
     oldPriceMinor: 659900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1386,7 +1366,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 479900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1444,7 +1423,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 239900,
     oldPriceMinor: 269900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -1501,7 +1479,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 219900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -1559,7 +1536,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 269900,
     oldPriceMinor: 299900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1616,7 +1592,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 189900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -1674,7 +1649,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 349900,
     oldPriceMinor: 389900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1731,7 +1705,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 149900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1789,7 +1762,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 169900,
     oldPriceMinor: 189900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -1847,7 +1819,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 989900,
     oldPriceMinor: 1079900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -1904,7 +1875,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 579900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -1962,7 +1932,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 849900,
     oldPriceMinor: 929900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -2019,7 +1988,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 719900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2077,7 +2045,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 789900,
     oldPriceMinor: 859900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2135,7 +2102,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1349900,
     oldPriceMinor: 1499900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -2192,7 +2158,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 529900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2250,7 +2215,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 899900,
     oldPriceMinor: 989900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -2307,7 +2271,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 649900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -2365,7 +2328,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 729900,
     oldPriceMinor: 799900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -2422,7 +2384,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 789900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2480,7 +2441,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 469900,
     oldPriceMinor: 519900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2537,7 +2497,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 519900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2595,7 +2554,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 849900,
     oldPriceMinor: 919900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -2653,7 +2611,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1499900,
     oldPriceMinor: 1649900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -2710,7 +2667,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 849900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -2768,7 +2724,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 999900,
     oldPriceMinor: 1099900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -2826,7 +2781,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1549900,
     oldPriceMinor: 1699900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2883,7 +2837,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 1699900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -2941,7 +2894,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1379900,
     oldPriceMinor: 1499900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -2998,7 +2950,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 699900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3056,7 +3007,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 699900,
     oldPriceMinor: 779900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -3113,7 +3063,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 749900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -3171,7 +3120,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 529900,
     oldPriceMinor: 589900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3229,7 +3177,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 899900,
     oldPriceMinor: 979900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3286,7 +3233,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 589900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -3344,7 +3290,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 829900,
     oldPriceMinor: 899900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3401,7 +3346,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 779900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3459,7 +3403,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 249900,
     oldPriceMinor: 279900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -3516,7 +3459,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 159900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -3574,7 +3516,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 219900,
     oldPriceMinor: 249900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3632,7 +3573,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 289900,
     oldPriceMinor: 319900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -3689,7 +3629,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 229900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3747,7 +3686,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 599900,
     oldPriceMinor: 659900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3804,7 +3742,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 179900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -3862,7 +3799,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 429900,
     oldPriceMinor: 479900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -3920,7 +3856,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 799900,
     oldPriceMinor: 879900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: true,
     specifications: [
       {
@@ -3977,7 +3912,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 519900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4035,7 +3969,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 649900,
     oldPriceMinor: 719900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4092,7 +4025,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 589900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4150,7 +4082,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 449900,
     oldPriceMinor: 499900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4207,7 +4138,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 699900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -4265,7 +4195,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 69900,
     oldPriceMinor: 79900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -4322,7 +4251,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 59900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -4380,7 +4308,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 74900,
     oldPriceMinor: 84900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -4438,7 +4365,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 99900,
     oldPriceMinor: 114900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4495,7 +4421,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 64900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4553,7 +4478,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 84900,
     oldPriceMinor: 94900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4610,7 +4534,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 39900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4668,7 +4591,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 89900,
     oldPriceMinor: 99900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -4725,7 +4647,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 79900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -4783,7 +4704,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 69900,
     oldPriceMinor: 79900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4841,7 +4761,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 119900,
     oldPriceMinor: 134900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -4898,7 +4817,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 54900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -4956,7 +4874,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 189900,
     oldPriceMinor: 209900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -5013,7 +4930,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 44900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5071,7 +4987,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 199900,
     oldPriceMinor: 224900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -5128,7 +5043,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 174900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -5186,7 +5100,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 449900,
     oldPriceMinor: 499900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -5244,7 +5157,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 499900,
     oldPriceMinor: 549900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5301,7 +5213,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 259900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5359,7 +5270,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 299900,
     oldPriceMinor: 329900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5417,7 +5327,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 749900,
     oldPriceMinor: 829900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -5475,7 +5384,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 49900,
     oldPriceMinor: 59900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -5532,7 +5440,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 64900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -5590,7 +5497,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 79900,
     oldPriceMinor: 89900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5647,7 +5553,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 84900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -5705,7 +5610,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 59900,
     oldPriceMinor: 67900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5762,7 +5666,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 69900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5820,7 +5723,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 34900,
     oldPriceMinor: 39900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -5878,7 +5780,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 949900,
     oldPriceMinor: 1049900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -5935,7 +5836,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 829900,
     stockStatus: "in_stock",
-    isPopular: true,
     isNew: false,
     specifications: [
       {
@@ -5993,7 +5893,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 789900,
     oldPriceMinor: 859900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -6050,7 +5949,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 649900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -6108,7 +6006,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1499900,
     oldPriceMinor: 1629900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {
@@ -6166,7 +6063,6 @@ export const demoProducts: DemoProduct[] = [
     priceMinor: 1349900,
     oldPriceMinor: 1479900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: true,
     specifications: [
       {
@@ -6223,7 +6119,6 @@ export const demoProducts: DemoProduct[] = [
     },
     priceMinor: 619900,
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [
       {

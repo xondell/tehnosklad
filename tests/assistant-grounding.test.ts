@@ -31,7 +31,6 @@ const product = {
   oldPriceMinor: null,
   currency: "MDL",
   stockStatus: "in_stock",
-  isPopular: false,
   isNew: false,
   specifications: [],
   images: [],

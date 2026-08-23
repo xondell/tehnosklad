@@ -34,7 +34,10 @@ export function Breadcrumbs({
         {normalizedItems.map((item, index) => {
           const isLast = index === normalizedItems.length - 1;
           return (
-            <li className="flex items-center gap-2" key={`${item.label}-${index}`}>
+            <li
+              className="flex items-center gap-2"
+              key={`${item.label}-${index}`}
+            >
               <span className="select-none text-stone-400" aria-hidden="true">
                 /
               </span>

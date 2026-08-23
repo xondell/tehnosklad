@@ -78,7 +78,6 @@ export function filterProducts(
           : filters.sort === "new"
             ? Number(b.isNew) - Number(a.isNew) ||
               a.name.localeCompare(b.name, locale)
-            : Number(b.isPopular) - Number(a.isPopular) ||
-              a.name.localeCompare(b.name, locale),
+            : a.name.localeCompare(b.name, locale),
   );
 }

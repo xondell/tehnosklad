@@ -15,7 +15,6 @@ import type {
 
 export type TransportProductQuery = {
   categoryId?: string;
-  popularOnly?: boolean;
   excludeId?: string;
   limit?: number;
   ids?: string[];
@@ -32,6 +31,9 @@ export interface CatalogTransport {
     slug: string,
   ): Promise<DbCategoryRow | null>;
   listProducts(query?: TransportProductQuery): Promise<DbProductRow[]>;
+  getPopularProductIds(limit?: number): Promise<string[]>;
+  recordProductView(productId: string): Promise<void>;
+  cleanupOldProductViews(retentionDays?: number): Promise<number>;
   findProductBySlug(locale: Locale, slug: string): Promise<DbProductRow | null>;
   findProductByHistoricalSlug(
     locale: Locale,
@@ -49,7 +51,7 @@ export interface CatalogTransport {
 const categorySelect =
   "id,presentation_key,sort_order,image_storage_path,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)";
 const productSelect =
-  "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_popular,is_new,sort_order,product_translations(locale,name,slug,short_description,description,seo_title,seo_description),categories!inner(id,presentation_key,sort_order,image_storage_path,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))";
+  "id,brand,model,sku,price_minor,old_price_minor,currency,availability,is_new,sort_order,product_translations(locale,name,slug,short_description,description,seo_title,seo_description),categories!inner(id,presentation_key,sort_order,image_storage_path,category_translations(locale,name,slug,short_description,description,seo_title,seo_description)),product_images(id,storage_path,sort_order,is_primary,product_image_translations(locale,alt_text))";
 
 function queryFailure(resource: string): CatalogDataError {
   return new CatalogDataError(
@@ -145,9 +147,6 @@ export class SupabaseCatalogTransport implements CatalogTransport {
     if (queryOptions.categoryId) {
       query = query.eq("category_id", queryOptions.categoryId);
     }
-    if (queryOptions.popularOnly) {
-      query = query.eq("is_popular", true);
-    }
     if (queryOptions.excludeId) {
       query = query.neq("id", queryOptions.excludeId);
     }
@@ -166,6 +165,29 @@ export class SupabaseCatalogTransport implements CatalogTransport {
           .getPublicUrl(image.storage_path).data.publicUrl,
       })),
     }));
+  }
+
+  async getPopularProductIds(limit = 7): Promise<string[]> {
+    const { data, error } = await this.client.rpc("get_popular_products_30d", {
+      p_limit: Math.min(limit, 7),
+    });
+    if (error) throw queryFailure("popular product ids");
+    return (data as string[]) ?? [];
+  }
+
+  async recordProductView(productId: string): Promise<void> {
+    const { error } = await this.client.rpc("record_product_view", {
+      p_product_id: productId,
+    });
+    if (error) throw queryFailure("record product view");
+  }
+
+  async cleanupOldProductViews(retentionDays = 31): Promise<number> {
+    const { data, error } = await this.client.rpc("cleanup_old_product_views", {
+      p_retention_days: retentionDays,
+    });
+    if (error) throw queryFailure("cleanup old product views");
+    return Number(data ?? 0);
   }
 
   async findProductBySlug(

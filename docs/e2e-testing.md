@@ -50,6 +50,7 @@ npm run db:reset:local
 ```
 
 Локальный стек доступен по адресам:
+
 - **API Gateway (Kong)**: `http://127.0.0.1:54321`
 - **PostgreSQL Database**: `postgresql://postgres:postgres@127.0.0.1:54322/postgres`
 - **Supabase Studio**: `http://127.0.0.1:54323`
@@ -70,21 +71,25 @@ npm run dev
 ## 5. Run E2E (Команды запуска тестов)
 
 ### Запуск всех админских E2E-тестов:
+
 ```bash
 npm run test:e2e:admin
 ```
 
 ### Запуск только минимального Smoke-теста:
+
 ```bash
 npm run test:e2e:smoke
 ```
 
 ### Запуск витринных тестов (Storefront):
+
 ```bash
 npx playwright test --project=chromium
 ```
 
 ### Запуск с интерактивным UI Playwright:
+
 ```bash
 npx playwright test --ui
 ```
@@ -108,6 +113,7 @@ npx playwright test --ui
 ## 7. RUN_ID (Изоляция тестовых прогонов)
 
 Каждый тест или тестовый прогон получает уникальный идентификатор `RUN_ID`:
+
 - **Формат**: `E2E-YYYYMMDD-HHMMSS-RAND` (например, `E2E-20260819-181430-a81f`).
 - **Использование**:
   - SKU товаров: `TS-E2E-A81F-01`
@@ -120,6 +126,7 @@ npx playwright test --ui
 ## 8. Test Data & Factories (Фабрики данных)
 
 Вспомогательные фабрики расположены в `e2e/helpers/factories/`:
+
 - `buildCategoryData(runId, overrides)` / `createCategoryViaUI(page, data)`
 - `buildAttributeGroupData(runId, overrides)`
 - `buildAttributeData(runId, type, overrides)`
@@ -133,6 +140,7 @@ npx playwright test --ui
 ## 9. Database Verification & Cleanup (Проверка БД и очистка)
 
 В модуле `e2e/helpers/admin-db.ts` реализованы:
+
 1. **`verifyCategoryExists(slug)` / `verifyProductExists(sku)`**: прямое чтение строк через локальный клиент для подтверждения персистентности данных в базе.
 2. **`cleanUpByRunId(runId)`**:
    - Автоматически вызывается в фикстуре `adminPage` после завершения каждого теста (`afterEach`).
@@ -144,13 +152,14 @@ npx playwright test --ui
 
 ## 10. Troubleshooting (Устранение неполадок)
 
-| Проблема | Причина | Решение |
-|---|---|---|
-| `connect ECONNREFUSED 127.0.0.1:54321` | Локальный Supabase остановлен | Запустите Docker Desktop и выполните `npm run db:start` |
-| `HTTP 500 on /ru or /admin` | База данных не инициализирована | Выполните `npm run db:reset:local` |
-| `Process from config.webServer was not able to start` | Конфликт портов | Убедитесь, что `reuseExistingServer: true` в `playwright.config.ts` |
-| `strict mode violation: locator(...) resolved to N elements` | Неоднозначный селектор | Используйте более точные локаторы: `getByRole('banner')`, `locator('main')` |
-| `duplicate key value violates unique constraint` | Повторное использование старого слага | Используйте хелпер `formatRunSlug(prefix, runId, locale)` |
+| Проблема                                                     | Причина                               | Решение                                                                     |
+| ------------------------------------------------------------ | ------------------------------------- | --------------------------------------------------------------------------- |
+| `connect ECONNREFUSED 127.0.0.1:54321`                       | Локальный Supabase остановлен         | Запустите Docker Desktop и выполните `npm run db:start`                     |
+| `HTTP 500 on /ru or /admin`                                  | База данных не инициализирована       | Выполните `npm run db:reset:local`                                          |
+| `Process from config.webServer was not able to start`        | Конфликт портов                       | Убедитесь, что `reuseExistingServer: true` в `playwright.config.ts`         |
+| `strict mode violation: locator(...) resolved to N elements` | Неоднозначный селектор                | Используйте более точные локаторы: `getByRole('banner')`, `locator('main')` |
+| `duplicate key value violates unique constraint`             | Повторное использование старого слага | Используйте хелпер `formatRunSlug(prefix, runId, locale)`                   |
 
 ---
-*Документация поддерживается в актуальном состоянии вместе с кодовой базой E2E-инфраструктуры.*
+
+_Документация поддерживается в актуальном состоянии вместе с кодовой базой E2E-инфраструктуры._

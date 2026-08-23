@@ -16,7 +16,7 @@ declare
     'lead_telegram_deliveries', 'leads',
     'product_attribute_value_translations', 'product_attribute_values',
     'product_image_translations', 'product_images', 'product_slug_routes',
-    'product_translations', 'products', 'profiles', 'site_settings', 'user_roles'
+    'product_translations', 'product_views', 'products', 'profiles', 'site_settings', 'user_roles'
   ];
 begin
   select array_agg(table_name order by table_name) into actual_tables

@@ -47,7 +47,7 @@ export default async function HomePage({
   const d = getDictionary(locale);
   const [categories, popular, settings] = await Promise.all([
     getPublishedCategories(locale),
-    getPopularProducts(locale, 12),
+    getPopularProducts(locale, 7),
     getPublicSiteSettings(locale),
   ]);
   return (
@@ -136,22 +136,22 @@ export default async function HomePage({
           </CarouselSection>
         </PageContainer>
       </section>
-      <section className="bg-stone-50 py-14">
-        <PageContainer>
-          <CarouselSection
-            header={
-              <div>
-                <h2 className="section-title text-xl sm:text-3xl font-bold">
-                  {d.home.popularTitle}
-                </h2>
-                <p className="mt-2 text-stone-600">
-                  {d.home.popularDescription}
-                </p>
-              </div>
-            }
-          >
-            {popular.length > 0 ? (
-              popular.map((product) => (
+      {popular.length >= 7 && (
+        <section className="bg-stone-50 py-14">
+          <PageContainer>
+            <CarouselSection
+              header={
+                <div>
+                  <h2 className="section-title text-xl sm:text-3xl font-bold">
+                    {d.home.popularTitle}
+                  </h2>
+                  <p className="mt-2 text-stone-600">
+                    {d.home.popularDescription}
+                  </p>
+                </div>
+              }
+            >
+              {popular.map((product) => (
                 <div
                   key={product.id}
                   className="w-[260px] sm:w-[calc((100%-1rem)/2)] md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] shrink-0 snap-start"
@@ -164,13 +164,11 @@ export default async function HomePage({
                     leadSource="home_product_card"
                   />
                 </div>
-              ))
-            ) : (
-              <p className="py-4 text-stone-500">{d.common.noResults}</p>
-            )}
-          </CarouselSection>
-        </PageContainer>
-      </section>
+              ))}
+            </CarouselSection>
+          </PageContainer>
+        </section>
+      )}
       <section className="py-14">
         <PageContainer>
           <h2 className="section-title text-xl sm:text-3xl font-bold">

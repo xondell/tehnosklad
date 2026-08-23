@@ -45,7 +45,6 @@ export type DbProductRow = {
   old_price_minor: number | string | null;
   currency: string;
   availability: StockStatus;
-  is_popular: boolean;
   is_new: boolean;
   sort_order: number;
   categories: DbCategoryRow;

@@ -36,7 +36,6 @@ function createTestProduct(partial: Partial<CatalogProduct>): CatalogProduct {
     oldPriceMinor: null,
     currency: "MDL",
     stockStatus: "in_stock",
-    isPopular: false,
     isNew: false,
     specifications: [],
     images: [],

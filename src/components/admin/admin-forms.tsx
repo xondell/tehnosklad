@@ -554,14 +554,6 @@ export function ProductForm({
         <div className="flex flex-wrap items-center gap-5 self-end pb-1.5">
           <label className="flex items-center gap-2 font-bold cursor-pointer select-none">
             <input
-              defaultChecked={product?.isPopular}
-              name="is_popular"
-              type="checkbox"
-            />{" "}
-            Популярный
-          </label>
-          <label className="flex items-center gap-2 font-bold cursor-pointer select-none">
-            <input
               defaultChecked={product?.isNew}
               name="is_new"
               type="checkbox"

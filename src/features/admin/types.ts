@@ -105,7 +105,6 @@ export type AdminProduct = {
   oldPriceMinor: string | null;
   availability: "in_stock" | "out_of_stock" | "on_order";
   quantity: number | null;
-  isPopular: boolean;
   isNew: boolean;
   isPublished: boolean;
   sortOrder: number;

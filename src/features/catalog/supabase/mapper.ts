@@ -227,7 +227,6 @@ export function mapProductRow(
     oldPriceMinor,
     currency: "MDL",
     stockStatus: row.availability,
-    isPopular: row.is_popular,
     isNew: row.is_new,
     specifications: specificationRows
       .filter((specification) => specification.product_id === row.id)

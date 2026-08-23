@@ -10,7 +10,6 @@ import type { Locale } from "@/i18n/config";
 
 export type ProductQuery = {
   categoryId?: string;
-  popularOnly?: boolean;
   limit?: number;
 };
 
@@ -20,6 +19,9 @@ export interface CatalogRepository {
     locale: Locale,
     query?: ProductQuery,
   ): Promise<CatalogProduct[]>;
+  getPopularProducts(locale: Locale, limit?: number): Promise<CatalogProduct[]>;
+  recordProductView(productId: string): Promise<void>;
+  cleanupOldProductViews(retentionDays?: number): Promise<number>;
   searchPublishedProducts(
     locale: Locale,
     categoryId: string | undefined,

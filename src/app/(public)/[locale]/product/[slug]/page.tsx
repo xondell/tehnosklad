@@ -15,6 +15,7 @@ import { formatPrice, getDiscountPercent } from "@/features/catalog/logic";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isLocale } from "@/i18n/config";
 import { localizedPath } from "@/i18n/config";
+import { ProductViewTracker } from "@/components/catalog/product-view-tracker";
 import { JsonLd } from "@/features/seo/json-ld";
 import { buildLocalizedMetadata } from "@/features/seo/metadata";
 import { buildProductSchema } from "@/features/seo/schema";
@@ -69,6 +70,7 @@ export default async function ProductPage({
   );
   return (
     <PageContainer className="py-8 sm:py-12">
+      <ProductViewTracker productId={product.id} />
       <JsonLd
         value={buildProductSchema({
           locale,

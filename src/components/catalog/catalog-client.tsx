@@ -13,7 +13,7 @@ import type {
   CatalogSearchResult,
   PublicSiteSettings,
 } from "@/features/catalog/types";
-import { localizedPath, type Locale } from "@/i18n/config";
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import type { LeadSource } from "@/features/leads/types";
 

@@ -57,7 +57,6 @@ export type CatalogProduct = {
   oldPriceMinor: number | null;
   currency: "MDL";
   stockStatus: StockStatus;
-  isPopular: boolean;
   isNew: boolean;
   specifications: ProductSpecification[];
   images: ProductImage[];
@@ -148,7 +147,6 @@ export type DemoProduct = {
   priceMinor: number;
   oldPriceMinor?: number;
   stockStatus: StockStatus;
-  isPopular: boolean;
   isNew: boolean;
   specifications: DemoProductSpecification[];
   imageTone: ImageTone;

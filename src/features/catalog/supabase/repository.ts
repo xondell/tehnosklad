@@ -29,6 +29,29 @@ export class SupabaseCatalogRepository implements CatalogRepository {
     return rows.map((row) => mapProductRow(row, specifications, locale));
   }
 
+  async getPopularProducts(locale: Locale, limit = 7) {
+    const ids = await this.transport.getPopularProductIds(limit);
+    if (!ids.length) return [];
+    const rows = await this.transport.listProducts({ ids });
+    const specifications = await this.transport.listSpecifications(ids);
+    const productsById = new Map(
+      rows.map((row) => [row.id, mapProductRow(row, specifications, locale)]),
+    );
+    return ids
+      .map((id) => productsById.get(id))
+      .filter((p): p is import("@/features/catalog/types").CatalogProduct =>
+        Boolean(p),
+      );
+  }
+
+  async recordProductView(productId: string) {
+    await this.transport.recordProductView(productId);
+  }
+
+  async cleanupOldProductViews(retentionDays = 31) {
+    return this.transport.cleanupOldProductViews(retentionDays);
+  }
+
   async searchPublishedProducts(
     locale: Locale,
     categoryId: string | undefined,

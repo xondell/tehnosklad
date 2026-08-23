@@ -345,7 +345,6 @@ suite.sequential("Stage 6 complete admin workflow", () => {
     productForm.set("availability", "in_stock");
     productForm.set("quantity", "2");
     productForm.set("sort_order", "950");
-    productForm.set("is_popular", "on");
     setTranslation(productForm, "ru", {
       name: "Товар Stage 6",
       slug: fixture.productSlugRu,

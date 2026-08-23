@@ -222,7 +222,7 @@ type ProductListOptions = {
 };
 
 const productSelect =
-  "id,category_id,brand,model,sku,price_minor,old_price_minor,availability,quantity,is_popular,is_new,is_published,sort_order,archived_at,product_translations(locale,name,slug,short_description,description,seo_title,seo_description),categories(category_translations(locale,name)),product_images(id,storage_path,sort_order,is_primary,deletion_pending_at,product_image_translations(locale,alt_text)),product_attribute_values(id,attribute_id,ordinal,number_value,boolean_value,option_id,color_value,product_attribute_value_translations(locale,text_value))";
+  "id,category_id,brand,model,sku,price_minor,old_price_minor,availability,quantity,is_new,is_published,sort_order,archived_at,product_translations(locale,name,slug,short_description,description,seo_title,seo_description),categories(category_translations(locale,name)),product_images(id,storage_path,sort_order,is_primary,deletion_pending_at,product_image_translations(locale,alt_text)),product_attribute_values(id,attribute_id,ordinal,number_value,boolean_value,option_id,color_value,product_attribute_value_translations(locale,text_value))";
 
 export async function listAdminProducts(
   options: ProductListOptions = {},
@@ -273,7 +273,6 @@ type ProductRow = {
   old_price_minor: string | number | null;
   availability: AdminProduct["availability"];
   quantity: number | null;
-  is_popular: boolean;
   is_new: boolean;
   is_published: boolean;
   sort_order: number;
@@ -325,7 +324,6 @@ function mapProduct(
     oldPriceMinor: mapDatabaseBigint(row.old_price_minor),
     availability: row.availability,
     quantity: row.quantity,
-    isPopular: row.is_popular,
     isNew: row.is_new,
     isPublished: row.is_published,
     sortOrder: row.sort_order,

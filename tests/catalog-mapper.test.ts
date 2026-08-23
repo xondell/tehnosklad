@@ -47,7 +47,6 @@ const product: DbProductRow = {
   old_price_minor: "849000",
   currency: "MDL",
   availability: "on_order",
-  is_popular: true,
   is_new: false,
   sort_order: 1,
   categories: category,

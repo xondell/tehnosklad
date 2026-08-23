@@ -64,7 +64,6 @@ function localizeProduct(
     oldPriceMinor: product.oldPriceMinor ?? null,
     currency: "MDL",
     stockStatus: product.stockStatus,
-    isPopular: product.isPopular,
     isNew: product.isNew,
     specifications: product.specifications.map((specification, index) => ({
       code: `demo_${index + 1}`,
@@ -103,6 +102,78 @@ function demoSettings(locale: Locale): PublicSiteSettings {
 }
 
 export class DemoCatalogRepository implements CatalogRepository {
+  private viewsMap = new Map<string, Date[]>();
+
+  constructor() {
+    // Seed initial product views for demo mode (8 products with views in last 30 days)
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const initialSeed = [
+      {
+        id: "20000000-0000-4000-8000-000000000001",
+        views: [now - 1 * day, now - 2 * day, now - 3 * day],
+      },
+      {
+        id: "20000000-0000-4000-8000-000000000002",
+        views: [now - 1 * day, now - 2 * day],
+      },
+      { id: "20000000-0000-4000-8000-000000000003", views: [now - 1 * day] },
+      { id: "20000000-0000-4000-8000-000000000004", views: [now - 1 * day] },
+      { id: "20000000-0000-4000-8000-000000000005", views: [now - 1 * day] },
+      { id: "20000000-0000-4000-8000-000000000006", views: [now - 1 * day] },
+      { id: "20000000-0000-4000-8000-000000000007", views: [now - 1 * day] },
+      { id: "20000000-0000-4000-8000-000000000008", views: [now - 1 * day] },
+    ];
+    for (const item of initialSeed) {
+      this.viewsMap.set(
+        item.id,
+        item.views.map((ts) => new Date(ts)),
+      );
+    }
+  }
+
+  async recordProductView(productId: string): Promise<void> {
+    const views = this.viewsMap.get(productId) ?? [];
+    views.push(new Date());
+    this.viewsMap.set(productId, views);
+  }
+
+  async getPopularProducts(
+    locale: Locale,
+    limit = 7,
+  ): Promise<CatalogProduct[]> {
+    const cappedLimit = Math.min(limit, 7);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const productViewCounts = demoProducts
+      .map((product) => {
+        const timestamps = this.viewsMap.get(product.id) ?? [];
+        const count30d = timestamps.filter((t) => t >= thirtyDaysAgo).length;
+        return { product, count30d };
+      })
+      .filter((item) => item.count30d > 0)
+      .sort((a, b) => {
+        if (b.count30d !== a.count30d) return b.count30d - a.count30d;
+        return a.product.id.localeCompare(b.product.id);
+      })
+      .slice(0, cappedLimit);
+
+    return productViewCounts.map((item) =>
+      localizeProduct(item.product, locale),
+    );
+  }
+
+  async cleanupOldProductViews(retentionDays = 31): Promise<number> {
+    const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
+    let deleted = 0;
+    for (const [id, timestamps] of this.viewsMap.entries()) {
+      const kept = timestamps.filter((t) => t >= cutoff);
+      deleted += timestamps.length - kept.length;
+      this.viewsMap.set(id, kept);
+    }
+    return deleted;
+  }
+
   async getPublishedCategories(locale: Locale) {
     return demoCategories.map((category) => localizeCategory(category, locale));
   }
@@ -111,8 +182,7 @@ export class DemoCatalogRepository implements CatalogRepository {
     return demoProducts
       .filter(
         (product) =>
-          (!query.categoryId || product.categoryId === query.categoryId) &&
-          (!query.popularOnly || product.isPopular),
+          !query.categoryId || product.categoryId === query.categoryId,
       )
       .slice(0, query.limit)
       .map((product) => localizeProduct(product, locale));

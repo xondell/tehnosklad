@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { PrimaryNav } from "@/components/layout/primary-nav";
 import type { PublicSiteSettings } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
+
+const emptySubscribe = () => () => {};
 
 export function MobileMenu({
   locale,
@@ -21,15 +23,15 @@ export function MobileMenu({
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const trigger = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const openMenu = () => {
     setOpen(true);
@@ -126,7 +128,9 @@ export function MobileMenu({
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               style={{
-                transform: active ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)",
+                transform: active
+                  ? "translate3d(0, 0, 0)"
+                  : "translate3d(100%, 0, 0)",
                 transition: "transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1)",
               }}
               className="safe-bottom relative z-10 flex h-dvh w-[min(22rem,92vw)] flex-col overflow-y-auto bg-white p-5 pt-[max(1.25rem,env(safe-area-inset-top))] shadow-2xl will-change-transform"
