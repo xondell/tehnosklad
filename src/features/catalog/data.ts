@@ -2,7 +2,10 @@ import "server-only";
 
 import { unstable_cache } from "next/cache";
 
-import { catalogCacheTags } from "@/features/catalog/cache";
+import {
+  catalogCacheTags,
+  revalidateCatalogAfterMutation,
+} from "@/features/catalog/cache";
 import { DemoCatalogRepository } from "@/features/catalog/demo-repository";
 import {
   CatalogDataError,
@@ -75,9 +78,14 @@ export const getPopularProducts = unstable_cache(
 );
 
 export async function recordProductView(productId: string): Promise<void> {
-  return runCatalogQuery("record-product-view", () =>
+  await runCatalogQuery("record-product-view", () =>
     createCatalogRepository().recordProductView(productId),
   );
+  try {
+    revalidateCatalogAfterMutation("product");
+  } catch {
+    // revalidateTag may be called outside request context in tests
+  }
 }
 
 export async function cleanupOldProductViews(
