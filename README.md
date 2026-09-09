@@ -6,7 +6,7 @@
 
 A production-oriented full-stack storefront with a public RU/RO catalog, protected administration, Supabase data, Telegram lead delivery and a grounded catalog assistant.
 
-<!-- No verified public deployment is available at the time of this update. -->
+[![Open live site](https://img.shields.io/badge/Open_live_site-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://tehnosklad123.vercel.app/)
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.3-000000?logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
