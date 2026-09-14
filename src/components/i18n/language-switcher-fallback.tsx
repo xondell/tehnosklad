@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import { locales, type Locale, localizedPath } from "@/i18n/config";
