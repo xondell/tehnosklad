@@ -212,6 +212,56 @@ describe("assistant provider adapters", () => {
     ]);
   });
 
+  it("sends only universally valid fields for an unknown model", async () => {
+    const sent: string[] = [];
+    // A fresh response per call: a body can only be read once.
+    const fetchMock = vi.fn((url: string, init: RequestInit) => {
+      expect(url).toContain("/v1/messages");
+      sent.push(String(init.body));
+      return Promise.resolve(
+        anthropicAnswer({ answer: "Готово.", productIds: [] }),
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    for (const model of ["claude-opus-9", "gateway/some-future-model"]) {
+      await expect(
+        new AnthropicProvider({ ...config, model }).generateGroundedAnswer(
+          input,
+        ),
+      ).resolves.toMatchObject({ ok: true });
+    }
+    // An unrecognized model must not be sent a parameter it may reject with a
+    // 400 on every single request.
+    for (const request of sent) {
+      const body = JSON.parse(request) as Record<string, unknown>;
+      expect(body).not.toHaveProperty("temperature");
+      expect(body).not.toHaveProperty("thinking");
+      expect(Object.keys(body).sort()).toEqual([
+        "max_tokens",
+        "messages",
+        "model",
+        "system",
+      ]);
+    }
+  });
+
+  it("disables reasoning only for the families that accept the toggle", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        anthropicAnswer({ answer: "Готово.", productIds: [] }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    await new AnthropicProvider({
+      ...config,
+      model: "claude-opus-5",
+    }).generateGroundedAnswer(input);
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(JSON.parse(String(init.body))).toMatchObject({
+      thinking: { type: "disabled" },
+    });
+  });
+
   it("keeps deterministic sampling for models that still accept it", async () => {
     const fetchMock = vi
       .fn()
@@ -247,6 +297,21 @@ describe("assistant provider adapters", () => {
 });
 
 describe("assistant answer sanitizing", () => {
+  it("removes Cyrillic prices that the ASCII word boundary used to miss", () => {
+    // `\b` never matched "лей", so the old pattern left such prices in place.
+    expect(sanitizeAnswer("Цена 9 499 лей. Есть в наличии.")).toBe(
+      "Есть в наличии.",
+    );
+    expect(sanitizeAnswer("Стоит 12 000 леев. Доставка бесплатна.")).toBe(
+      "Доставка бесплатна.",
+    );
+    expect(sanitizeAnswer("Costă 9 499 lei. Este în stoc.")).toBe(
+      "Este în stoc.",
+    );
+    // A plain number is not a price and must survive.
+    expect(sanitizeAnswer("Вмещает 300 литров.")).toBe("Вмещает 300 литров.");
+  });
+
   it("drops the whole sentence that carries a price, not just the token", () => {
     expect(
       sanitizeAnswer(
