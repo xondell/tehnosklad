@@ -7,6 +7,7 @@ import "@/app/globals.css";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { AssistantLauncher } from "@/components/public/assistant-launcher";
+import type { AssistantPageContext } from "@/components/public/assistant-widget";
 import {
   getCategoryBySlug,
   getProductBySlug,
@@ -45,29 +46,45 @@ export async function generateMetadata({
   };
 }
 
-async function alternateHrefFor(locale: "ru" | "ro", pathname: string) {
+type CurrentPage = {
+  alternateHref?: string;
+  assistantContext?: AssistantPageContext;
+};
+
+// Resolves the localized twin of the current page and, for product and
+// category pages, the entity the assistant should treat as page context.
+async function currentPageFor(
+  locale: "ru" | "ro",
+  pathname: string,
+): Promise<CurrentPage> {
   const segments = pathname.split("/").filter(Boolean);
-  if (segments.length !== 3 || segments[0] !== locale) return undefined;
+  if (segments.length !== 3 || segments[0] !== locale) return {};
   const targetLocale = locale === "ru" ? "ro" : "ru";
   let slug: string;
   try {
     slug = decodeURIComponent(segments[2]!);
   } catch {
-    return undefined;
+    return {};
   }
   if (segments[1] === "category") {
     const category = await getCategoryBySlug(locale, slug);
     return category
-      ? `/${targetLocale}/category/${category.alternateSlug}`
-      : undefined;
+      ? {
+          alternateHref: `/${targetLocale}/category/${category.alternateSlug}`,
+          assistantContext: { type: "category", id: category.id },
+        }
+      : {};
   }
   if (segments[1] === "product") {
     const product = await getProductBySlug(locale, slug);
     return product
-      ? `/${targetLocale}/product/${product.alternateSlug}`
-      : undefined;
+      ? {
+          alternateHref: `/${targetLocale}/product/${product.alternateSlug}`,
+          assistantContext: { type: "product", id: product.id },
+        }
+      : {};
   }
-  return undefined;
+  return {};
 }
 
 export default async function PublicLayout({
@@ -86,10 +103,11 @@ export default async function PublicLayout({
   const dictionary = getDictionary(locale);
   const pathname =
     (await headers()).get("x-tehnosklad-pathname") ?? `/${locale}`;
-  const [settings, alternateHref] = await Promise.all([
+  const [settings, currentPage] = await Promise.all([
     getPublicSiteSettings(locale),
-    alternateHrefFor(locale, pathname),
+    currentPageFor(locale, pathname),
   ]);
+  const alternateHref = currentPage.alternateHref;
 
   return (
     <html data-scroll-behavior="smooth" lang={locale}>
@@ -116,6 +134,7 @@ export default async function PublicLayout({
           locale={locale}
           dictionary={dictionary}
           settings={settings}
+          page={currentPage.assistantContext}
         />
       </body>
     </html>

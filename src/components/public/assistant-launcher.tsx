@@ -2,7 +2,10 @@
 
 import { useRef, useState, type ComponentType } from "react";
 
-import type { AssistantWidgetProps } from "@/components/public/assistant-widget";
+import type {
+  AssistantPageContext,
+  AssistantWidgetProps,
+} from "@/components/public/assistant-widget";
 import type { PublicSiteSettings } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -11,10 +14,12 @@ export function AssistantLauncher({
   locale,
   dictionary,
   settings,
+  page,
 }: {
   locale: Locale;
   dictionary: Dictionary;
   settings: PublicSiteSettings;
+  page?: AssistantPageContext | null;
 }) {
   const launcher = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
@@ -44,6 +49,7 @@ export function AssistantLauncher({
           locale={locale}
           dictionary={dictionary}
           settings={settings}
+          page={page}
           onClose={() => {
             setOpen(false);
             requestAnimationFrame(() => launcher.current?.focus());
