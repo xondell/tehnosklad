@@ -10,7 +10,11 @@ export function fallbackAnswer(
   knowledge: AssistantKnowledgeItem[],
   settings: PublicSiteSettings,
 ): string {
-  if (knowledge.length) return sanitizeAnswer(knowledge[0]!.content);
+  // Sanitizing can empty a knowledge entry that consisted of a price sentence.
+  const topKnowledge = knowledge.length
+    ? sanitizeAnswer(knowledge[0]!.content)
+    : "";
+  if (topKnowledge) return topKnowledge;
   if (references.length)
     return locale === "ro"
       ? "Am găsit produse relevante în catalog. Verificați cardurile de mai jos pentru preț și disponibilitate actuală."

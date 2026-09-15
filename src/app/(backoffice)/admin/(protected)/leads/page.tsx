@@ -84,6 +84,7 @@ export default async function LeadsPage({
               "category_product_card",
               "product_page",
               "similar_product_card",
+              "assistant",
             ].map((source) => (
               <option key={source} value={source}>
                 {source}

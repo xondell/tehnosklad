@@ -1,12 +1,15 @@
 import { isLocale, type Locale } from "@/i18n/config";
 import type {
   AssistantHistoryMessage,
+  AssistantPageContext,
   AssistantRequest,
 } from "@/features/assistant/types";
 
 const MAX_QUESTION = 600;
 const MAX_HISTORY = 6;
 const MAX_HISTORY_CHARS = 1_800;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function cleanText(value: unknown, maximum: number): string | null {
   if (typeof value !== "string") return null;
@@ -19,6 +22,28 @@ function cleanText(value: unknown, maximum: number): string | null {
     : null;
 }
 
+/*
+ * The page context is a closed shape: unknown keys, a foreign type or an
+ * identifier that is not a UUID are rejected rather than repaired. An absent
+ * field and an explicit null both mean "no page context".
+ */
+function readPageContext(
+  value: unknown,
+): { ok: true; page: AssistantPageContext | undefined } | { ok: false } {
+  if (value === undefined || value === null)
+    return { ok: true, page: undefined };
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    return { ok: false };
+  const record = value as Record<string, unknown>;
+  if (Object.keys(record).some((key) => key !== "type" && key !== "id"))
+    return { ok: false };
+  if (record.type !== "product" && record.type !== "category")
+    return { ok: false };
+  if (typeof record.id !== "string" || !UUID_PATTERN.test(record.id))
+    return { ok: false };
+  return { ok: true, page: { type: record.type, id: record.id } };
+}
+
 export function validateAssistantPayload(
   value: unknown,
 ): { ok: true; data: AssistantRequest } | { ok: false } {
@@ -27,10 +52,12 @@ export function validateAssistantPayload(
   const record = value as Record<string, unknown>;
   if (
     Object.keys(record).some(
-      (key) => !["locale", "question", "history"].includes(key),
+      (key) => !["locale", "question", "history", "page"].includes(key),
     )
   )
     return { ok: false };
+  const page = readPageContext(record.page);
+  if (!page.ok) return { ok: false };
   if (typeof record.locale !== "string" || !isLocale(record.locale))
     return { ok: false };
   const question = cleanText(record.question, MAX_QUESTION);
@@ -58,6 +85,11 @@ export function validateAssistantPayload(
   }
   return {
     ok: true,
-    data: { locale: record.locale as Locale, question, history },
+    data: {
+      locale: record.locale as Locale,
+      question,
+      history,
+      ...(page.page ? { page: page.page } : {}),
+    },
   };
 }

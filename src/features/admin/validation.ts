@@ -65,6 +65,12 @@ export function integerValue(
   return parsed;
 }
 
+export function localeValue(formData: FormData, name: string): "ru" | "ro" {
+  const value = String(formData.get(name) ?? "");
+  if (value !== "ru" && value !== "ro") throw new AdminValidationError(name);
+  return value;
+}
+
 export function checkboxValue(formData: FormData, name: string): boolean {
   return formData.get(name) === "on";
 }

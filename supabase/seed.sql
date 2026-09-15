@@ -399,4 +399,21 @@ insert into public.product_views (product_id, viewed_at) values
   ('20000000-0000-4000-8000-000000000006', now() - interval '1 day'),
   ('20000000-0000-4000-8000-000000000007', now() - interval '1 day');
 
+-- 8. Вставка статей базы знаний помощника
+-- Зеркало демо-фикстур `src/features/assistant/demo-knowledge.ts`.
+truncate table public.assistant_knowledge cascade;
+insert into public.assistant_knowledge (id, locale, title, content, is_active) values
+  ('30000000-0000-4000-8000-000000000001', 'ru', 'Доставка', 'Доставка по Комрату выполняется в день заказа или на следующий рабочий день. По югу Молдовы срок доставки обычно составляет один-два рабочих дня. Точную стоимость и дату доставки менеджер подтверждает по телефону после оформления заявки.', true),
+  ('30000000-0000-4000-8000-000000000101', 'ro', 'Livrare', 'Livrarea în Comrat se face în ziua comenzii sau în următoarea zi lucrătoare. În sudul Moldovei termenul este de obicei una-două zile lucrătoare. Costul exact și data livrării sunt confirmate de manager la telefon după înregistrarea cererii.', true),
+  ('30000000-0000-4000-8000-000000000002', 'ru', 'Оплата', 'Оплатить покупку можно наличными при получении или банковской картой в магазине. Для юридических лиц доступна оплата по счёту. Чек и гарантийный талон выдаются вместе с товаром.', true),
+  ('30000000-0000-4000-8000-000000000102', 'ro', 'Modalități de plată', 'Achitarea se face în numerar la primire sau cu cardul bancar în magazin. Pentru persoane juridice este disponibilă plata prin factură. Bonul și certificatul de garanție se eliberează împreună cu produsul.', true),
+  ('30000000-0000-4000-8000-000000000003', 'ru', 'Гарантия', 'На всю технику действует официальная гарантия производителя. Срок гарантии указан в гарантийном талоне и зависит от модели. Для обращения по гарантии сохраните чек и гарантийный талон.', true),
+  ('30000000-0000-4000-8000-000000000103', 'ro', 'Garanție', 'Toate electrocasnicele au garanție oficială de la producător. Termenul de garanție este indicat în certificatul de garanție și depinde de model. Pentru o solicitare de garanție păstrați bonul și certificatul.', true),
+  ('30000000-0000-4000-8000-000000000004', 'ru', 'Возврат и обмен', 'Товар надлежащего качества можно вернуть или обменять в течение 14 дней с момента покупки, если сохранены товарный вид, упаковка, чек и полная комплектация. Технику с выявленным дефектом магазин принимает на проверку и заменяет или ремонтирует по гарантии.', true),
+  ('30000000-0000-4000-8000-000000000104', 'ro', 'Retur și schimb', 'Un produs de calitate corespunzătoare poate fi returnat sau schimbat în 14 zile de la cumpărare, dacă se păstrează aspectul comercial, ambalajul, bonul și setul complet. Produsele cu defect sunt preluate pentru verificare și înlocuite sau reparate în garanție.', true),
+  ('30000000-0000-4000-8000-000000000005', 'ru', 'Самовывоз из магазина', 'Заказ можно забрать самостоятельно в магазине в рабочие часы. Перед поездкой оставьте заявку или позвоните: менеджер проверит наличие конкретной модели и отложит её.', true),
+  ('30000000-0000-4000-8000-000000000105', 'ro', 'Ridicare din magazin', 'Comanda poate fi ridicată personal din magazin în orele de program. Înainte de deplasare lăsați o cerere sau sunați: managerul verifică disponibilitatea modelului și îl rezervă.', true),
+  ('30000000-0000-4000-8000-000000000006', 'ru', 'Подключение и установка', 'Установку и подключение крупной техники выполняют мастера магазина. Условия и стоимость услуги зависят от типа техники и обсуждаются с менеджером при оформлении заказа.', true),
+  ('30000000-0000-4000-8000-000000000106', 'ro', 'Conectare și instalare', 'Instalarea și conectarea electrocasnicelor mari sunt efectuate de specialiștii magazinului. Condițiile și costul serviciului depind de tipul tehnicii și se discută cu managerul la plasarea comenzii.', true);
+
 commit;

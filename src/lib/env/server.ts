@@ -20,6 +20,17 @@ export function getSupabaseServiceRoleEnvironment() {
   };
 }
 
+/*
+ * Probe instead of require: assistant telemetry, knowledge and the durable
+ * rate limit are optional capabilities, not preconditions for an answer.
+ */
+export function hasSupabaseServiceRoleEnvironment(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
+  );
+}
+
 export function getLeadSecurityEnvironment() {
   const environment = requireEnvironmentVariables({
     LEAD_IP_HASH_SECRET: process.env.LEAD_IP_HASH_SECRET,
@@ -53,15 +64,19 @@ export function getOptionalTelegramEnvironment(): TelegramEnvironment | null {
   return { botToken, chatId };
 }
 
+const ANTHROPIC_DEFAULT_BASE_URL = "https://api.anthropic.com";
+
+export type AssistantUpstreamEnvironment = {
+  apiKey: string;
+  model: string;
+  baseUrl: string;
+  timeoutMs: number;
+};
+
 export type AssistantEnvironment =
   | { provider: "fallback"; timeoutMs: number }
-  | {
-      provider: "openai-compatible";
-      apiKey: string;
-      model: string;
-      baseUrl: string;
-      timeoutMs: number;
-    };
+  | ({ provider: "openai-compatible" } & AssistantUpstreamEnvironment)
+  | ({ provider: "anthropic" } & AssistantUpstreamEnvironment);
 
 export function getAssistantEnvironment(): AssistantEnvironment {
   const provider = (process.env.AI_PROVIDER ?? "fallback").trim().toLowerCase();
@@ -88,12 +103,43 @@ export function getAssistantEnvironment(): AssistantEnvironment {
       timeoutMs,
     };
   }
+  if (provider === "anthropic") {
+    const environment = requireEnvironmentVariables({
+      AI_PROVIDER_API_KEY: process.env.AI_PROVIDER_API_KEY,
+      AI_MODEL: process.env.AI_MODEL,
+    });
+    // The Anthropic API host is well known; an override exists only for
+    // gateways and is given without the versioned `/v1` path.
+    const baseUrl = process.env.AI_PROVIDER_BASE_URL?.trim();
+    return {
+      provider,
+      apiKey: environment.AI_PROVIDER_API_KEY,
+      model: environment.AI_MODEL,
+      baseUrl: (baseUrl
+        ? requireValidUrl("AI_PROVIDER_BASE_URL", baseUrl)
+        : ANTHROPIC_DEFAULT_BASE_URL
+      ).replace(/\/$/, ""),
+      timeoutMs,
+    };
+  }
   throw new EnvironmentConfigurationError(["AI_PROVIDER"]);
 }
 
 export function getAssistantRateLimitSecret(): string {
+  const secret = getOptionalAssistantRateLimitSecret();
+  if (!secret)
+    throw new EnvironmentConfigurationError(["AI_RATE_LIMIT_SECRET"]);
+  return secret;
+}
+
+/*
+ * The assistant must also answer in demo/local setups that have no secret at
+ * all; an invalid secret stays a configuration error.
+ */
+export function getOptionalAssistantRateLimitSecret(): string | null {
   const secret = process.env.AI_RATE_LIMIT_SECRET?.trim();
-  if (!secret || secret.length < 32) {
+  if (!secret) return null;
+  if (secret.length < 32) {
     throw new EnvironmentConfigurationError(["AI_RATE_LIMIT_SECRET"]);
   }
   return secret;

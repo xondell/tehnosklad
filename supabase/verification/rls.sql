@@ -52,30 +52,108 @@ values
   ('90000000-0000-4000-8000-000000000030', 'ru', 'Скрытое удаление'),
   ('90000000-0000-4000-8000-000000000030', 'ro', 'Ștergere ascunsă');
 
+-- The seed grows with the catalog, so anon visibility is asserted against
+-- expectations derived from the data instead of hard-coded seed counts: anon
+-- must see exactly the published rows, and none of the drafts inserted above.
+-- The expectations are computed here, while the session is still privileged.
+create temporary table rls_expected on commit drop as
+select
+  (
+    select count(*) from public.products as product
+    join public.categories as category on category.id = product.category_id
+    where product.is_published and product.archived_at is null
+      and category.is_published and category.archived_at is null
+  ) as products,
+  (
+    select count(*) from public.categories
+    where is_published and archived_at is null
+  ) as categories,
+  (select count(*) from public.site_settings) as site_settings,
+  (
+    select count(*) from public.category_translations as translation
+    join public.categories as category
+      on category.id = translation.category_id
+    where category.is_published and category.archived_at is null
+  ) as category_translations,
+  (
+    select count(*) from public.product_translations as translation
+    join public.products as product on product.id = translation.product_id
+    join public.categories as category on category.id = product.category_id
+    where product.is_published and product.archived_at is null
+      and category.is_published and category.archived_at is null
+  ) as product_translations,
+  (
+    select count(*) from public.category_attributes as binding
+    join public.categories as category on category.id = binding.category_id
+    join public.attributes as attribute on attribute.id = binding.attribute_id
+    where category.is_published and category.archived_at is null
+      and attribute.is_active
+  ) as category_attributes,
+  (
+    select count(*) from public.product_attribute_values as value
+    join public.products as product on product.id = value.product_id
+    join public.categories as category on category.id = product.category_id
+    join public.attributes as attribute on attribute.id = value.attribute_id
+    join public.category_attributes as binding
+      on binding.category_id = product.category_id
+     and binding.attribute_id = attribute.id
+    where product.is_published and product.archived_at is null
+      and category.is_published and category.archived_at is null
+      and attribute.is_active
+  ) as product_attribute_values,
+  (
+    select count(*) from public.attribute_groups as attribute_group
+    where attribute_group.is_active and exists (
+      select 1 from public.attributes as attribute
+      join public.category_attributes as binding
+        on binding.attribute_id = attribute.id
+      join public.categories as category on category.id = binding.category_id
+      where attribute.group_id = attribute_group.id and attribute.is_active
+        and category.is_published and category.archived_at is null
+    )
+  ) as attribute_groups;
+grant select on rls_expected to anon, authenticated;
+
 set local role anon;
 
 do $$
+declare
+  expected pg_temp.rls_expected;
 begin
-  if (select count(*) from public.products) <> 12 then
-    raise exception 'anon published product count is not 12';
+  select * into expected from pg_temp.rls_expected;
+  if (select count(*) from public.products) <> expected.products then
+    raise exception 'anon published product count does not match the catalog';
   end if;
-  if (select count(*) from public.categories) <> 3 then
-    raise exception 'anon published category count is not 3';
+  if (select count(*) from public.categories) <> expected.categories then
+    raise exception 'anon published category count does not match the catalog';
   end if;
-  if (select count(*) from public.site_settings) <> 14 then
-    raise exception 'anon public settings count is not 14';
+  if (select count(*) from public.site_settings) <> expected.site_settings then
+    raise exception 'anon public settings count does not match site_settings';
   end if;
-  if (select count(*) from public.category_translations) <> 6 then
-    raise exception 'anon category translation count is not 6';
+  if (select count(*) from public.category_translations)
+    <> expected.category_translations
+  then
+    raise exception 'anon category translation count does not match the catalog';
   end if;
-  if (select count(*) from public.product_translations) <> 24 then
-    raise exception 'anon product translation count is not 24';
+  if (select count(*) from public.product_translations)
+    <> expected.product_translations
+  then
+    raise exception 'anon product translation count does not match the catalog';
   end if;
-  if (select count(*) from public.category_attributes) <> 9 then
-    raise exception 'anon category attribute count is not 9';
+  if (select count(*) from public.category_attributes)
+    <> expected.category_attributes
+  then
+    raise exception 'anon category attribute count does not match the catalog';
   end if;
-  if (select count(*) from public.product_attribute_values) <> 36 then
-    raise exception 'anon product attribute value count is not 36';
+  if (select count(*) from public.product_attribute_values)
+    <> expected.product_attribute_values
+  then
+    raise exception 'anon product attribute value count does not match the catalog';
+  end if;
+  if (select count(*) from public.attribute_groups)
+    <> expected.attribute_groups
+  then
+    raise exception 'anon attribute group visibility does not match the catalog';
   end if;
   if exists (select 1 from public.category_slug_routes)
     or exists (select 1 from public.product_slug_routes)
@@ -86,8 +164,8 @@ begin
   if (
     select max(total_count)
     from public.search_public_catalog_product_ids('ru')
-  ) <> 12 then
-    raise exception 'anon catalog search count is not 12';
+  ) <> expected.products then
+    raise exception 'anon catalog search count does not match the catalog';
   end if;
   if exists (
     select 1
@@ -126,10 +204,10 @@ begin
     raise exception 'anon can read deletion-pending image metadata';
   end if;
 
-  if not exists (
-    select 1 from public.attribute_groups where code = 'general'
+  if exists (
+    select 1 from public.attribute_groups where not is_active
   ) then
-    raise exception 'anon cannot read the published catalog attribute group';
+    raise exception 'anon can read an inactive attribute group';
   end if;
 
   begin
@@ -198,9 +276,12 @@ $$;
 set local role authenticated;
 
 do $$
+declare
+  expected pg_temp.rls_expected;
 begin
-  if (select count(*) from public.products) <> 12
-    or (select count(*) from public.categories) <> 3
+  select * into expected from pg_temp.rls_expected;
+  if (select count(*) from public.products) <> expected.products
+    or (select count(*) from public.categories) <> expected.categories
   then
     raise exception 'authenticated non-admin catalog differs from anon';
   end if;

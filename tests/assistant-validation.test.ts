@@ -38,6 +38,36 @@ describe("assistant validation and provider boundary", () => {
       }).ok,
     ).toBe(false);
   });
+  it("accepts only a whitelisted page context", () => {
+    const base = { locale: "ru", question: "Что это?", history: [] };
+    const page = {
+      type: "product" as const,
+      id: "11111111-1111-4111-8111-111111111111",
+    };
+    const accepted = validateAssistantPayload({ ...base, page });
+    expect(accepted.ok && accepted.data.page).toEqual(page);
+    expect(
+      validateAssistantPayload({
+        ...base,
+        page: { type: "category", id: "22222222-2222-4222-8222-222222222222" },
+      }).ok,
+    ).toBe(true);
+    expect(validateAssistantPayload({ ...base, page: null }).ok).toBe(true);
+    expect(
+      validateAssistantPayload({ ...base, page: { type: "cart", id: page.id } })
+        .ok,
+    ).toBe(false);
+    expect(
+      validateAssistantPayload({ ...base, page: { type: "product", id: "42" } })
+        .ok,
+    ).toBe(false);
+    expect(
+      validateAssistantPayload({
+        ...base,
+        page: { ...page, locale: "ru" },
+      }).ok,
+    ).toBe(false);
+  });
   it("uses an isolated stable HMAC rather than a raw address", () => {
     const secret = "assistant-test-secret-that-is-at-least-32-characters";
     const value = assistantSubjectHash(
@@ -48,9 +78,11 @@ describe("assistant validation and provider boundary", () => {
     expect(value).not.toContain("203.0.113.7");
   });
   it("drops model links, prices and HTML; references must remain server assembled", () => {
-    expect(sanitizeAnswer("<b>Buy</b> https://evil.test 99 999 MDL")).toBe(
-      "Buy",
-    );
+    // The priced sentence goes as a whole, so no "Buy ." stub is left behind.
+    expect(
+      sanitizeAnswer("<b>Есть в наличии</b>. Buy https://evil.test 99 999 MDL"),
+    ).toBe("Есть в наличии.");
+    expect(sanitizeAnswer("<b>Buy</b> https://evil.test 99 999 MDL")).toBe("");
     expect(
       parseProviderResult({ answer: "recommendation", productIds: ["known"] }),
     ).toEqual({ ok: true, answer: "recommendation", productIds: ["known"] });

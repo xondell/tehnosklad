@@ -89,4 +89,14 @@ Browser не передаёт доверенный bucket/path: bucket фикс�
 
 # Grounded assistant
 
-The assistant endpoint has same-origin, content-type/body limits, strict schema and role validation, an isolated HMAC rate limit, timeout and no-store response. It uses the public RLS catalog client only—never the service-role client or leads tables. Provider output is plain text and product cards/URLs are built server-side from allowlisted published DTOs. Conversation text is not retained.
+The assistant endpoint has same-origin, content-type/body limits, strict schema and role validation, an isolated HMAC rate limit, timeout and no-store response. Provider output is plain text and product cards/URLs are built server-side from allowlisted published DTOs. Conversation text is not retained. Leads and outbox tables are never read or written by the assistant.
+
+Catalog data is read through the public RLS client only: the assistant sees exactly what an anonymous visitor sees, so an unpublished product or category can never reach the prompt. The service-role client is used in three narrow, server-only places, none of which touch the catalog:
+
+- `src/app/api/assistant/route.ts` — the `consume_assistant_rate_limit` RPC, which is deliberately not granted to `anon`/`authenticated` and only accepts an HMAC subject hash.
+- `src/features/assistant/service.ts` — the best-effort `assistant_logs` insert (request UUID, locale, outcome, provider, duration bucket, fallback flag, reference count; no IP and no question text).
+- `src/features/assistant/knowledge.ts` — reading `assistant_knowledge`, whose RLS policy is admin-only, so the public widget could not read it under RLS.
+
+Consequence worth stating plainly: because the knowledge query runs as service-role, RLS is bypassed there and the `is_active` filter is applied in application code (`.eq("locale", …).eq("is_active", true)`). A disabled article stays out of answers only as long as that query keeps the filter — it is not enforced by the database. Knowledge base writes are the opposite: they go through admin `admin_*` RPCs under RLS from `/admin/assistant-knowledge`, with no service-role client involved.
+
+Without a service-role key (demo mode, local development) the endpoint does not fail open on data: the rate limit falls back to a process-local window (`src/features/assistant/rate-limit.ts`) and knowledge comes from the read-only demo fixtures, while telemetry is written to the server console only.

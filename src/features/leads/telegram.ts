@@ -36,6 +36,7 @@ const sourceLabels: Record<LeadForTelegram["source"], string> = {
   category_product_card: "Карточка товара в категории",
   product_page: "Страница товара",
   similar_product_card: "Похожий товар",
+  assistant: "Помощник по каталогу",
 };
 
 export function formatLeadTelegramMessage(lead: LeadForTelegram): string {

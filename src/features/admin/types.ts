@@ -167,6 +167,7 @@ export type AdminDashboard = {
   categoriesTotal: number;
   newLeads: number;
   telegramErrors: number;
+  knowledgeActive: number;
   recentLeads: AdminLead[];
 };
 
@@ -181,4 +182,47 @@ export type AdminOrphanEntry = {
   productId: string;
   path: string;
   state: "orphan_object" | "missing_object" | "pending_metadata";
+};
+
+export type AdminAssistantKnowledge = {
+  id: string;
+  locale: "ru" | "ro";
+  title: string;
+  content: string;
+  isActive: boolean;
+  updatedAt: string;
+};
+
+export type AdminAssistantLogEntry = {
+  id: string;
+  requestId: string;
+  locale: AdminLocale;
+  outcome: string;
+  provider: string;
+  durationBucket: "lt_250" | "lt_1000" | "gte_1000";
+  fallbackUsed: boolean;
+  referenceCount: number;
+  createdAt: string;
+};
+
+export type AdminAssistantLogShare = {
+  key: string;
+  count: number;
+  share: number;
+};
+
+export type AdminAssistantLogReport = {
+  days: number;
+  since: string;
+  total: number;
+  analyzed: number;
+  truncated: boolean;
+  fallbackCount: number;
+  fallbackShare: number;
+  averageReferences: number;
+  outcomes: AdminAssistantLogShare[];
+  providers: AdminAssistantLogShare[];
+  durations: AdminAssistantLogShare[];
+  locales: AdminAssistantLogShare[];
+  recent: AdminAssistantLogEntry[];
 };

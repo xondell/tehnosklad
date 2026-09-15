@@ -20,12 +20,17 @@ export default async function AdminPage() {
     ["Категории", dashboard.categoriesTotal, "/admin/categories"],
     ["Новые заявки", dashboard.newLeads, "/admin/leads?status=new"],
     ["Ошибки Telegram", dashboard.telegramErrors, "/admin/leads"],
+    [
+      "Статьи базы знаний",
+      dashboard.knowledgeActive,
+      "/admin/assistant-knowledge",
+    ],
   ] as const;
   return (
     <main className="admin-content" id="admin-main">
       <AdminPageHeader
         title="Панель управления"
-        description="Состояние каталога, заявок и Telegram delivery."
+        description="Состояние каталога, заявок, Telegram delivery и базы знаний помощника."
       />
       <section
         aria-label="Статистика"

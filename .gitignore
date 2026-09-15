@@ -28,5 +28,8 @@ next-env.d.ts
 # Vercel
 .vercel
 
+# Ephemeral agent worktrees created inside the repository
+/.claude/worktrees/
+
 # Imported nested archive copy (not part of this repository)
 /sklad/

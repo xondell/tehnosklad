@@ -1,11 +1,19 @@
 import "server-only";
 
+import { demoAssistantKnowledge } from "@/features/assistant/demo-knowledge";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { hasSupabaseServiceRoleEnvironment } from "@/lib/env/server";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service";
 
 const MAX_KNOWLEDGE_RESULTS = 4;
 const MAX_KNOWLEDGE_CONTENT = 1_600;
+/*
+ * One weak body match is noise, not relevance: "в наличии" shares a stem with
+ * "наличными", which used to answer a question about fridges with the payment
+ * article. A title match (6) or two body matches (2 + 2) clear the bar.
+ */
+const MIN_KNOWLEDGE_SCORE = 4;
 
 export type AssistantKnowledgeItem = {
   id: string;
@@ -98,7 +106,7 @@ export function rankAssistantKnowledge(
       }
       return { item, score };
     })
-    .filter(({ score }) => score > 0)
+    .filter(({ score }) => score >= MIN_KNOWLEDGE_SCORE)
     .sort((left, right) => right.score - left.score)
     .slice(0, limit)
     .map(({ item }) => ({
@@ -155,9 +163,20 @@ function builtInLegalKnowledge(
   ]);
 }
 
+function demoKnowledge(locale: Locale): AssistantKnowledgeItem[] {
+  return demoAssistantKnowledge.map((article) => ({
+    id: article.id,
+    title: article.title[locale],
+    content: article.content[locale],
+    source: "database" as const,
+  }));
+}
+
 async function databaseKnowledge(
   locale: Locale,
 ): Promise<AssistantKnowledgeItem[]> {
+  // Demo and local setups have no service-role client but still need articles.
+  if (!hasSupabaseServiceRoleEnvironment()) return demoKnowledge(locale);
   try {
     const { data, error } = await createServiceRoleSupabaseClient()
       .from("assistant_knowledge")

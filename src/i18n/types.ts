@@ -147,6 +147,9 @@ export type Dictionary = {
     catalog: string;
     disclaimer: string;
     unavailable: string;
+    rateLimited: string;
+    /** Contains a {seconds} placeholder replaced with the retry delay. */
+    rateLimitedSeconds: string;
     fallback: string;
     product: string;
     welcome: string;
