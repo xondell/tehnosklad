@@ -1,6 +1,7 @@
 # Project Knowledge Dump
 
 > **Status Legend:**
+>
 > - **[CONFIRMED]**: Directly verified in source code, configuration files, i18n dictionaries, or database seed files.
 > - **[INFERRED]**: Logically deduced from implementation behavior or domain standards, but not stated verbatim.
 > - **[MISSING_INFORMATION]**: No factual information or implementation exists in the project.
@@ -31,9 +32,10 @@
 ## 2. AI Assistant Architecture & Knowledge Retrieval
 
 ### 2.1 System Architecture & Philosophy
+
 - **Component Location**: `src/features/assistant/`, API Route: `src/app/api/assistant/route.ts`. **[CONFIRMED]**
 - **Core Philosophy**:
-  1. **Strict Pre-Grounding (RAG)**: The AI model receives all necessary store settings, active knowledge base articles, legal operator attributes, published categories, and matching catalog products in its system/user context *before* answering. No model tool-calling is used. **[CONFIRMED]**
+  1. **Strict Pre-Grounding (RAG)**: The AI model receives all necessary store settings, active knowledge base articles, legal operator attributes, published categories, and matching catalog products in its system/user context _before_ answering. No model tool-calling is used. **[CONFIRMED]**
   2. **Zero Vector Search / Zero Embeddings**: The system **does not use** vector embeddings (e.g. OpenAI Embeddings, pgvector, FAISS, or dense retrieval). Knowledge base retrieval uses a custom deterministic token-matching stemmer algorithm (`rankAssistantKnowledge` in `src/features/assistant/knowledge.ts`). **[CONFIRMED]**
   3. **Privacy-Preserving Design**:
      - No chat transcripts, prompt texts, or AI responses are persisted in the database. **[CONFIRMED]**
@@ -46,6 +48,7 @@
      - All LLM output text is post-processed by `sanitizeAnswer` (`src/features/assistant/provider.ts`), which strips HTML, Markdown links, and any sentence containing currency expressions (e.g. `MDL`, `лей`, `lei`). **[CONFIRMED]**
 
 ### 2.2 Knowledge Retrieval Mechanism
+
 - **Fast-Path Deterministic Matcher (`answerDirectQuestion` in `direct-answer.ts`)**:
   - Regex pattern matching for direct questions regarding store address, phone, working hours, and legal operator details (IDNO, legal address, privacy email, responsible person) in Russian and Romanian.
   - Completely bypasses LLM invocation and returns instant static text responses. **[CONFIRMED]**
@@ -61,12 +64,14 @@
   6. Ranking & Bounds: Returns top **4 articles** (`MAX_KNOWLEDGE_RESULTS`), truncating each article content to **1,600 characters** (`MAX_KNOWLEDGE_CONTENT`). **[CONFIRMED]**
 
 ### 2.3 Dynamic Catalog Retrieval (`retrieveAssistantProducts` in `retrieval.ts`)
+
 - Regex-based intent extractor parses user queries to identify target categories, brands, price ranges (in MDL), stock status (`in_stock` / `on_order`), and sort preferences. **[CONFIRMED]**
 - Multi-turn intent merger: Follow-up turns (e.g., "а подешевле?") inherit category/brand scope from up to 2 previous user turns. **[CONFIRMED]**
 - Page Context Sensitivity: If the user opens the assistant from a specific product page, that product (`currentProduct`) leads the grounded context. **[CONFIRMED]**
 - Maximum products injected into context: **5 products** (`MAX_ASSISTANT_PRODUCTS = 5`). **[CONFIRMED]**
 
 ### 2.4 Model Providers & Fallback Engine
+
 - Configured via `AI_PROVIDER` environment variable:
   - `openai-compatible`: Third-party REST API (OpenAI, DeepSeek, Groq) using `/chat/completions`. **[CONFIRMED]**
   - `anthropic`: Anthropic Messages API (`/v1/messages`). **[CONFIRMED]**
@@ -95,6 +100,7 @@
 The project contains 6 bilingual knowledge base articles, stored as rows in `public.assistant_knowledge` (`supabase/seed.sql`) and mirrored in TypeScript fixtures (`src/features/assistant/demo-knowledge.ts`).
 
 ### Article 1: Delivery / Доставка / Livrare **[CONFIRMED]**
+
 - **ID (RU)**: `30000000-0000-4000-8000-000000000001`
 - **ID (RO)**: `30000000-0000-4000-8000-000000000101`
 - **Title (RU)**: Доставка
@@ -108,6 +114,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
 - **Source**: `supabase/seed.sql:406-407`, `src/features/assistant/demo-knowledge.ts:15-26`
 
 ### Article 2: Payment / Оплата / Modalități de plată **[CONFIRMED]**
+
 - **ID (RU)**: `30000000-0000-4000-8000-000000000002`
 - **ID (RO)**: `30000000-0000-4000-8000-000000000102`
 - **Title (RU)**: Оплата
@@ -121,6 +128,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
 - **Source**: `supabase/seed.sql:408-409`, `src/features/assistant/demo-knowledge.ts:27-37`
 
 ### Article 3: Warranty / Гарантия / Garanție **[CONFIRMED]**
+
 - **ID (RU)**: `30000000-0000-4000-8000-000000000003`
 - **ID (RO)**: `30000000-0000-4000-8000-000000000103`
 - **Title (RU)**: Гарантия
@@ -134,6 +142,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
 - **Source**: `supabase/seed.sql:410-411`, `src/features/assistant/demo-knowledge.ts:38-48`
 
 ### Article 4: Returns & Exchanges / Возврат и обмен / Retur și schimb **[CONFIRMED]**
+
 - **ID (RU)**: `30000000-0000-4000-8000-000000000004`
 - **ID (RO)**: `30000000-0000-4000-8000-000000000104`
 - **Title (RU)**: Возврат и обмен
@@ -147,6 +156,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
 - **Source**: `supabase/seed.sql:412-413`, `src/features/assistant/demo-knowledge.ts:49-59`
 
 ### Article 5: Store Pickup / Самовывоз из магазина / Ridicare din magazin **[CONFIRMED]**
+
 - **ID (RU)**: `30000000-0000-4000-8000-000000000005`
 - **ID (RO)**: `30000000-0000-4000-8000-000000000105`
 - **Title (RU)**: Самовывоз из магазина
@@ -160,6 +170,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
 - **Source**: `supabase/seed.sql:414-415`, `src/features/assistant/demo-knowledge.ts:60-70`
 
 ### Article 6: Connection & Installation / Подключение и установка / Conectare și instalare **[CONFIRMED]**
+
 - **ID (RU)**: `30000000-0000-4000-8000-000000000006`
 - **ID (RO)**: `30000000-0000-4000-8000-000000000106`
 - **Title (RU)**: Подключение и установка
@@ -218,6 +229,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
 ## 6. Products & Catalog Structure (Товары и каталог)
 
 ### 6.1 Catalog Summary & Metrics
+
 - **Total Product Categories**: 15 main published categories. **[CONFIRMED]**
 - **Total Catalog Products**: 105 products in default seed/demo data (7 products per category). **[CONFIRMED]**
 - **Currency**: `MDL` (Moldovan Leu). Stored internally in minor units (cents/bani, e.g. 949,900 minor units = 9,499 MDL). **[CONFIRMED]**
@@ -227,6 +239,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
   - `out_of_stock` ("Нет в наличии" / "Stoc epuizat") **[CONFIRMED]**
 
 ### 6.2 Categories Breakdown (15 Categories)
+
 1. **Refrigerators (`refrigerators`) / Холодильники / Frigidere**
    - Icon: `fridge`
    - Description: "Для свежих продуктов каждый день"
@@ -278,6 +291,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
     - Sample Brands: Cooper&Hunter, Gree, Midea, AUX, Daikin, Mitsubishi Heavy, TCL. **[CONFIRMED]**
 
 ### 6.3 Brands Carried (42 Brands Total) **[CONFIRMED]**
+
 `AUX`, `Beko`, `Bosch`, `Braun`, `Candy`, `Cooper&Hunter`, `Daikin`, `DeLonghi`, `Dreame`, `ECOVACS`, `Electrolux`, `Gaggia`, `Gorenje`, `Gree`, `Hansa`, `Indesit`, `Kärcher`, `Kenwood`, `Krups`, `LG`, `Melitta`, `Midea`, `Mitsubishi Heavy`, `Moulinex`, `Nivona`, `Nutribullet`, `Panasonic`, `Philips`, `Roborock`, `Roidmi`, `Rowenta`, `Russell Hobbs`, `Saeco`, `Samsung`, `Scarlett`, `Sharp`, `Siemens`, `TCL`, `Tefal`, `Thomas`, `Whirlpool`, `Xiaomi`.
 
 - **Sources**:
@@ -419,16 +433,16 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
 
 ## 15. Dynamic vs. Static Information Matrix
 
-| Information Item | Current Location | Storage Type | Recommended Handling for AI Assistant |
-|---|---|---|---|
-| Store Address & Hours | `site_settings` table / `site.ts` | Dynamic (DB/Env) | Direct Grounding / Deterministic Fast-Path |
-| Product Prices & Stock | `products` table | Dynamic (DB) | Server Catalog Retrieval (LLM returns IDs only) |
-| Delivery Terms & Speed | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article |
-| Payment Methods | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article |
-| Warranty Terms | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article |
-| Return & Exchange Rules | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article |
-| Appliance Connection Services | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article |
-| Legal Operator Details | `LEGAL_*` Env / Site Settings | Dynamic (Env) | Direct Grounding / Deterministic Fast-Path |
+| Information Item              | Current Location                         | Storage Type            | Recommended Handling for AI Assistant           |
+| ----------------------------- | ---------------------------------------- | ----------------------- | ----------------------------------------------- |
+| Store Address & Hours         | `site_settings` table / `site.ts`        | Dynamic (DB/Env)        | Direct Grounding / Deterministic Fast-Path      |
+| Product Prices & Stock        | `products` table                         | Dynamic (DB)            | Server Catalog Retrieval (LLM returns IDs only) |
+| Delivery Terms & Speed        | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article                             |
+| Payment Methods               | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article                             |
+| Warranty Terms                | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article                             |
+| Return & Exchange Rules       | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article                             |
+| Appliance Connection Services | `assistant_knowledge` / `demo-knowledge` | Semi-Static (Admin CMS) | Grounded KB Article                             |
+| Legal Operator Details        | `LEGAL_*` Env / Site Settings            | Dynamic (Env)           | Direct Grounding / Deterministic Fast-Path      |
 
 ---
 
@@ -438,7 +452,7 @@ The project contains 6 bilingual knowledge base articles, stored as rows in `pub
    - In `supabase/migrations/20260806081344_stage_8_initial_site_settings.sql`, `open_time` is set to `08:00–16:00` and `closed_day` is `Понедельник — выходной`.
    - In `src/config/site.ts`, `openTime` is `08:00–16:00`.
    - However, in older documentation notes (`docs/stage-3.md`), sample contact text referenced `09:00–18:00`.
-   - *Resolution for Assistant*: Code uses `site_settings` / `src/config/site.ts` (`08:00–16:00`, Tuesday-Sunday).
+   - _Resolution for Assistant_: Code uses `site_settings` / `src/config/site.ts` (`08:00–16:00`, Tuesday-Sunday).
 
 2. **`CONFLICT`: DB Table `assistant_knowledge` vs `demoAssistantKnowledge`**
    - In local/demo mode (without Supabase service key), `demoAssistantKnowledge` fixture is used.

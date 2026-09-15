@@ -48,7 +48,7 @@ export function LanguageSwitcher({
 
   return (
     <nav aria-label={label}>
-      <ul className="flex h-[1.875rem] w-fit items-center rounded-[100vmax] border border-stone-300 bg-white shadow-sm">
+      <ul className="flex h-9 w-fit items-center rounded-[100vmax] border border-stone-300 bg-white p-0.5 shadow-sm">
         {locales.map((locale) => {
           const isCurrent = locale === currentLocale;
 
@@ -57,7 +57,7 @@ export function LanguageSwitcher({
               <Link
                 aria-current={isCurrent ? "page" : undefined}
                 aria-label={`${label}: ${languageFullNames[locale]}`}
-                className={`relative flex size-[1.625rem] items-center justify-center rounded-[100vmax] border text-xs font-black transition-colors focus-visible:z-10 ${
+                className={`relative flex size-8 items-center justify-center rounded-[100vmax] border text-xs font-black transition-colors focus-visible:z-10 ${
                   isCurrent
                     ? "border-stone-950 bg-stone-950 text-white shadow-sm"
                     : "border-transparent bg-white text-stone-950"

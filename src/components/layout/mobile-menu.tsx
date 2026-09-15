@@ -184,7 +184,7 @@ export function MobileMenu({
         />
         <a
           aria-label={dictionary.actions.call}
-          className="icon-button"
+          className="icon-button h-9 w-9 min-h-9"
           href={settings.phoneHref}
         >
           <svg
@@ -206,7 +206,7 @@ export function MobileMenu({
           ref={trigger}
           aria-expanded={open}
           aria-label={dictionary.actions.menu}
-          className="icon-button"
+          className="icon-button h-9 w-9 min-h-9"
           type="button"
           onClick={openMenu}
         >
