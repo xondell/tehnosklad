@@ -9,6 +9,9 @@ import {
 } from "@/features/admin/mapper";
 import type {
   AdminAssistantKnowledge,
+  AdminAssistantLogEntry,
+  AdminAssistantLogReport,
+  AdminAssistantLogShare,
   AdminAttribute,
   AdminAttributeGroup,
   AdminCategory,
@@ -384,34 +387,54 @@ export async function getAdminProduct(id: string) {
 
 export async function getAdminDashboard(): Promise<AdminDashboard> {
   const supabase = await context();
-  const [products, active, out, categories, leads, telegram, recent] =
-    await Promise.all([
-      supabase.from("products").select("id", { count: "exact", head: true }),
-      supabase
-        .from("products")
-        .select("id", { count: "exact", head: true })
-        .eq("is_published", true)
-        .is("archived_at", null),
-      supabase
-        .from("products")
-        .select("id", { count: "exact", head: true })
-        .eq("availability", "out_of_stock")
-        .is("archived_at", null),
-      supabase
-        .from("categories")
-        .select("id", { count: "exact", head: true })
-        .is("archived_at", null),
-      supabase
-        .from("leads")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "new"),
-      supabase
-        .from("lead_telegram_deliveries")
-        .select("id", { count: "exact", head: true })
-        .in("state", ["permanent_failure", "manual_review"]),
-      listAdminLeads({ limit: 5 }),
-    ]);
-  for (const result of [products, active, out, categories, leads, telegram]) {
+  const [
+    products,
+    active,
+    out,
+    categories,
+    leads,
+    telegram,
+    knowledge,
+    recent,
+  ] = await Promise.all([
+    supabase.from("products").select("id", { count: "exact", head: true }),
+    supabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("is_published", true)
+      .is("archived_at", null),
+    supabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("availability", "out_of_stock")
+      .is("archived_at", null),
+    supabase
+      .from("categories")
+      .select("id", { count: "exact", head: true })
+      .is("archived_at", null),
+    supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "new"),
+    supabase
+      .from("lead_telegram_deliveries")
+      .select("id", { count: "exact", head: true })
+      .in("state", ["permanent_failure", "manual_review"]),
+    supabase
+      .from("assistant_knowledge")
+      .select("id", { count: "exact", head: true })
+      .eq("is_active", true),
+    listAdminLeads({ limit: 5 }),
+  ]);
+  for (const result of [
+    products,
+    active,
+    out,
+    categories,
+    leads,
+    telegram,
+    knowledge,
+  ]) {
     if (result.error) fail("dashboard", result.error);
   }
   return {
@@ -421,6 +444,7 @@ export async function getAdminDashboard(): Promise<AdminDashboard> {
     categoriesTotal: categories.count ?? 0,
     newLeads: leads.count ?? 0,
     telegramErrors: telegram.count ?? 0,
+    knowledgeActive: knowledge.count ?? 0,
     recentLeads: recent,
   };
 }
@@ -663,6 +687,91 @@ export async function getAdminAssistantKnowledge(id: string) {
       (article) => article.id === id,
     ) ?? null
   );
+}
+
+/*
+ * Telemetry rows are small and already indexed by `created_at desc`, so the
+ * period summary is aggregated in the server component instead of a dedicated
+ * RPC. The cap keeps a busy period from loading an unbounded result set; the
+ * exact period total is counted separately so the page can say when the
+ * breakdown covers only the most recent requests.
+ */
+const ASSISTANT_LOG_SAMPLE_LIMIT = 5000;
+const ASSISTANT_LOG_RECENT_LIMIT = 20;
+
+function assistantLogShares(
+  entries: AdminAssistantLogEntry[],
+  pick: (entry: AdminAssistantLogEntry) => string,
+): AdminAssistantLogShare[] {
+  const counts = new Map<string, number>();
+  for (const entry of entries) {
+    const key = pick(entry);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([key, count]) => ({
+      key,
+      count,
+      share: entries.length ? count / entries.length : 0,
+    }))
+    .sort(
+      (left, right) =>
+        right.count - left.count || left.key.localeCompare(right.key),
+    );
+}
+
+export async function getAdminAssistantLogReport(
+  days: number,
+): Promise<AdminAssistantLogReport> {
+  const supabase = await context();
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const [totalResult, sampleResult] = await Promise.all([
+    supabase
+      .from("assistant_logs")
+      .select("id", { count: "exact", head: true })
+      .gte("created_at", since),
+    supabase
+      .from("assistant_logs")
+      .select(
+        "id,request_id,locale,outcome,provider,duration_bucket,fallback_used,reference_count,created_at",
+      )
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(ASSISTANT_LOG_SAMPLE_LIMIT),
+  ]);
+  if (totalResult.error) fail("assistant-logs", totalResult.error);
+  if (sampleResult.error) fail("assistant-logs", sampleResult.error);
+  const entries = (sampleResult.data ?? []).map((row) => ({
+    id: row.id,
+    requestId: row.request_id,
+    locale: row.locale,
+    outcome: row.outcome,
+    provider: row.provider,
+    durationBucket: row.duration_bucket,
+    fallbackUsed: row.fallback_used,
+    referenceCount: row.reference_count,
+    createdAt: row.created_at,
+  })) as AdminAssistantLogEntry[];
+  const fallbackCount = entries.filter((entry) => entry.fallbackUsed).length;
+  const references = entries.reduce(
+    (total, entry) => total + entry.referenceCount,
+    0,
+  );
+  return {
+    days,
+    since,
+    total: totalResult.count ?? entries.length,
+    analyzed: entries.length,
+    truncated: entries.length === ASSISTANT_LOG_SAMPLE_LIMIT,
+    fallbackCount,
+    fallbackShare: entries.length ? fallbackCount / entries.length : 0,
+    averageReferences: entries.length ? references / entries.length : 0,
+    outcomes: assistantLogShares(entries, (entry) => entry.outcome),
+    providers: assistantLogShares(entries, (entry) => entry.provider),
+    durations: assistantLogShares(entries, (entry) => entry.durationBucket),
+    locales: assistantLogShares(entries, (entry) => entry.locale),
+    recent: entries.slice(0, ASSISTANT_LOG_RECENT_LIMIT),
+  };
 }
 
 export async function callAdminRpc(
