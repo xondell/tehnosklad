@@ -11,6 +11,7 @@ const items = [
   ["/admin/attributes", "Характеристики", "⚙"],
   ["/admin/products", "Товары", "□"],
   ["/admin/leads", "Заявки", "✉"],
+  ["/admin/assistant-knowledge", "База знаний помощника", "✦"],
   ["/admin/settings", "Публичные настройки", "☷"],
   ["/admin/media/orphans", "Проверка файлов", "⌕"],
 ] as const;

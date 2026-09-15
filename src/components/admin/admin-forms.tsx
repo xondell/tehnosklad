@@ -5,6 +5,7 @@ import {
 import { IntegerInput, MoneyInput } from "@/components/admin/numeric-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
 import {
+  saveAssistantKnowledgeAction,
   saveAttributeAction,
   saveAttributeGroupAction,
   saveCategoryAction,
@@ -12,6 +13,7 @@ import {
   saveProductAttributesAction,
 } from "@/features/admin/actions";
 import type {
+  AdminAssistantKnowledge,
   AdminAttribute,
   AdminAttributeGroup,
   AdminCategory,
@@ -728,6 +730,72 @@ export function ProductAttributesForm({
       )}
       <div className="admin-form-actions">
         <SubmitButton>Сохранить характеристики</SubmitButton>
+      </div>
+    </form>
+  );
+}
+
+export function AssistantKnowledgeForm({
+  article,
+}: {
+  article?: AdminAssistantKnowledge;
+}) {
+  return (
+    <form
+      action={saveAssistantKnowledgeAction}
+      className="admin-card admin-form-grid admin-form-grid--2"
+    >
+      {article ? <input name="id" type="hidden" value={article.id} /> : null}
+      <label className="field-label">
+        Язык
+        <select
+          className="field"
+          defaultValue={article?.locale ?? "ru"}
+          name="locale"
+        >
+          <option value="ru">Русский</option>
+          <option value="ro">Română</option>
+        </select>
+      </label>
+      <label className="flex min-h-11 items-center gap-3 font-bold">
+        <input
+          defaultChecked={article?.isActive ?? true}
+          name="is_active"
+          type="checkbox"
+        />{" "}
+        Активна
+      </label>
+      <label className="field-label sm:col-span-2">
+        <span>
+          Заголовок{" "}
+          <span className="text-xs font-normal text-stone-500">
+            (по нему помощник находит статью, например «Доставка»)
+          </span>
+        </span>
+        <CountedInput
+          defaultValue={article?.title}
+          maxLength={160}
+          name="title"
+          required
+        />
+      </label>
+      <label className="field-label sm:col-span-2">
+        <span>
+          Текст ответа{" "}
+          <span className="text-xs font-normal text-stone-500">
+            (помощник отвечает только тем, что здесь написано)
+          </span>
+        </span>
+        <CountedTextarea
+          defaultValue={article?.content}
+          maxLength={5000}
+          name="content"
+          required
+          rows={8}
+        />
+      </label>
+      <div className="admin-form-actions sm:col-span-2">
+        <SubmitButton>Сохранить статью</SubmitButton>
       </div>
     </form>
   );

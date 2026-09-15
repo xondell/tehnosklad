@@ -57,4 +57,41 @@ test.describe("catalog assistant widget", () => {
     expect(limits.minHeight).toBe(40);
     expect(limits.maxHeight).toBe(287);
   });
+
+  test("answers a catalog question with grounded product cards", async ({
+    page,
+  }) => {
+    const dialog = page.getByRole("dialog", { name: "Помощник Техносклада" });
+
+    await dialog
+      .getByRole("textbox", { name: "Например: нужен холодильник" })
+      .fill("Какие холодильники есть в наличии?");
+    await dialog.getByRole("button", { name: "Спросить" }).click();
+
+    await expect(
+      dialog.getByText("Я нашёл подходящие товары в каталоге", {
+        exact: false,
+      }),
+    ).toBeVisible();
+    // Cards are assembled server-side from catalog DTOs, never from model text.
+    await expect(
+      dialog.locator('a[href^="/ru/product/"]').first(),
+    ).toBeVisible();
+    await expect(
+      dialog.getByText("Помощник сейчас недоступен", { exact: false }),
+    ).toBeHidden();
+  });
+
+  test("answers a store question from published settings", async ({ page }) => {
+    const dialog = page.getByRole("dialog", { name: "Помощник Техносклада" });
+
+    await dialog
+      .getByRole("textbox", { name: "Например: нужен холодильник" })
+      .fill("Где находится магазин?");
+    await dialog.getByRole("button", { name: "Спросить" }).click();
+
+    await expect(
+      dialog.getByText("Магазин находится по адресу", { exact: false }),
+    ).toBeVisible();
+  });
 });

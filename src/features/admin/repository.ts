@@ -8,6 +8,7 @@ import {
   type AdminTranslationRow,
 } from "@/features/admin/mapper";
 import type {
+  AdminAssistantKnowledge,
   AdminAttribute,
   AdminAttributeGroup,
   AdminCategory,
@@ -634,6 +635,34 @@ export async function scanAdminProductOrphans(): Promise<AdminOrphanEntry[]> {
       });
   }
   return entries.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+export async function listAdminAssistantKnowledge(): Promise<
+  AdminAssistantKnowledge[]
+> {
+  const supabase = await context();
+  const { data, error } = await supabase
+    .from("assistant_knowledge")
+    .select("id,locale,title,content,is_active,updated_at")
+    .order("locale")
+    .order("updated_at", { ascending: false });
+  if (error) fail("assistant-knowledge", error);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    locale: row.locale,
+    title: row.title,
+    content: row.content,
+    isActive: row.is_active,
+    updatedAt: row.updated_at,
+  })) as AdminAssistantKnowledge[];
+}
+
+export async function getAdminAssistantKnowledge(id: string) {
+  return (
+    (await listAdminAssistantKnowledge()).find(
+      (article) => article.id === id,
+    ) ?? null
+  );
 }
 
 export async function callAdminRpc(

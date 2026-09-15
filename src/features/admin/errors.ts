@@ -54,6 +54,11 @@ const knownMessages: Array<[string, string]> = [
   ],
   ["duplicate key", "Такой slug, код или SKU уже используется."],
   ["site_setting_not_allowed", "Эту настройку редактировать нельзя."],
+  [
+    "assistant_knowledge_incomplete",
+    "Заполните заголовок и текст статьи базы знаний.",
+  ],
+  ["assistant_knowledge_not_found", "Статья базы знаний не найдена."],
 ];
 
 export function sanitizeAdminError(error: unknown): AdminDataError {

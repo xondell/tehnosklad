@@ -20,6 +20,17 @@ export function getSupabaseServiceRoleEnvironment() {
   };
 }
 
+/*
+ * Probe instead of require: assistant telemetry, knowledge and the durable
+ * rate limit are optional capabilities, not preconditions for an answer.
+ */
+export function hasSupabaseServiceRoleEnvironment(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
+  );
+}
+
 export function getLeadSecurityEnvironment() {
   const environment = requireEnvironmentVariables({
     LEAD_IP_HASH_SECRET: process.env.LEAD_IP_HASH_SECRET,
@@ -92,8 +103,20 @@ export function getAssistantEnvironment(): AssistantEnvironment {
 }
 
 export function getAssistantRateLimitSecret(): string {
+  const secret = getOptionalAssistantRateLimitSecret();
+  if (!secret)
+    throw new EnvironmentConfigurationError(["AI_RATE_LIMIT_SECRET"]);
+  return secret;
+}
+
+/*
+ * The assistant must also answer in demo/local setups that have no secret at
+ * all; an invalid secret stays a configuration error.
+ */
+export function getOptionalAssistantRateLimitSecret(): string | null {
   const secret = process.env.AI_RATE_LIMIT_SECRET?.trim();
-  if (!secret || secret.length < 32) {
+  if (!secret) return null;
+  if (secret.length < 32) {
     throw new EnvironmentConfigurationError(["AI_RATE_LIMIT_SECRET"]);
   }
   return secret;

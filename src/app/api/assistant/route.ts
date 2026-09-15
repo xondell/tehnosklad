@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { answerAssistant } from "@/features/assistant/service";
-import { assistantSubjectHash } from "@/features/assistant/security";
+import {
+  assistantRateLimitSubject,
+  consumeAssistantRateLimit,
+} from "@/features/assistant/rate-limit";
 import { validateAssistantPayload } from "@/features/assistant/validation";
 import { isAllowedMutationOrigin } from "@/lib/request-origin";
-import { getAssistantRateLimitSecret } from "@/lib/env/server";
-import { createServiceRoleSupabaseClient } from "@/lib/supabase/service";
 const MAX_BODY_BYTES = 8 * 1024;
 function json(body: object, status: number, headers?: HeadersInit) {
   return NextResponse.json(body, {
@@ -33,16 +34,12 @@ export async function POST(request: Request) {
   const validation = validateAssistantPayload(body);
   if (!validation.ok) return json({ ok: false, code: "validation_error" }, 422);
   try {
-    const subjectHash = assistantSubjectHash(
-      request.headers,
-      getAssistantRateLimitSecret(),
-    );
-    const { data, error } = await createServiceRoleSupabaseClient().rpc(
-      "consume_assistant_rate_limit",
-      { subject_hash: subjectHash },
-    );
-    if (error) return json({ ok: false, code: "temporary_error" }, 503);
-    if (!data)
+    const subjectHash = assistantRateLimitSubject(request.headers);
+    if (!subjectHash) return json({ ok: false, code: "temporary_error" }, 503);
+    const decision = await consumeAssistantRateLimit(subjectHash);
+    if (decision === "unavailable")
+      return json({ ok: false, code: "temporary_error" }, 503);
+    if (decision === "limited")
       return json(
         { ok: false, code: "rate_limited", retryAfterSeconds: 60 },
         429,

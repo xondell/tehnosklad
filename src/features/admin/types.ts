@@ -182,3 +182,12 @@ export type AdminOrphanEntry = {
   path: string;
   state: "orphan_object" | "missing_object" | "pending_metadata";
 };
+
+export type AdminAssistantKnowledge = {
+  id: string;
+  locale: "ru" | "ro";
+  title: string;
+  content: string;
+  isActive: boolean;
+  updatedAt: string;
+};

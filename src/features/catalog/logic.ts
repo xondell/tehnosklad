@@ -1,3 +1,4 @@
+import { matchesSearchQuery } from "@/features/catalog/search-text";
 import type { CatalogFilters, CatalogProduct } from "@/features/catalog/types";
 import type { Locale } from "@/i18n/config";
 
@@ -37,16 +38,20 @@ export function filterProducts(
   filters: CatalogFilters,
   locale: Locale,
 ): CatalogProduct[] {
-  const query = filters.query.trim().toLocaleLowerCase(locale);
+  const query = filters.query.trim();
   const minMinor = Number(filters.minPrice) * 100;
   const maxMinor = Number(filters.maxPrice) * 100;
   const result = products.filter((product) => {
-    const haystack =
-      `${product.name} ${product.brand} ${product.model}`.toLocaleLowerCase(
-        locale,
-      );
+    // Mirrors the searchable haystack of `search_public_catalog_product_ids`.
+    const haystack = [
+      product.name,
+      product.brand,
+      product.model,
+      product.sku,
+      product.category.name,
+    ].join(" ");
     return (
-      (!query || haystack.includes(query)) &&
+      (!query || matchesSearchQuery(haystack, query)) &&
       (filters.categoryId === "all" ||
         product.category.id === filters.categoryId) &&
       (filters.brand === "all" || product.brand === filters.brand) &&

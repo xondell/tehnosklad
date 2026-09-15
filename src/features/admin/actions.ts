@@ -25,6 +25,7 @@ import {
   createCategoryImagePath,
   createProductImagePath,
   integerValue,
+  localeValue,
   moneyToMinor,
   optionalMoneyToMinor,
   optionalText,
@@ -735,4 +736,49 @@ export async function saveSiteSettingAction(
     error = caught;
   }
   redirect(destination("/admin/settings", error));
+}
+
+export async function saveAssistantKnowledgeAction(
+  formData: FormData,
+): Promise<never> {
+  await requireAdmin();
+  const id = optionalUuidValue(formData.get("id"), "id");
+  let target = id
+    ? `/admin/assistant-knowledge/${id}`
+    : "/admin/assistant-knowledge/new";
+  let error: unknown;
+  try {
+    const result = await callAdminRpc("admin_save_assistant_knowledge", {
+      p_id: id,
+      p_locale: localeValue(formData, "locale"),
+      p_title: requiredText(formData, "title", 1, 160),
+      p_content: requiredText(formData, "content", 1, 5000),
+      p_is_active: checkboxValue(formData, "is_active"),
+    });
+    target = `/admin/assistant-knowledge/${String(result.data)}`;
+    revalidatePath("/admin/assistant-knowledge");
+  } catch (caught) {
+    error = caught;
+  }
+  redirect(destination(target, error));
+}
+
+export async function deleteAssistantKnowledgeAction(
+  formData: FormData,
+): Promise<never> {
+  await requireAdmin();
+  const id = uuidValue(formData.get("id"), "id");
+  let error: unknown;
+  try {
+    await callAdminRpc("admin_delete_assistant_knowledge", { p_id: id });
+    revalidatePath("/admin/assistant-knowledge");
+  } catch (caught) {
+    error = caught;
+  }
+  redirect(
+    destination(
+      error ? `/admin/assistant-knowledge/${id}` : "/admin/assistant-knowledge",
+      error,
+    ),
+  );
 }

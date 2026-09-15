@@ -1,7 +1,7 @@
 import "server-only";
 import {
   getPublicSiteSettings,
-  searchPublishedProducts,
+  getPublishedCategories,
 } from "@/features/catalog/data";
 import type {
   CatalogProduct,
@@ -14,32 +14,19 @@ import type {
 } from "@/features/assistant/types";
 import { answerDirectQuestion } from "@/features/assistant/direct-answer";
 import { searchAssistantKnowledge } from "@/features/assistant/knowledge";
+import {
+  MAX_ASSISTANT_PRODUCTS,
+  retrieveAssistantProducts,
+  type AssistantSearchIntent,
+} from "@/features/assistant/retrieval";
 import { siteConfig } from "@/config/site";
 import {
   getLegalOperatorConfig,
   type LegalOperatorConfig,
 } from "@/lib/env/legal";
 
-const MAX_PRODUCTS = 5;
-function terms(value: string) {
-  return (
-    value
-      .match(/[\p{L}\p{N}-]{2,}/gu)
-      ?.slice(-12)
-      .join(" ") ?? value
-  );
-}
-
-function catalogQuestion(request: AssistantRequest) {
-  const recentUserQuestions = request.history
-    .filter((message) => message.role === "user")
-    .slice(-2)
-    .map((message) => message.content);
-  return terms([...recentUserQuestions, request.question].join(" ")).slice(
-    0,
-    100,
-  );
-}
+const MAX_PRODUCTS = MAX_ASSISTANT_PRODUCTS;
+const MAX_CONTEXT_CATEGORIES = 30;
 
 function publicContext(
   settings: PublicSiteSettings,
@@ -65,6 +52,21 @@ function publicContext(
   };
 }
 
+/*
+ * The resolved search is part of the grounding: it lets the provider say what
+ * the catalog was actually filtered by instead of guessing.
+ */
+function searchContext(intent: AssistantSearchIntent) {
+  return {
+    category: intent.categoryName,
+    brand: intent.brand,
+    availability: intent.availability,
+    minPriceMinor: intent.minPriceMinor,
+    maxPriceMinor: intent.maxPriceMinor,
+    keywords: intent.keywords,
+  };
+}
+
 export async function buildAssistantContext(request: AssistantRequest) {
   const settings = await getPublicSiteSettings(request.locale);
   const operator = getLegalOperatorConfig();
@@ -83,25 +85,21 @@ export async function buildAssistantContext(request: AssistantRequest) {
       settings,
       directAnswer: direct.answer,
       directIntent: direct.intent,
-      context: JSON.stringify({ ...baseContext, knowledge: [], catalog: [] }),
+      context: JSON.stringify({
+        ...baseContext,
+        knowledge: [],
+        categories: [],
+        catalog: [],
+      }),
     };
   }
 
-  const [result, knowledge] = await Promise.all([
-    searchPublishedProducts(request.locale, undefined, {
-      query: catalogQuestion(request),
-      brand: null,
-      availability: null,
-      minPriceMinor: null,
-      maxPriceMinor: null,
-      attributes: {},
-      sort: "popular",
-      page: 1,
-      pageSize: MAX_PRODUCTS,
-    }),
+  const [retrieval, knowledge, categories] = await Promise.all([
+    retrieveAssistantProducts(request),
     searchAssistantKnowledge(request.locale, request.question),
+    getPublishedCategories(request.locale),
   ]);
-  const products = result.products.slice(0, MAX_PRODUCTS);
+  const products = retrieval.products.slice(0, MAX_PRODUCTS);
   const references = products.map((product) =>
     referenceFor(product, request.locale),
   );
@@ -134,6 +132,12 @@ export async function buildAssistantContext(request: AssistantRequest) {
         content,
         source,
       })),
+      // Published category names let the provider offer a narrower question
+      // instead of inventing product groups the store does not carry.
+      categories: categories
+        .slice(0, MAX_CONTEXT_CATEGORIES)
+        .map((category) => category.name),
+      search: searchContext(retrieval.intent),
       catalog,
     }),
   };

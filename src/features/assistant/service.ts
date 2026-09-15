@@ -13,7 +13,10 @@ import type {
   AssistantRequest,
   AssistantResponse,
 } from "@/features/assistant/types";
-import { getAssistantEnvironment } from "@/lib/env/server";
+import {
+  getAssistantEnvironment,
+  hasSupabaseServiceRoleEnvironment,
+} from "@/lib/env/server";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service";
 
 function durationBucket(start: number) {
@@ -39,6 +42,8 @@ function recordTelemetry(input: {
     referenceCount: input.referenceCount,
   };
   console.info("Assistant request", telemetry);
+  // Demo and local setups have no telemetry sink; the console line is enough.
+  if (!hasSupabaseServiceRoleEnvironment()) return;
   // Best effort only: the assistant remains available if telemetry is down.
   void (async () => {
     const { error } = await createServiceRoleSupabaseClient()
