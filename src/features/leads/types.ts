@@ -8,6 +8,7 @@ export const leadSources = [
   "category_product_card",
   "product_page",
   "similar_product_card",
+  "assistant",
 ] as const;
 
 export type LeadSource = (typeof leadSources)[number];

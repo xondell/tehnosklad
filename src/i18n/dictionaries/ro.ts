@@ -168,6 +168,9 @@ export const ro: Dictionary = {
       "Răspunsul este generat automat. Verificați disponibilitatea și condițiile la magazin.",
     unavailable:
       "Asistentul nu este disponibil acum. Deschideți catalogul sau sunați magazinul.",
+    rateLimited: "Prea multe întrebări la rând. Încercați puțin mai târziu.",
+    rateLimitedSeconds:
+      "Prea multe întrebări la rând. Reîncercați peste {seconds} s.",
     fallback: "Sunt afișate rezultate din căutarea în catalog.",
     product: "Deschide produsul",
     welcome: "Bună! Vă ajut să găsiți tehnică din catalogul actual.",
