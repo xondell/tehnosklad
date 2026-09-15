@@ -149,13 +149,6 @@ export function MobileMenu({
               <div onClick={close}>
                 <PrimaryNav locale={locale} dictionary={dictionary} mobile />
               </div>
-              <div className="mt-5">
-                <LanguageSwitcher
-                  currentLocale={locale}
-                  label={dictionary.languageSwitcherLabel}
-                  alternateHref={alternateHref}
-                />
-              </div>
               <a
                 className="button-primary mt-5 gap-1.5"
                 href={settings.phoneHref}
@@ -184,6 +177,11 @@ export function MobileMenu({
   return (
     <>
       <div className="flex items-center gap-1.5 lg:hidden">
+        <LanguageSwitcher
+          currentLocale={locale}
+          label={dictionary.languageSwitcherLabel}
+          alternateHref={alternateHref}
+        />
         <a
           aria-label={dictionary.actions.call}
           className="icon-button"
