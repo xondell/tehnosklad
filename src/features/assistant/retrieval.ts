@@ -3,6 +3,7 @@ import "server-only";
 import {
   getCatalogFacets,
   getPublishedCategories,
+  getPublishedProducts,
   searchPublishedProducts,
 } from "@/features/catalog/data";
 import {
@@ -11,6 +12,7 @@ import {
   searchTokens,
 } from "@/features/catalog/search-text";
 import type {
+  CatalogCategory,
   CatalogProduct,
   CatalogSort,
   StockStatus,
@@ -41,6 +43,7 @@ export type AssistantSearchIntent = {
 export type AssistantRetrieval = {
   intent: AssistantSearchIntent;
   products: CatalogProduct[];
+  currentProduct: CatalogProduct | null;
 };
 
 /*
@@ -444,17 +447,64 @@ export function buildAssistantProbes(intent: AssistantSearchIntent): Probe[] {
   );
 }
 
+/*
+ * The page the widget sits on is the weakest category signal: a category named
+ * in the question wins, then the one inherited from the conversation, and only
+ * a question that resolved to no category at all falls back to the page.
+ */
+export function applyPageScope(
+  intent: AssistantSearchIntent,
+  category: { id: string; name: string } | null,
+): AssistantSearchIntent {
+  if (!category || intent.categoryId) return intent;
+  return { ...intent, categoryId: category.id, categoryName: category.name };
+}
+
+function pageCategory(
+  request: AssistantRequest,
+  categories: CatalogCategory[],
+): CatalogCategory | null {
+  if (request.page?.type !== "category") return null;
+  const id = request.page.id;
+  return categories.find((category) => category.id === id) ?? null;
+}
+
+/*
+ * The product of a product page is grounded alongside the search results, so a
+ * question like "does it fit?" has the viewed product in context.
+ */
+async function pageProduct(
+  request: AssistantRequest,
+): Promise<CatalogProduct | null> {
+  if (request.page?.type !== "product") return null;
+  const id = request.page.id;
+  try {
+    const products = await getPublishedProducts(request.locale);
+    return products.find((product) => product.id === id) ?? null;
+  } catch {
+    // Page context is an optimization; the assistant still answers without it.
+    console.error("Assistant page product unavailable", {
+      code: "assistant_page_product_unavailable",
+    });
+    return null;
+  }
+}
+
 export async function retrieveAssistantProducts(
   request: AssistantRequest,
 ): Promise<AssistantRetrieval> {
-  const [categories, facets] = await Promise.all([
+  const [categories, facets, currentProduct] = await Promise.all([
     getPublishedCategories(request.locale),
     getCatalogFacets(request.locale),
+    pageProduct(request),
   ]);
-  const intent = buildAssistantIntent(request, {
-    categories: categories.map(({ id, name }) => ({ id, name })),
-    brands: facets.brands,
-  });
+  const intent = applyPageScope(
+    buildAssistantIntent(request, {
+      categories: categories.map(({ id, name }) => ({ id, name })),
+      brands: facets.brands,
+    }),
+    currentProduct?.category ?? pageCategory(request, categories),
+  );
   for (const probe of buildAssistantProbes(intent)) {
     const result = await searchPublishedProducts(
       request.locale,
@@ -475,7 +525,8 @@ export async function retrieveAssistantProducts(
       return {
         intent,
         products: result.products.slice(0, MAX_ASSISTANT_PRODUCTS),
+        currentProduct,
       };
   }
-  return { intent, products: [] };
+  return { intent, products: [], currentProduct };
 }

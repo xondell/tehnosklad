@@ -6,6 +6,7 @@ import {
 } from "@/features/assistant/grounding";
 import { fallbackAnswer } from "@/features/assistant/fallback";
 import {
+  AnthropicProvider,
   DeterministicProvider,
   OpenAiCompatibleProvider,
 } from "@/features/assistant/provider";
@@ -95,7 +96,9 @@ export async function answerAssistant(
   const provider =
     environment.provider === "openai-compatible"
       ? new OpenAiCompatibleProvider(environment)
-      : new DeterministicProvider();
+      : environment.provider === "anthropic"
+        ? new AnthropicProvider(environment)
+        : new DeterministicProvider();
   const result = await provider.generateGroundedAnswer({
     locale: request.locale,
     question: request.question,
@@ -103,9 +106,18 @@ export async function answerAssistant(
     context: grounding.context,
   });
   const fallbackUsed = !result.ok;
-  const references = result.ok
+  /*
+   * A successful answer that cites no known product still shows the cards that
+   * retrieval found: the provider only selects ids, it never decides whether
+   * the grounded catalog results are worth showing.
+   */
+  const citedReferences = result.ok
     ? referencesForIds(grounding.products, request.locale, result.productIds)
-    : grounding.references;
+    : [];
+  const references =
+    result.ok && citedReferences.length
+      ? citedReferences
+      : grounding.references;
   const answer = result.ok
     ? result.answer
     : fallbackAnswer(
@@ -117,7 +129,15 @@ export async function answerAssistant(
   recordTelemetry({
     requestId,
     locale: request.locale,
-    outcome: result.ok ? "provider_success" : result.code,
+    /*
+     * The offline default is a configured mode, not an incident: it gets its
+     * own outcome so provider incidents stay visible in `assistant_logs`.
+     */
+    outcome: result.ok
+      ? "provider_success"
+      : environment.provider === "fallback"
+        ? "deterministic_fallback"
+        : result.code,
     provider: environment.provider,
     started,
     fallbackUsed,
