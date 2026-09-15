@@ -76,6 +76,7 @@ begin
       ('product_images_product_id_fkey'),
       ('product_slug_routes_product_id_fkey'),
       ('product_translations_product_id_fkey'),
+      ('product_views_product_id_fkey'),
       ('products_category_id_fkey'),
       ('profiles_id_fkey'),
       ('user_roles_user_id_fkey')
@@ -102,15 +103,33 @@ begin
     raise exception 'RLS is disabled on a public table';
   end if;
 
-  if (
+  -- Every public table is admin-reachable through `admin_all`, except the
+  -- append-only `product_views` counter: it is written by a security definer
+  -- RPC and admins only read it, so it carries a named select-only policy.
+  if exists (
+    select 1
+    from unnest(expected_tables) as expected(table_name)
+    where expected.table_name <> 'product_views'
+      and not exists (
+        select 1 from pg_policies
+        where schemaname = 'public'
+          and tablename = expected.table_name
+          and policyname = 'admin_all'
+      )
+  ) or (
     select count(*) from pg_policies
     where schemaname = 'public' and policyname = 'admin_all'
-  ) <> cardinality(expected_tables) then
+  ) <> cardinality(expected_tables) - 1 or not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'product_views'
+      and policyname = 'Admins can view product views' and cmd = 'SELECT'
+      and roles = array['authenticated']::name[]
+  ) then
     raise exception 'admin policy inventory mismatch';
   end if;
   if (
     select count(*) from pg_policies where schemaname = 'public'
-  ) <> 46 then
+  ) <> 47 then
     raise exception 'public policy inventory mismatch';
   end if;
   if exists (
@@ -206,8 +225,12 @@ begin
     raise exception 'Storage policy inventory mismatch';
   end if;
 
-  if (select count(*) from public.category_slug_routes) <> 6
-    or (select count(*) from public.product_slug_routes) <> 24
+  -- Seed size changes with the catalog, so the backfill is checked
+  -- structurally: one current route per translated locale, nothing stale.
+  if (select count(*) from public.category_slug_routes)
+      <> (select count(*) from public.category_translations)
+    or (select count(*) from public.product_slug_routes)
+      <> (select count(*) from public.product_translations)
     or exists (
       select 1 from public.category_slug_routes where not is_current
     )
@@ -256,7 +279,7 @@ begin
     'execute'
   ) or not has_function_privilege(
     'authenticated',
-    'public.admin_save_product(uuid,uuid,text,text,text,bigint,bigint,public.availability_status,integer,boolean,boolean,boolean,integer,jsonb,jsonb)',
+    'public.admin_save_product(uuid,uuid,text,text,text,bigint,bigint,public.availability_status,integer,boolean,boolean,integer,jsonb,jsonb)',
     'execute'
   ) or not has_function_privilege(
     'authenticated',
@@ -282,13 +305,25 @@ begin
     raise exception 'Stage 6 function grants mismatch';
   end if;
 
+  -- 24 admin RPCs, one signature each. An accidental overload is an error in
+  -- itself: PostgREST resolves overloads by argument names, so a leftover
+  -- signature stays callable with the grants of the version it replaced.
   if (
     select count(*)
     from pg_proc as function_row
     join pg_namespace as namespace on namespace.oid = function_row.pronamespace
     where namespace.nspname = 'public'
       and function_row.proname like 'admin\_%' escape '\'
-  ) <> 22 or exists (
+  ) <> 24 or (
+    select count(distinct function_row.proname)
+    from pg_proc as function_row
+    join pg_namespace as namespace on namespace.oid = function_row.pronamespace
+    where namespace.nspname = 'public'
+      and function_row.proname like 'admin\_%' escape '\'
+  ) <> 24 then
+    raise exception 'Stage 6 admin RPC inventory mismatch';
+  end if;
+  if exists (
     select 1
     from pg_proc as function_row
     join pg_namespace as namespace on namespace.oid = function_row.pronamespace
@@ -535,6 +570,28 @@ begin
 end;
 $$;
 
+-- The seed ships categories, products and translations only, so the attribute
+-- probes below build their own group and attributes. Everything is rolled back
+-- together with the surrounding transaction.
+insert into public.attribute_groups (id, code, sort_order)
+values ('92000000-0000-4000-8000-000000000030', 'verification_group', 995);
+insert into public.attribute_group_translations (group_id, locale, name)
+values
+  ('92000000-0000-4000-8000-000000000030', 'ru', 'Проверочная группа'),
+  ('92000000-0000-4000-8000-000000000030', 'ro', 'Grup de verificare');
+
+insert into public.attributes (
+  id, group_id, code, data_type, is_filterable, sort_order
+) values (
+  '92000000-0000-4000-8000-000000000031',
+  '92000000-0000-4000-8000-000000000030',
+  'verification_text', 'text', false, 994
+);
+insert into public.attribute_translations (attribute_id, locale, name)
+values
+  ('92000000-0000-4000-8000-000000000031', 'ru', 'Текст'),
+  ('92000000-0000-4000-8000-000000000031', 'ro', 'Text');
+
 do $$
 begin
   begin
@@ -542,7 +599,7 @@ begin
       id, attribute_id, code, sort_order
     ) values (
       '92000000-0000-4000-8000-000000000020',
-      '31000000-0000-4000-8000-000000000001',
+      '92000000-0000-4000-8000-000000000031',
       'invalid_text_option', 999
     );
     raise exception 'option for text attribute unexpectedly succeeded';
@@ -627,7 +684,7 @@ begin
       id, group_id, code, data_type, is_filterable, sort_order
     ) values (
       '92000000-0000-4000-8000-000000000001',
-      '30000000-0000-4000-8000-000000000001',
+      '92000000-0000-4000-8000-000000000030',
       'verification_required', 'boolean', true, 999
     );
     insert into public.attribute_translations (attribute_id, locale, name)
@@ -649,12 +706,37 @@ begin
 end;
 $$;
 
+insert into public.attributes (
+  id, group_id, code, data_type, is_filterable, sort_order
+) values (
+  '92000000-0000-4000-8000-000000000003',
+  '92000000-0000-4000-8000-000000000030',
+  'verification_numeric', 'number', true, 997
+);
+insert into public.attribute_translations (attribute_id, locale, name)
+values
+  ('92000000-0000-4000-8000-000000000003', 'ru', 'Число'),
+  ('92000000-0000-4000-8000-000000000003', 'ro', 'Număr');
+insert into public.category_attributes (
+  category_id, attribute_id, is_required, is_filterable, sort_order
+) values (
+  '10000000-0000-4000-8000-000000000001',
+  '92000000-0000-4000-8000-000000000003', false, true, 997
+);
+insert into public.product_attribute_values (
+  id, product_id, attribute_id, number_value
+) values (
+  '92000000-0000-4000-8000-000000000004',
+  '20000000-0000-4000-8000-000000000001',
+  '92000000-0000-4000-8000-000000000003', 280
+);
+
 do $$
 begin
   begin
     update public.attributes
-    set data_type = 'number'
-    where id = '31000000-0000-4000-8000-000000000002';
+    set data_type = 'boolean'
+    where id = '92000000-0000-4000-8000-000000000003';
     set constraints all immediate;
     raise exception 'incompatible attribute type change unexpectedly succeeded';
   exception when raise_exception then
@@ -671,7 +753,7 @@ begin
       id, group_id, code, data_type, is_filterable, sort_order
     ) values (
       '92000000-0000-4000-8000-000000000002',
-      '30000000-0000-4000-8000-000000000001',
+      '92000000-0000-4000-8000-000000000030',
       'verification_filter_override', 'number', false, 998
     );
     insert into public.attribute_translations (attribute_id, locale, name)
@@ -693,31 +775,6 @@ begin
   end;
 end;
 $$;
-
-insert into public.attributes (
-  id, group_id, code, data_type, is_filterable, sort_order
-) values (
-  '92000000-0000-4000-8000-000000000003',
-  '30000000-0000-4000-8000-000000000001',
-  'verification_numeric', 'number', true, 997
-);
-insert into public.attribute_translations (attribute_id, locale, name)
-values
-  ('92000000-0000-4000-8000-000000000003', 'ru', 'Число'),
-  ('92000000-0000-4000-8000-000000000003', 'ro', 'Număr');
-insert into public.category_attributes (
-  category_id, attribute_id, is_required, is_filterable, sort_order
-) values (
-  '10000000-0000-4000-8000-000000000001',
-  '92000000-0000-4000-8000-000000000003', false, true, 997
-);
-insert into public.product_attribute_values (
-  id, product_id, attribute_id, number_value
-) values (
-  '92000000-0000-4000-8000-000000000004',
-  '20000000-0000-4000-8000-000000000001',
-  '92000000-0000-4000-8000-000000000003', 280
-);
 
 do $$
 begin

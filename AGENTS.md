@@ -39,7 +39,7 @@ Bilingual (RU/RO) appliance catalog + lead platform: Next.js 16.3 App Router sto
 - Copy `.env.example` → `.env.local` (all `.env*` except the example are gitignored).
 - Only `NEXT_PUBLIC_*` reach the browser. `SUPABASE_SERVICE_ROLE_KEY`, `LEAD_IP_HASH_SECRET`, `AI_RATE_LIMIT_SECRET`, Telegram and AI keys are server-only; secrets must be ≥32 chars or runtime validation throws. The assistant runs without a paid provider via `AI_PROVIDER=fallback` (see `.env.example`).
 - Env parsing/validation is centralized in `src/lib/env/` — add new variables there, not inline.
-- `next.config.ts` enforces a strict CSP (`connect-src 'self' https://*.supabase.co`); any new external fetch target (e.g. a custom AI provider) must be added to the CSP or it will be blocked. Auth, RLS, leads and the assistant are security-sensitive; read `docs/security.md` before touching them.
+- `next.config.ts` enforces a strict CSP (`connect-src 'self' https://*.supabase.co`). The CSP constrains the browser only: a new **client-side** fetch target must be added to it or the browser blocks the request. Server-side fetches (the AI provider call, Telegram delivery) are not subject to the CSP — they are restricted by the env validation in `src/lib/env/` (HTTPS-only in production) instead. Auth, RLS, leads and the assistant are security-sensitive; read `docs/security.md` before touching them.
 
 ## Structure
 

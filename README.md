@@ -61,6 +61,7 @@ Protected `/admin` tooling covers:
 - product CRUD;
 - images/media;
 - customer leads;
+- assistant knowledge base and request statistics;
 - public site settings;
 - storage / metadata reconciliation.
 
@@ -73,6 +74,8 @@ A deterministic fallback can run without a paid external AI provider:
 ```env
 AI_PROVIDER=fallback
 ```
+
+Store policies — delivery, payment, warranty, returns — come from a bilingual knowledge base (`assistant_knowledge`) that admins edit at `/admin/assistant-knowledge`; the assistant answers from those articles instead of inventing terms, and anonymous request telemetry is summarized at `/admin/assistant-logs`.
 
 Customer lead records are not passed into assistant context.
 
