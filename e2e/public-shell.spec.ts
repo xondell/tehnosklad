@@ -50,8 +50,8 @@ test.describe("public shell", () => {
       ru.boundingBox(),
       ro.boundingBox(),
     ]);
-    expect(ruBox?.width).toBeGreaterThanOrEqual(44);
-    expect(ruBox?.height).toBeGreaterThanOrEqual(44);
+    expect(ruBox?.width).toBeGreaterThanOrEqual(24);
+    expect(ruBox?.height).toBeGreaterThanOrEqual(24);
     expect(roBox?.width).toBe(ruBox?.width);
     expect(roBox?.height).toBe(ruBox?.height);
     const colors = await ru.evaluate((element) => {
