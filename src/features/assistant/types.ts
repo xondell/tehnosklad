@@ -13,10 +13,19 @@ export type AssistantReference = {
   stockStatus: "in_stock" | "out_of_stock" | "on_order";
   url: string;
 };
+/*
+ * Optional context of the page the widget is embedded into. It only narrows
+ * retrieval; every fact still comes from catalog DTOs and the knowledge base.
+ */
+export type AssistantPageContext = {
+  type: "product" | "category";
+  id: string;
+};
 export type AssistantRequest = {
   locale: Locale;
   question: string;
   history: AssistantHistoryMessage[];
+  page?: AssistantPageContext;
 };
 export type AssistantResponse = {
   answer: string;
