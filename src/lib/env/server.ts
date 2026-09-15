@@ -64,15 +64,19 @@ export function getOptionalTelegramEnvironment(): TelegramEnvironment | null {
   return { botToken, chatId };
 }
 
+const ANTHROPIC_DEFAULT_BASE_URL = "https://api.anthropic.com";
+
+export type AssistantUpstreamEnvironment = {
+  apiKey: string;
+  model: string;
+  baseUrl: string;
+  timeoutMs: number;
+};
+
 export type AssistantEnvironment =
   | { provider: "fallback"; timeoutMs: number }
-  | {
-      provider: "openai-compatible";
-      apiKey: string;
-      model: string;
-      baseUrl: string;
-      timeoutMs: number;
-    };
+  | ({ provider: "openai-compatible" } & AssistantUpstreamEnvironment)
+  | ({ provider: "anthropic" } & AssistantUpstreamEnvironment);
 
 export function getAssistantEnvironment(): AssistantEnvironment {
   const provider = (process.env.AI_PROVIDER ?? "fallback").trim().toLowerCase();
@@ -95,6 +99,25 @@ export function getAssistantEnvironment(): AssistantEnvironment {
       baseUrl: requireValidUrl(
         "AI_PROVIDER_BASE_URL",
         environment.AI_PROVIDER_BASE_URL,
+      ).replace(/\/$/, ""),
+      timeoutMs,
+    };
+  }
+  if (provider === "anthropic") {
+    const environment = requireEnvironmentVariables({
+      AI_PROVIDER_API_KEY: process.env.AI_PROVIDER_API_KEY,
+      AI_MODEL: process.env.AI_MODEL,
+    });
+    // The Anthropic API host is well known; an override exists only for
+    // gateways and is given without the versioned `/v1` path.
+    const baseUrl = process.env.AI_PROVIDER_BASE_URL?.trim();
+    return {
+      provider,
+      apiKey: environment.AI_PROVIDER_API_KEY,
+      model: environment.AI_MODEL,
+      baseUrl: (baseUrl
+        ? requireValidUrl("AI_PROVIDER_BASE_URL", baseUrl)
+        : ANTHROPIC_DEFAULT_BASE_URL
       ).replace(/\/$/, ""),
       timeoutMs,
     };
